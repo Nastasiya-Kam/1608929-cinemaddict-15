@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Анастасия Каманина](https://up.htmlacademy.ru/ecmascript/15/user/1608929).
-* Наставник: `Неизвестно`.
+* Наставник: [Ирина Черкасова](https://htmlacademy.ru/profile/raccoonlemon).
 
 ---
 
