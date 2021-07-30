@@ -8,20 +8,23 @@ import {createShowMoreTemplate} from './view/show-more.js';
 import {createTopRatedTemplate} from './view/top-rated.js';
 import {createMostCommentedTemplate} from './view/most-commented.js';
 import {createStatisticsTemplate} from './view/statistics.js';
+import {createFilmDetailsTemplate} from './view/popup.js';
+import {createControlsTemplate} from './view/popup-controls.js';
+import {createFilmCommentsTemplate} from './view/popup-details.js';
 
 const FILM_COUNT = 5;
 const EXTRA_FILM_COUNT = 2;
+
+const site = document.body;
+const siteHeader = site.querySelector('.header');
+const siteMain = site.querySelector('.main');
+const footerStatistics = site.querySelector('.footer__statistics');
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const siteHeader = document.querySelector('.header');
-
 render(siteHeader, createProfileTemplate(), 'beforeend');
-
-const siteMain = document.querySelector('.main');
-
 render(siteMain, createSiteMenuTemplate(), 'beforeend');
 render(siteMain, createSortTemplate(), 'beforeend');
 render(siteMain, createFilmsTemplate(), 'beforeend');
@@ -54,8 +57,14 @@ for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
   render(mostCommentedList, createCardFilmTemplate(), 'beforeend');
 }
 
-const footerStatistics = document.querySelector('.footer__statistics');
-
 render(footerStatistics, createStatisticsTemplate(), 'beforeend');
+render(site, createFilmDetailsTemplate(), 'beforeend');
 
-// todo Подробная информация о фильме (попап).
+const filmDetails = site.querySelector('.film-details');
+const filmDetailsTop = filmDetails.querySelector('.film-details__top-container');
+
+render(filmDetailsTop, createControlsTemplate(), 'beforeend');
+
+const filmDetailsBottom = filmDetails.querySelector('.film-details__bottom-container');
+
+render(filmDetailsBottom, createFilmCommentsTemplate(), 'beforeend');
