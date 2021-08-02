@@ -11,9 +11,15 @@ import {createStatisticsTemplate} from './view/statistics.js';
 import {createFilmDetailsTemplate} from './view/popup.js';
 import {createControlsTemplate} from './view/popup-controls.js';
 import {createFilmCommentsTemplate} from './view/popup-details.js';
+import {generateFilm} from './mock/film.js';
 
 const FILM_COUNT = 5;
 const EXTRA_FILM_COUNT = 2;
+const FILM_DEVELOPER_COUNT = 20;
+
+// временно отключаем проверку eslint о вызове переменной
+// eslint-disable-next-line no-unused-vars
+const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
 
 const site = document.body;
 const siteHeader = site.querySelector('.header');
