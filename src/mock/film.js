@@ -81,6 +81,20 @@ const generateDescription = (count) => {
   return new Array(count).fill().map(() => SENTENCES[getRandomInteger(0, SENTENCES.length - 1)]).join(' ');
 };
 
+const generateGenres = (count) => {
+  const GENRES = [
+    'Drama',
+    'Film-Noir',
+    'Mystery',
+    'Western',
+    'Comedy',
+    'Cartoon',
+    'Mystery',
+  ];
+
+  return new Array(count).fill().map(() => GENRES[getRandomInteger(1, GENRES.length - 1)]);
+};
+
 const comment = {
   text: '',
   emoji: '',
@@ -101,13 +115,13 @@ const generateFilm = () => ({
   comments: generateComments(getRandomInteger(MIN_COMMENTS_COUNT, MAX_COUNT)),
   rating: getRandomFloat(0, 10, 1),
   release: generateDate(),
-  runtime: `${getRandomInteger(0, 2)}h ${getRandomInteger(0, 59)}m`, //?число (минуты)
-  genres: 'Drama Film-Noir Mystery', //?массив
+  duration: `${getRandomInteger(0, 2)}h ${getRandomInteger(0, 59)}m`, //?число (минуты)
+  genres: generateGenres(getRandomInteger(1, 3)),
   director:	'Anthony Mann', //?массив
   writers:	'Anne Wigton, Heinz Herald, Richard Weil', //?массив
   actors:	'Erich von Stroheim, Mary Beth Hughes, Dan Duryea', //?массив
   country:	'USA',
-  ratingAge: '18+',
+  age: '18+',
   isWatchList: Boolean(getRandomInteger(0, 1)),
   isWatched: Boolean(getRandomInteger(0, 1)),
   isFavorite: Boolean(getRandomInteger(0, 1)),
