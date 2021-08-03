@@ -17,8 +17,6 @@ const FILM_COUNT = 5;
 const EXTRA_FILM_COUNT = 2;
 const FILM_DEVELOPER_COUNT = 20;
 
-// временно отключаем проверку eslint о вызове переменной
-// eslint-disable-next-line no-unused-vars
 const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
 
 const site = document.body;
@@ -43,7 +41,7 @@ const filmsList = filmsContainer.querySelector('.films-list');
 const filmsListContainer = filmsList.querySelector('.films-list__container');
 
 for (let i = 0; i < FILM_COUNT; i ++) {
-  render(filmsListContainer, createCardFilmTemplate(), 'beforeend');
+  render(filmsListContainer, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
 render(filmsList, createShowMoreTemplate(), 'beforeend');
@@ -52,7 +50,7 @@ render(filmsContainer, createTopRatedTemplate(), 'beforeend');
 const topRatedList = filmsContainer.querySelector('.films-list--extra .films-list__container');
 
 for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-  render(topRatedList, createCardFilmTemplate(), 'beforeend');
+  render(topRatedList, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
 render(filmsContainer, createMostCommentedTemplate(), 'beforeend');
@@ -60,7 +58,7 @@ render(filmsContainer, createMostCommentedTemplate(), 'beforeend');
 const mostCommentedList = filmsContainer.querySelector('.films-list--extra:last-child .films-list__container');
 
 for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-  render(mostCommentedList, createCardFilmTemplate(), 'beforeend');
+  render(mostCommentedList, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
 render(footerStatistics, createStatisticsTemplate(), 'beforeend');

@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 const MAX_COUNT = 5;
 const MIN_COMMENTS_COUNT = 0;
 const MIN_DESCRIPTION_COUNT = 1;
@@ -53,13 +51,13 @@ const generateFilmName = () => {
 
 const generateFilmImage = () => {
   const FILM_IMAGE = [
-    'made-for-each-other',
-    'popeye-meets-sinbad',
-    'sagebrush-trail',
-    'santa-claus-conquers-the-martians',
-    'the-dance-of-life',
-    'the-great-flamarion',
-    'the-man-with-the-golden-arm',
+    'made-for-each-other.png',
+    'popeye-meets-sinbad.png',
+    'sagebrush-trail.jpg',
+    'santa-claus-conquers-the-martians.jpg',
+    'the-dance-of-life.jpg',
+    'the-great-flamarion.jpg',
+    'the-man-with-the-golden-arm.jpg',
   ];
 
   return FILM_IMAGE[getRandomInteger(0, FILM_IMAGE.length - 1)];
@@ -93,7 +91,7 @@ const comment = {
 
 const generateComments = (count) => new Array(count).fill().map(() => comment);
 
-const generateDate = () => dayjs(`${getRandomInteger(2000, 2021)}-${getRandomInteger(0, 12)}-${getRandomInteger(0, 28)} `).format('D MMMM YYYY');
+const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)} `;
 
 const generateFilm = () => ({
   name: generateFilmName(),
@@ -103,7 +101,7 @@ const generateFilm = () => ({
   comments: generateComments(getRandomInteger(MIN_COMMENTS_COUNT, MAX_COUNT)),
   rating: getRandomFloat(0, 10, 1),
   release: generateDate(),
-  runtime: `${getRandomInteger(0, 2)}h ${getRandomInteger(0, 59)}m`,
+  runtime: `${getRandomInteger(0, 2)}h ${getRandomInteger(0, 59)}m`, //?число (минуты)
   genres: 'Drama Film-Noir Mystery', //?массив
   director:	'Anthony Mann', //?массив
   writers:	'Anne Wigton, Heinz Herald, Richard Weil', //?массив
