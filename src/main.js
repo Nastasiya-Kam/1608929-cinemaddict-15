@@ -28,7 +28,7 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(siteHeader, createProfileTemplate(), 'beforeend');
+render(siteHeader, createProfileTemplate(filter[1]), 'beforeend');
 render(siteMain, createSiteMenuTemplate(filter), 'beforeend');
 render(siteMain, createSortTemplate(), 'beforeend');
 render(siteMain, createFilmsTemplate(), 'beforeend');
