@@ -8,13 +8,13 @@ import {createShowMoreTemplate} from './view/show-more.js';
 import {createTopRatedTemplate} from './view/top-rated.js';
 import {createMostCommentedTemplate} from './view/most-commented.js';
 import {createStatisticsTemplate} from './view/statistics.js';
-// import {createFilmDetailsTemplate} from './view/popup.js';
+import {createFilmDetailsTemplate} from './view/popup.js';
 import {generateFilm} from './mock/film.js';
 import {generateFilter} from './view/filter.js';
 
-const FILM_COUNT = 5;
 const EXTRA_FILM_COUNT = 2;
-const FILM_DEVELOPER_COUNT = 20;
+const FILM_DEVELOPER_COUNT = 21;
+const FILM_COUNT_PER_STEP = 5;
 
 const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
 const filter = generateFilter(films);
@@ -40,11 +40,31 @@ render(filmsContainer, createFilmListTemplate(), 'beforeend');
 const filmsList = filmsContainer.querySelector('.films-list');
 const filmsListContainer = filmsList.querySelector('.films-list__container');
 
-for (let i = 0; i < FILM_COUNT; i ++) {
+for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i ++) {
   render(filmsListContainer, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
-render(filmsList, createShowMoreTemplate(), 'beforeend');
+if (films.length > FILM_COUNT_PER_STEP) {
+  let renderedFilmCount = FILM_COUNT_PER_STEP;
+
+  render(filmsList, createShowMoreTemplate(), 'beforeend');
+
+  const loadMoreButton = filmsContainer.querySelector('.films-list__show-more');
+
+  loadMoreButton.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    films
+      .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
+      .forEach((film) => render(filmsListContainer, createCardFilmTemplate(film), 'beforeend'));
+
+    renderedFilmCount += FILM_COUNT_PER_STEP;
+
+    if (renderedFilmCount >= films.length) {
+      loadMoreButton.remove();
+    }
+  });
+}
+
 render(filmsContainer, createTopRatedTemplate(), 'beforeend');
 
 const topRatedList = filmsContainer.querySelector('.films-list--extra .films-list__container');
@@ -62,4 +82,4 @@ for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
 }
 
 render(footerStatistics, createStatisticsTemplate(films), 'beforeend');
-// render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
+render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
