@@ -10,12 +10,14 @@ import {createMostCommentedTemplate} from './view/most-commented.js';
 import {createStatisticsTemplate} from './view/statistics.js';
 // import {createFilmDetailsTemplate} from './view/popup.js';
 import {generateFilm} from './mock/film.js';
+import {generateFilter} from './view/filter.js';
 
 const FILM_COUNT = 5;
 const EXTRA_FILM_COUNT = 2;
 const FILM_DEVELOPER_COUNT = 20;
 
 const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
+const filter = generateFilter(films);
 
 const site = document.body;
 const siteHeader = site.querySelector('.header');
@@ -27,7 +29,7 @@ const render = (container, template, place) => {
 };
 
 render(siteHeader, createProfileTemplate(), 'beforeend');
-render(siteMain, createSiteMenuTemplate(), 'beforeend');
+render(siteMain, createSiteMenuTemplate(filter), 'beforeend');
 render(siteMain, createSortTemplate(), 'beforeend');
 render(siteMain, createFilmsTemplate(), 'beforeend');
 
