@@ -59,5 +59,5 @@ for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
   render(mostCommentedList, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
-render(footerStatistics, createStatisticsTemplate(), 'beforeend');
+render(footerStatistics, createStatisticsTemplate(films), 'beforeend');
 render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
