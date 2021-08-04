@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import {getReleaseDate} from '../utils.js';
 import {createFilmCommentsTemplate} from './popup-comments.js';
 
 const createGenresTemplate = (genres) => {
@@ -25,7 +25,7 @@ const createControlsTemplate = (filmStatus) => {
 
 const createFilmDetailsTemplate = (film) => {
   const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description} = film;
-  const releaseDate = dayjs(release).format('DD MMMM YYYY');
+  const releaseDate = getReleaseDate(release);
 
   return (`<section class="film-details">
       <form class="film-details__inner" action="" method="get">

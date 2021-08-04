@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import {getCommentDate} from '../utils.js';
 import {EMOJI} from '../const.js';
 
 const createComments = (comments) => {
@@ -16,7 +16,7 @@ const createComments = (comments) => {
         <p class="film-details__comment-text">${text}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
-          <span class="film-details__comment-day">${dayjs(date).format('YYYY/M/DD HH:mm')}</span>
+          <span class="film-details__comment-day">${getCommentDate(date)}</span>
           <button class="film-details__comment-delete">Delete</button>
         </p>
       </div>

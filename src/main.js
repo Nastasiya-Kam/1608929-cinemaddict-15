@@ -8,7 +8,7 @@ import {createShowMoreTemplate} from './view/show-more.js';
 import {createTopRatedTemplate} from './view/top-rated.js';
 import {createMostCommentedTemplate} from './view/most-commented.js';
 import {createStatisticsTemplate} from './view/statistics.js';
-import {createFilmDetailsTemplate} from './view/popup.js';
+// import {createFilmDetailsTemplate} from './view/popup.js';
 import {generateFilm} from './mock/film.js';
 
 const FILM_COUNT = 5;
@@ -60,4 +60,4 @@ for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
 }
 
 render(footerStatistics, createStatisticsTemplate(films), 'beforeend');
-render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
+// render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
