@@ -1,3 +1,5 @@
+import {EMOJI} from '../const.js';
+
 const MAX_COUNT = 5;
 const MIN_COMMENTS_COUNT = 0;
 const MIN_DESCRIPTION_COUNT = 1;
@@ -92,20 +94,39 @@ const generateGenres = (count) => {
     'Mystery',
   ];
 
-  return new Array(count).fill().map(() => GENRES[getRandomInteger(1, GENRES.length - 1)]);
+  return new Array(count).fill().map(() => GENRES[getRandomInteger(0, GENRES.length - 1)]);
 };
 
-const comment = {
-  text: '',
-  emoji: '',
-  author: '',
-  date: '',
-  button: '',
+const generateEmoji = () => EMOJI[getRandomInteger(0, EMOJI.length - 1)];
+
+const generateText = () => {
+  const TEXTS = [
+    'Interesting setting and a good cast',
+    'Booooooooooring',
+    'Very very old. Meh',
+    'Almost two hours? Seriously?',
+  ];
+
+  return TEXTS[getRandomInteger(0, TEXTS.length - 1)];
 };
 
-const generateComments = (count) => new Array(count).fill().map(() => comment);
+const generateAuthor = () => {
+  const AUTHORS = [
+    'Tim Macoveev',
+    'John Doe',
+  ];
+
+  return AUTHORS[getRandomInteger(0, AUTHORS.length - 1)];
+};
 
 const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)} `;
+
+const generateComments = (count) => new Array(count).fill().map(() => ({
+  text: generateText(),
+  emoji: generateEmoji(),
+  author: generateAuthor(),
+  date: generateDate(),
+}));
 
 const generateFilm = () => ({
   name: generateFilmName(),

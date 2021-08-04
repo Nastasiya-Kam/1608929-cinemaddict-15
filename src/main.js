@@ -9,7 +9,6 @@ import {createTopRatedTemplate} from './view/top-rated.js';
 import {createMostCommentedTemplate} from './view/most-commented.js';
 import {createStatisticsTemplate} from './view/statistics.js';
 import {createFilmDetailsTemplate} from './view/popup.js';
-import {createFilmCommentsTemplate} from './view/popup-details.js';
 import {generateFilm} from './mock/film.js';
 
 const FILM_COUNT = 5;
@@ -62,8 +61,3 @@ for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
 
 render(footerStatistics, createStatisticsTemplate(), 'beforeend');
 render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
-
-const filmDetails = site.querySelector('.film-details');
-const filmDetailsBottom = filmDetails.querySelector('.film-details__bottom-container');
-
-render(filmDetailsBottom, createFilmCommentsTemplate(), 'beforeend');

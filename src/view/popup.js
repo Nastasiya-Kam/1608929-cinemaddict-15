@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {createFilmCommentsTemplate} from './popup-comments.js';
 
 const createGenresTemplate = (genres) => {
   let genresTemplate = '';
@@ -85,9 +86,10 @@ const createFilmDetailsTemplate = (film) => {
               <p class="film-details__film-description">${description}</p>
             </div>
           </div>
+          ${createControlsTemplate(film)}
         </div>
 
-        <div class="film-details__bottom-container">${createControlsTemplate(film)}</div>
+        <div class="film-details__bottom-container">${createFilmCommentsTemplate(film)}</div>
       </form>
     </section>`
   );
