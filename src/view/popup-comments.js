@@ -1,4 +1,4 @@
-import {getCommentDate} from '../utils.js';
+import {getCommentDate} from '../utils/dates.js';
 import {EMOJI} from '../const.js';
 
 const createComments = (comments) => {

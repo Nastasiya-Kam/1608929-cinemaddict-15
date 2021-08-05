@@ -1,4 +1,4 @@
-import {getCardDate} from '../utils.js';
+import {getCardDate} from '../utils/dates.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 

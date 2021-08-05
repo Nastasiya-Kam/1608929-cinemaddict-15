@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 // Функция из интернета по генерации случайного числа из диапазона
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 const getRandomInteger = (a = 0, b = 1) => {
@@ -31,8 +29,4 @@ const getRandomFloat = (start = 0, finish = 1, decimalPlaces = 1) => {
   return Number(String(number).substr(0, decimalPlaces + (lengthNumber - decimalPlaces + 1)));
 };
 
-const getReleaseDate = (date) => dayjs(date).format('DD MMMM YYYY');
-const getCommentDate = (date) => dayjs(date).format('YYYY/M/DD HH:mm');
-const getCardDate = (date) => dayjs(date).format('YYYY');
-
-export {getRandomInteger, getInteger, getRandomFloat, getReleaseDate, getCommentDate, getCardDate};
+export {getRandomInteger, getInteger, getRandomFloat};
