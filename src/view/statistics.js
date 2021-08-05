@@ -1,3 +1,3 @@
-const createStatisticsTemplate = (films) => `<p>${films.length} movies inside</p>`;
+const createStatisticsTemplate = (number) => `<p>${number} movies inside</p>`;
 
 export {createStatisticsTemplate};

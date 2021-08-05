@@ -12,13 +12,15 @@ import {createFilmDetailsTemplate} from './view/popup.js';
 import {generateFilm} from './mock/film.js';
 import {generateFilter} from './view/filter.js';
 import {getRating} from './utils/users.js';
+import {getNumberFilms} from './utils/films.js';
 
 const EXTRA_FILM_COUNT = 2;
-const FILM_DEVELOPER_COUNT = 21;
+const FILM_DEVELOPER_COUNT = 22;
 const FILM_COUNT_PER_STEP = 5;
 
 const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
 const filter = generateFilter(films);
+const numberFilms = getNumberFilms(films);
 
 const site = document.body;
 const siteHeader = site.querySelector('.header');
@@ -92,7 +94,7 @@ for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
   render(mostCommentedList, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
-render(footerStatistics, createStatisticsTemplate(films), 'beforeend');
+render(footerStatistics, createStatisticsTemplate(numberFilms), 'beforeend');
 
 // todo действия для открытия попапа с подробной информацией о фильме
 // функция отрисовки (?) в обработчик события кликов по ТЗ: Клик по обложке фильма, заголовку, количеству комментариев открывает попап с подробной информацией о фильме;
