@@ -11,6 +11,7 @@ import {createStatisticsTemplate} from './view/statistics.js';
 import {createFilmDetailsTemplate} from './view/popup.js';
 import {generateFilm} from './mock/film.js';
 import {generateFilter} from './view/filter.js';
+import {getRating} from './utils/users.js';
 
 const EXTRA_FILM_COUNT = 2;
 const FILM_DEVELOPER_COUNT = 21;
@@ -28,7 +29,7 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(siteHeader, createProfileTemplate(filter[1]), 'beforeend');
+render(siteHeader, createProfileTemplate(getRating(films)), 'beforeend');
 render(siteMain, createSiteMenuTemplate(filter), 'beforeend');
 render(siteMain, createSortTemplate(), 'beforeend');
 render(siteMain, createFilmsTemplate(), 'beforeend');
