@@ -40,6 +40,16 @@ render(filmsContainer, createFilmListTemplate(), 'beforeend');
 const filmsList = filmsContainer.querySelector('.films-list');
 const filmsListContainer = filmsList.querySelector('.films-list__container');
 
+const checkClass = (item) => item === 'film-card__controls-item';
+
+filmsListContainer.addEventListener('click', (evt) => {
+  const buttonClasses = Array.from(evt.target.classList);
+
+  if (buttonClasses.some(checkClass)) {
+    evt.target.classList.toggle('film-card__controls-item--active');
+  }
+});
+
 for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i ++) {
   render(filmsListContainer, createCardFilmTemplate(films[i]), 'beforeend');
 }
@@ -94,7 +104,14 @@ render(footerStatistics, createStatisticsTemplate(films), 'beforeend');
 render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
 
 const filmDetails = site.querySelector('.film-details');
+const filmDetailsControls = filmDetails.querySelector('.film-details__controls');
 const filmDetailsCloseButton = filmDetails.querySelector('.film-details__close-btn');
+
+filmDetailsControls.addEventListener('click', (evt) => {
+  if (evt.target.tagName === 'BUTTON') {
+    evt.target.classList.toggle('film-details__control-button--active');
+  }
+});
 
 // const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
