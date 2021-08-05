@@ -82,4 +82,35 @@ for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
 }
 
 render(footerStatistics, createStatisticsTemplate(films), 'beforeend');
+
+// todo действия для открытия попапа с подробной информацией о фильме
+// функция отрисовки (?) в обработчик события кликов по ТЗ: Клик по обложке фильма, заголовку, количеству комментариев открывает попап с подробной информацией о фильме;
+
+// const openFilmDetailsSuccess = () => {
+//   render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
+//   document.addEventListener('keydown', onFilmDetailsEscKeydown);
+// };
+
 render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
+
+const filmDetails = site.querySelector('.film-details');
+const filmDetailsCloseButton = filmDetails.querySelector('.film-details__close-btn');
+
+// const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+// const onFilmDetailsEscKeydown = (evt) => {
+//   if (isEscEvent(evt)) {
+//     evt.preventDefault();
+//     document.removeEventListener('keydown', onFilmDetailsEscKeydown);
+//     filmDetails.remove();
+//   }
+// };
+
+const closeFilmDetails = () => {
+  // document.removeEventListener('keydown', onFilmDetailsEscKeydown);
+  filmDetails.remove();
+};
+
+filmDetailsCloseButton.addEventListener('click', () => {
+  closeFilmDetails();
+});
