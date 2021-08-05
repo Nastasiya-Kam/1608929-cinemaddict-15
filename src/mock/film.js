@@ -1,9 +1,13 @@
 import {EMOJI} from '../const.js';
 import {getRandomInteger, getRandomFloat} from '../utils.js';
 
-const MAX_COUNT = 5;
+const MAX_COMMENTS_COUNT = 5;
+const MAX_DESCRIPTION_COUNT = 5;
 const MIN_COMMENTS_COUNT = 0;
 const MIN_DESCRIPTION_COUNT = 1;
+
+const getRandomBoolean = () => Boolean(getRandomInteger(0, 1));
+const getRandomArrayItem = (array) => array[getRandomInteger(0, array.length - 1)];
 
 const generateFilmName = () => {
   const NAMES = [
@@ -12,13 +16,11 @@ const generateFilmName = () => {
     'The Man with the Golden Arm',
     'Santa Claus Conquers the Martians',
     'Popeye the Sailor Meets Sindbad the Sailor',
-    'The Man with the Golden Arm',
     'The Great Flamarion',
-    'Santa Claus Conquers the Martians',
     'Made for Each Other',
   ];
 
-  return NAMES[getRandomInteger(0, NAMES.length - 1)];
+  return getRandomArrayItem(NAMES);
 };
 
 const generateFilmImage = () => {
@@ -32,7 +34,7 @@ const generateFilmImage = () => {
     'the-man-with-the-golden-arm.jpg',
   ];
 
-  return FILM_IMAGE[getRandomInteger(0, FILM_IMAGE.length - 1)];
+  return getRandomArrayItem(FILM_IMAGE);
 };
 
 const generateDescription = (count) => {
@@ -50,7 +52,7 @@ const generateDescription = (count) => {
     'In rutrum ac purus sit amet tempus.',
   ];
 
-  return new Array(count).fill().map(() => SENTENCES[getRandomInteger(0, SENTENCES.length - 1)]).join(' ');
+  return new Array(count).fill().map(() => getRandomArrayItem(SENTENCES)).join(' ');
 };
 
 const generateGenres = (count) => {
@@ -64,7 +66,7 @@ const generateGenres = (count) => {
     'Mystery',
   ];
 
-  return new Array(count).fill().map(() => GENRES[getRandomInteger(0, GENRES.length - 1)]);
+  return new Array(count).fill().map(() => getRandomArrayItem(GENRES));
 };
 
 const generateEmoji = () => EMOJI[getRandomInteger(0, EMOJI.length - 1)];
@@ -77,7 +79,7 @@ const generateText = () => {
     'Almost two hours? Seriously?',
   ];
 
-  return TEXTS[getRandomInteger(0, TEXTS.length - 1)];
+  return getRandomArrayItem(TEXTS);
 };
 
 const generateAuthor = () => {
@@ -86,7 +88,7 @@ const generateAuthor = () => {
     'John Doe',
   ];
 
-  return AUTHORS[getRandomInteger(0, AUTHORS.length - 1)];
+  return getRandomArrayItem(AUTHORS);
 };
 
 const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)} `;
@@ -102,8 +104,8 @@ const generateFilm = () => ({
   name: generateFilmName(),
   original: generateFilmName(),
   img: generateFilmImage(),
-  description: generateDescription(getRandomInteger(MIN_DESCRIPTION_COUNT, MAX_COUNT)),
-  comments: generateComments(getRandomInteger(MIN_COMMENTS_COUNT, MAX_COUNT)),
+  description: generateDescription(getRandomInteger(MIN_DESCRIPTION_COUNT, MAX_DESCRIPTION_COUNT)),
+  comments: generateComments(getRandomInteger(MIN_COMMENTS_COUNT, MAX_COMMENTS_COUNT)),
   rating: getRandomFloat(0, 10, 1),
   release: generateDate(),
   duration: `${getRandomInteger(0, 2)}h ${getRandomInteger(0, 59)}m`, //?число (минуты)
@@ -113,9 +115,9 @@ const generateFilm = () => ({
   actors:	'Erich von Stroheim, Mary Beth Hughes, Dan Duryea', //?массив
   country:	'USA',
   age: '18+',
-  isWatchList: Boolean(getRandomInteger(0, 1)),
-  isWatched: Boolean(getRandomInteger(0, 1)),
-  isFavorite: Boolean(getRandomInteger(0, 1)),
+  isWatchList: getRandomBoolean(),
+  isWatched: getRandomBoolean(),
+  isFavorite: getRandomBoolean(),
 });
 
 export {generateFilm};
