@@ -9,11 +9,19 @@ import {createTopRatedTemplate} from './view/top-rated.js';
 import {createMostCommentedTemplate} from './view/most-commented.js';
 import {createStatisticsTemplate} from './view/statistics.js';
 import {createFilmDetailsTemplate} from './view/popup.js';
-import {createControlsTemplate} from './view/popup-controls.js';
-import {createFilmCommentsTemplate} from './view/popup-details.js';
+import {generateFilm} from './mock/film.js';
+import {generateFilter} from './utils/filter.js';
+import {getRating} from './utils/users.js';
+import {getNumberFilms} from './utils/films.js';
 
-const FILM_COUNT = 5;
 const EXTRA_FILM_COUNT = 2;
+const FILM_DEVELOPER_COUNT = 22;
+const FILM_COUNT_PER_STEP = 5;
+
+const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
+const filter = generateFilter(films);
+const numberFilms = getNumberFilms(films);
+const rating = getRating(films);
 
 const site = document.body;
 const siteHeader = site.querySelector('.header');
@@ -24,8 +32,8 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(siteHeader, createProfileTemplate(), 'beforeend');
-render(siteMain, createSiteMenuTemplate(), 'beforeend');
+render(siteHeader, createProfileTemplate(rating), 'beforeend');
+render(siteMain, createSiteMenuTemplate(filter), 'beforeend');
 render(siteMain, createSortTemplate(), 'beforeend');
 render(siteMain, createFilmsTemplate(), 'beforeend');
 
@@ -36,17 +44,47 @@ render(filmsContainer, createFilmListTemplate(), 'beforeend');
 const filmsList = filmsContainer.querySelector('.films-list');
 const filmsListContainer = filmsList.querySelector('.films-list__container');
 
-for (let i = 0; i < FILM_COUNT; i ++) {
-  render(filmsListContainer, createCardFilmTemplate(), 'beforeend');
+const checkClass = (item) => item === 'film-card__controls-item';
+
+filmsListContainer.addEventListener('click', (evt) => {
+  const buttonClasses = Array.from(evt.target.classList);
+
+  if (buttonClasses.some(checkClass)) {
+    evt.target.classList.toggle('film-card__controls-item--active');
+  }
+});
+
+for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i ++) {
+  render(filmsListContainer, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
-render(filmsList, createShowMoreTemplate(), 'beforeend');
+if (films.length > FILM_COUNT_PER_STEP) {
+  let renderedFilmCount = FILM_COUNT_PER_STEP;
+
+  render(filmsList, createShowMoreTemplate(), 'beforeend');
+
+  const loadMoreButton = filmsContainer.querySelector('.films-list__show-more');
+
+  loadMoreButton.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    films
+      .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
+      .forEach((film) => render(filmsListContainer, createCardFilmTemplate(film), 'beforeend'));
+
+    renderedFilmCount += FILM_COUNT_PER_STEP;
+
+    if (renderedFilmCount >= films.length) {
+      loadMoreButton.remove();
+    }
+  });
+}
+
 render(filmsContainer, createTopRatedTemplate(), 'beforeend');
 
 const topRatedList = filmsContainer.querySelector('.films-list--extra .films-list__container');
 
 for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-  render(topRatedList, createCardFilmTemplate(), 'beforeend');
+  render(topRatedList, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
 render(filmsContainer, createMostCommentedTemplate(), 'beforeend');
@@ -54,17 +92,46 @@ render(filmsContainer, createMostCommentedTemplate(), 'beforeend');
 const mostCommentedList = filmsContainer.querySelector('.films-list--extra:last-child .films-list__container');
 
 for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-  render(mostCommentedList, createCardFilmTemplate(), 'beforeend');
+  render(mostCommentedList, createCardFilmTemplate(films[i]), 'beforeend');
 }
 
-render(footerStatistics, createStatisticsTemplate(), 'beforeend');
-render(site, createFilmDetailsTemplate(), 'beforeend');
+render(footerStatistics, createStatisticsTemplate(numberFilms), 'beforeend');
+
+// todo действия для открытия попапа с подробной информацией о фильме
+// функция отрисовки (?) в обработчик события кликов по ТЗ: Клик по обложке фильма, заголовку, количеству комментариев открывает попап с подробной информацией о фильме;
+
+// const openFilmDetailsSuccess = () => {
+//   render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
+//   document.addEventListener('keydown', onFilmDetailsEscKeydown);
+// };
+
+render(site, createFilmDetailsTemplate(films[0]), 'beforeend');
 
 const filmDetails = site.querySelector('.film-details');
-const filmDetailsTop = filmDetails.querySelector('.film-details__top-container');
+const filmDetailsControls = filmDetails.querySelector('.film-details__controls');
+const filmDetailsCloseButton = filmDetails.querySelector('.film-details__close-btn');
 
-render(filmDetailsTop, createControlsTemplate(), 'beforeend');
+filmDetailsControls.addEventListener('click', (evt) => {
+  if (evt.target.tagName === 'BUTTON') {
+    evt.target.classList.toggle('film-details__control-button--active');
+  }
+});
 
-const filmDetailsBottom = filmDetails.querySelector('.film-details__bottom-container');
+// const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
-render(filmDetailsBottom, createFilmCommentsTemplate(), 'beforeend');
+// const onFilmDetailsEscKeydown = (evt) => {
+//   if (isEscEvent(evt)) {
+//     evt.preventDefault();
+//     document.removeEventListener('keydown', onFilmDetailsEscKeydown);
+//     filmDetails.remove();
+//   }
+// };
+
+const closeFilmDetails = () => {
+  // document.removeEventListener('keydown', onFilmDetailsEscKeydown);
+  filmDetails.remove();
+};
+
+filmDetailsCloseButton.addEventListener('click', () => {
+  closeFilmDetails();
+});

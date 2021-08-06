@@ -1,3 +1,3 @@
-const createStatisticsTemplate = () => '<p>130 291 movies inside</p>';
+const createStatisticsTemplate = (number) => `<p>${number} movies inside</p>`;
 
 export {createStatisticsTemplate};
