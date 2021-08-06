@@ -21,6 +21,7 @@ const FILM_COUNT_PER_STEP = 5;
 const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
 const filter = generateFilter(films);
 const numberFilms = getNumberFilms(films);
+const rating = getRating(films);
 
 const site = document.body;
 const siteHeader = site.querySelector('.header');
@@ -31,7 +32,7 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(siteHeader, createProfileTemplate(getRating(films)), 'beforeend');
+render(siteHeader, createProfileTemplate(rating), 'beforeend');
 render(siteMain, createSiteMenuTemplate(filter), 'beforeend');
 render(siteMain, createSortTemplate(), 'beforeend');
 render(siteMain, createFilmsTemplate(), 'beforeend');

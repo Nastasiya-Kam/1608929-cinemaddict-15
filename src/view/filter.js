@@ -1,10 +1,16 @@
+const Filter = {watchList: 'watchList', watched: 'watched', favorite: 'favorite'};
+
 const filmToFilterMap = {
-  watchList: (films) => films.filter((film) => film.isWatchList).length,
-  watched: (films) => films.filter((film) => film.isWatched).length,
-  favorite: (films) => films.filter((film) => film.isFavorite).length,
+  [Filter.watchList]: (films) => films.filter((film) => film.isWatchList).length,
+  [Filter.watched]: (films) => films.filter((film) => film.isWatched).length,
+  [Filter.favorite]: (films) => films.filter((film) => film.isFavorite).length,
 };
 
-// todo как сделать объект {свойство: кол-во, свойство: кол-во, свойство: кол-во}?
-const generateFilter = (films) => Object.entries(filmToFilterMap).map(([filterName, countFilms]) => ({[filterName]: countFilms(films)}));
+const generateFilter = (films) => {
+  const filter = {};
+
+  Object.entries(filmToFilterMap).forEach(([filterName, countFilms]) => (filter[filterName] = countFilms(films)));
+  return filter;
+};
 
 export {generateFilter};
