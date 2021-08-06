@@ -10,7 +10,7 @@ import {createMostCommentedTemplate} from './view/most-commented.js';
 import {createStatisticsTemplate} from './view/statistics.js';
 import {createFilmDetailsTemplate} from './view/popup.js';
 import {generateFilm} from './mock/film.js';
-import {generateFilter} from './view/filter.js';
+import {generateFilter} from './utils/filter.js';
 import {getRating} from './utils/users.js';
 import {getNumberFilms} from './utils/films.js';
 
