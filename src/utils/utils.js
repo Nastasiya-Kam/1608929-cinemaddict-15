@@ -1,3 +1,8 @@
+const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
 // Функция из интернета по генерации случайного числа из диапазона
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 const getRandomInteger = (a = 0, b = 1) => {
@@ -28,5 +33,29 @@ const getRandomFloat = (start = 0, finish = 1, decimalPlaces = 1) => {
 
   return Number(String(number).substr(0, decimalPlaces + (lengthNumber - decimalPlaces + 1)));
 };
+// Функция из интернета по вставке элемента в начало или в конец родительского элемента
+// https://github.com/htmlacademy-ecmascript/taskmanager-15/pull/3/commits/e5b37903905e6b3896d48563a1880456ced4c04d
+const renderElement = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
 
-export {getRandomInteger, getInteger, getRandomFloat};
+const renderTemplate = (container, template, place) => {
+  container.insertAdjacentHTML(place, template);
+};
+// Функция из интернета по созданию элемента
+// https://github.com/htmlacademy-ecmascript/taskmanager-15/pull/3/commits/e5b37903905e6b3896d48563a1880456ced4c04d
+const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
+export {getRandomInteger, getInteger, getRandomFloat, renderTemplate, RenderPosition, renderElement, createElement};
