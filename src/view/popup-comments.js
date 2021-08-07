@@ -1,5 +1,6 @@
 import {getCommentDate} from '../utils/dates.js';
 import {EMOJI} from '../const.js';
+import {createElement} from '../utils/utils.js';
 
 const createComments = (comments) => {
   let commentsList = '';
@@ -62,4 +63,27 @@ const createFilmCommentsTemplate = (film) => {
   );
 };
 
-export {createFilmCommentsTemplate};
+class FilmComments {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCommentsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default FilmComments;

@@ -1,5 +1,6 @@
 import {getReleaseDate} from '../utils/dates.js';
-import {createFilmCommentsTemplate} from './popup-comments.js';
+import {createElement} from '../utils/utils.js';
+import FilmComments from './popup-comments.js';
 
 const createGenresTemplate = (genres) => {
   let genresTemplate = '';
@@ -89,10 +90,33 @@ const createFilmDetailsTemplate = (film) => {
           ${createControlsTemplate(film)}
         </div>
 
-        <div class="film-details__bottom-container">${createFilmCommentsTemplate(film)}</div>
+        <div class="film-details__bottom-container">${new FilmComments(film).getTemplate()}</div>
       </form>
     </section>`
   );
 };
 
-export {createFilmDetailsTemplate};
+class FilmDetails {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default FilmDetails;

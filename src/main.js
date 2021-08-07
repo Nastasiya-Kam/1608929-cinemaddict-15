@@ -1,19 +1,19 @@
-import {createProfileTemplate} from './view/profile.js';
-import {createSiteMenuTemplate} from './view/site-menu.js';
+import ProfileView from './view/profile.js';
+import SiteMenuView from './view/site-menu.js';
 import SortTemplateView from './view/sort.js';
 import FilmsView from './view/films.js';
 import FilmListView from './view/film-list.js';
-import {createCardFilmTemplate} from './view/card-film.js';
+import CardFilmView from './view/card-film.js';
 import ShowMoreView from './view/show-more.js';
 import TopRatedView from './view/top-rated.js';
 import MostCommentedView from './view/most-commented.js';
-import {createStatisticsTemplate} from './view/statistics.js';
-import {createFilmDetailsTemplate} from './view/popup.js';
+import StatisticsView from './view/statistics.js';
+import FilmDetailsView from './view/popup.js';
 import {generateFilm} from './mock/film.js';
 import {generateFilter} from './utils/filter.js';
 import {getRating} from './utils/users.js';
 import {getNumberFilms} from './utils/films.js';
-import {RenderPosition, renderTemplate, renderElement} from './utils/utils.js';
+import {RenderPosition, renderElement} from './utils/utils.js';
 
 const EXTRA_FILM_COUNT = 2;
 const FILM_DEVELOPER_COUNT = 22;
@@ -29,8 +29,8 @@ const siteHeader = site.querySelector('.header');
 const siteMain = site.querySelector('.main');
 const footerStatistics = site.querySelector('.footer__statistics');
 
-renderTemplate(siteHeader, createProfileTemplate(rating), 'beforeend');
-renderTemplate(siteMain, createSiteMenuTemplate(filter), 'beforeend');
+renderElement(siteHeader, new ProfileView(rating).getElement(), RenderPosition.BEFOREEND);
+renderElement(siteMain, new SiteMenuView(filter).getElement(), RenderPosition.BEFOREEND);
 renderElement(siteMain, new SortTemplateView().getElement(), RenderPosition.BEFOREEND);
 renderElement(siteMain, new FilmsView().getElement(), RenderPosition.BEFOREEND);
 
@@ -52,7 +52,7 @@ filmsListContainer.addEventListener('click', (evt) => {
 });
 
 for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i ++) {
-  renderTemplate(filmsListContainer, createCardFilmTemplate(films[i]), 'beforeend');
+  renderElement(filmsListContainer, new CardFilmView(films[i]).getElement(), RenderPosition.BEFOREEND);
 }
 
 if (films.length > FILM_COUNT_PER_STEP) {
@@ -66,7 +66,7 @@ if (films.length > FILM_COUNT_PER_STEP) {
     evt.preventDefault();
     films
       .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
-      .forEach((film) => renderTemplate(filmsListContainer, createCardFilmTemplate(film), 'beforeend'));
+      .forEach((film) => renderElement(filmsListContainer, new CardFilmView(film).getElement(), RenderPosition.BEFOREEND));
 
     renderedFilmCount += FILM_COUNT_PER_STEP;
 
@@ -81,7 +81,7 @@ renderElement(filmsContainer, new TopRatedView().getElement(), RenderPosition.BE
 const topRatedList = filmsContainer.querySelector('.films-list--extra .films-list__container');
 
 for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-  renderTemplate(topRatedList, createCardFilmTemplate(films[i]), 'beforeend');
+  renderElement(topRatedList, new CardFilmView(films[i]).getElement(), RenderPosition.BEFOREEND);
 }
 
 renderElement(filmsContainer, new MostCommentedView().getElement(), RenderPosition.BEFOREEND);
@@ -89,10 +89,10 @@ renderElement(filmsContainer, new MostCommentedView().getElement(), RenderPositi
 const mostCommentedList = filmsContainer.querySelector('.films-list--extra:last-child .films-list__container');
 
 for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-  renderTemplate(mostCommentedList, createCardFilmTemplate(films[i]), 'beforeend');
+  renderElement(mostCommentedList, new CardFilmView(films[i]).getElement(), RenderPosition.BEFOREEND);
 }
 
-renderTemplate(footerStatistics, createStatisticsTemplate(numberFilms), 'beforeend');
+renderElement(footerStatistics, new StatisticsView(numberFilms).getElement(), RenderPosition.BEFOREEND);
 
 // todo действия для открытия попапа с подробной информацией о фильме
 // функция отрисовки (?) в обработчик события кликов по ТЗ: Клик по обложке фильма, заголовку, количеству комментариев открывает попап с подробной информацией о фильме;
@@ -102,7 +102,7 @@ renderTemplate(footerStatistics, createStatisticsTemplate(numberFilms), 'beforee
 //   document.addEventListener('keydown', onFilmDetailsEscKeydown);
 // };
 
-renderTemplate(site, createFilmDetailsTemplate(films[0]), 'beforeend');
+renderElement(site, new FilmDetailsView(films[0]).getElement(), RenderPosition.BEFOREEND);
 
 const filmDetails = site.querySelector('.film-details');
 const filmDetailsControls = filmDetails.querySelector('.film-details__controls');
