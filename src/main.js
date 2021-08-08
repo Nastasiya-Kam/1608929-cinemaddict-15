@@ -5,15 +5,13 @@ import FilmsView from './view/films.js';
 import FilmsListView from './view/films-list.js';
 import CardFilmView from './view/card-film.js';
 import ShowMoreView from './view/show-more.js';
-import TopRatedView from './view/top-rated.js';
-import MostCommentedView from './view/most-commented.js';
 import StatisticsView from './view/statistics.js';
 import FilmDetailsView from './view/popup.js';
 import {generateFilm} from './mock/film.js';
 import {generateFilter} from './utils/filter.js';
 import {getRating} from './utils/users.js';
 import {getNumberFilms} from './utils/films.js';
-import {renderElement, isEscEvent} from './utils/dom.js';
+import {renderElement, isEscEvent, TITLES} from './utils/dom.js';
 
 const EXTRA_FILM_COUNT = 2;
 const FILM_DEVELOPER_COUNT = 22;
@@ -28,7 +26,6 @@ const site = document.body;
 const siteHeader = site.querySelector('.header');
 const siteMain = site.querySelector('.main');
 const footerStatistics = site.querySelector('.footer__statistics');
-const body = document.body;
 
 const checkClass = (item) => item === 'film-card__controls-item';
 
@@ -36,7 +33,7 @@ const openFilmDetails = (film) => {
   const filmDetails = new FilmDetailsView(film);
 
   site.appendChild(filmDetails.getElement());
-  body.classList.add('hide-overflow');
+  site.classList.add('hide-overflow');
 
   filmDetails.getElement().querySelector('.film-details__controls').addEventListener('click', (evt) => {
     if (evt.target.tagName === 'BUTTON') {
@@ -48,7 +45,7 @@ const openFilmDetails = (film) => {
     if (isEscEvent(evt)) {
       evt.preventDefault();
       document.removeEventListener('keydown', onFilmDetailsEscKeydown);
-      body.classList.remove('hide-overflow');
+      site.classList.remove('hide-overflow');
       site.removeChild(filmDetails.getElement());
     }
   };
@@ -57,7 +54,7 @@ const openFilmDetails = (film) => {
 
   const closeFilmDetails = () => {
     document.removeEventListener('keydown', onFilmDetailsEscKeydown);
-    body.classList.remove('hide-overflow');
+    site.classList.remove('hide-overflow');
     site.removeChild(filmDetails.getElement());
   };
 
@@ -73,7 +70,6 @@ const openFilmDetails = (film) => {
 const renderFilm = (filmsListElement, film) => {
   const filmComponent = new CardFilmView(film);
 
-  //? Не выглядит ли все три навешивания событий повторением в коде? Возможно нужно все три слушателя повесить через делегирование?
   filmComponent.getElement().querySelector('.film-card__poster').addEventListener('click', () => {
     openFilmDetails(film);
   });
@@ -105,7 +101,7 @@ renderElement(siteMain, new FilmsView().getElement());
 
 const filmsContainer = siteMain.querySelector('.films');
 
-const filmsListComponent = new FilmsListView();
+const filmsListComponent = new FilmsListView(TITLES.mainList.isExtraList, TITLES.mainList.title);
 renderElement(filmsContainer, filmsListComponent.getElement());
 
 const filmsList = filmsContainer.querySelector('.films-list');
@@ -135,14 +131,14 @@ if (films.length > FILM_COUNT_PER_STEP) {
   });
 }
 
-const topRatedComponent = new TopRatedView();
+const topRatedComponent = new FilmsListView(TITLES.topList.isExtraList, TITLES.topList.title);
 renderElement(filmsContainer, topRatedComponent.getElement());
 
 for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
   renderFilm(topRatedComponent.getElement().querySelector('.films-list__container'), films[i]);
 }
 
-const mostCommentedComponent = new MostCommentedView();
+const mostCommentedComponent = new FilmsListView(TITLES.mostCommentedList.isExtraList, TITLES.mostCommentedList.title);
 renderElement(filmsContainer, mostCommentedComponent.getElement());
 
 for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
