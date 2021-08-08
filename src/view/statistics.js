@@ -1,4 +1,4 @@
-import {createElement} from '../utils/utils';
+import {createElement} from '../utils/dom.js';
 
 const createStatisticsTemplate = (number) => `<p>${number} movies inside</p>`;
 

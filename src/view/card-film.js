@@ -1,5 +1,5 @@
 import {getCardDate} from '../utils/dates.js';
-import {createElement} from '../utils/utils.js';
+import {createElement} from '../utils/dom.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 

@@ -13,7 +13,7 @@ import {generateFilm} from './mock/film.js';
 import {generateFilter} from './utils/filter.js';
 import {getRating} from './utils/users.js';
 import {getNumberFilms} from './utils/films.js';
-import {renderElement, isEscEvent} from './utils/utils.js';
+import {renderElement, isEscEvent} from './utils/dom.js';
 
 const EXTRA_FILM_COUNT = 2;
 const FILM_DEVELOPER_COUNT = 22;

@@ -1,5 +1,5 @@
 import {getReleaseDate} from '../utils/dates.js';
-import {createElement} from '../utils/utils.js';
+import {createElement} from '../utils/dom.js';
 import FilmComments from './popup-comments.js';
 
 const createGenresTemplate = (genres) => {

@@ -1,5 +1,5 @@
 import {EMOJI} from '../const.js';
-import {getRandomInteger, getRandomFloat} from '../utils/utils.js';
+import {getRandomInteger, getRandomFloat} from '../utils/random.js';
 
 const MAX_COMMENTS_COUNT = 5;
 const MAX_DESCRIPTION_COUNT = 5;

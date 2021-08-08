@@ -1,6 +1,6 @@
 import {getCommentDate} from '../utils/dates.js';
 import {EMOJI} from '../const.js';
-import {createElement} from '../utils/utils.js';
+import {createElement} from '../utils/dom.js';
 
 const createComments = (comments) => {
   let commentsList = '';

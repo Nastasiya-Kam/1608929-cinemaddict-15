@@ -1,4 +1,4 @@
-import {createElement} from '../utils/utils';
+import {createElement} from '../utils/dom.js';
 
 const createSiteMenuTemplate = (filter) => {
   const {watchList, watched, favorite} = filter;

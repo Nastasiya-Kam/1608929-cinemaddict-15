@@ -1,4 +1,4 @@
-import {createElement} from '../utils/utils';
+import {createElement} from '../utils/dom.js';
 
 const createProfileTemplate = (rating) => (
   `<section class="header__profile profile">
