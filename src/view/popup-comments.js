@@ -1,5 +1,6 @@
 import {getCommentDate} from '../utils/dates.js';
 import {EMOJI} from '../const.js';
+import {createElement} from '../utils/dom.js';
 
 const createComments = (comments) => {
   let commentsList = '';
@@ -40,26 +41,45 @@ const createEmojiList = (emoji) => {
   return emojiTemplate;
 };
 
-const createFilmCommentsTemplate = (film) => {
-  const {comments} = film;
+const createFilmCommentsTemplate = (comments) => (
+  `<section class="film-details__comments-wrap">
+    <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
-  return (
-    `<section class="film-details__comments-wrap">
-      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+    <ul class="film-details__comments-list">${createComments(comments)}</ul>
 
-      <ul class="film-details__comments-list">${createComments(comments)}</ul>
+    <div class="film-details__new-comment">
+      <div class="film-details__add-emoji-label"></div>
 
-      <div class="film-details__new-comment">
-        <div class="film-details__add-emoji-label"></div>
+      <label class="film-details__comment-label">
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+      </label>
 
-        <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-        </label>
+      <div class="film-details__emoji-list">${createEmojiList(EMOJI)}</div>
+    </div>
+  </section>`
+);
 
-        <div class="film-details__emoji-list">${createEmojiList(EMOJI)}</div>
-      </div>
-    </section>`
-  );
-};
+class FilmComments {
+  constructor(comments) {
+    this._comments = comments;
+    this._element = null;
+  }
 
-export {createFilmCommentsTemplate};
+  getTemplate() {
+    return createFilmCommentsTemplate(this._comments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default FilmComments;

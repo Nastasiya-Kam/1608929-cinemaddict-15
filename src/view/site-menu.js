@@ -1,3 +1,5 @@
+import {createElement} from '../utils/dom.js';
+
 const createSiteMenuTemplate = (filter) => {
   const {watchList, watched, favorite} = filter;
 
@@ -12,4 +14,27 @@ const createSiteMenuTemplate = (filter) => {
   </nav>`);
 };
 
-export {createSiteMenuTemplate};
+class SiteMenu {
+  constructor(filter) {
+    this._filter = filter;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSiteMenuTemplate(this._filter);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default SiteMenu;
