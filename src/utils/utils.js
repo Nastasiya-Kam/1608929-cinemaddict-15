@@ -35,7 +35,7 @@ const getRandomFloat = (start = 0, finish = 1, decimalPlaces = 1) => {
 };
 // Функция из интернета по вставке элемента в начало или в конец родительского элемента
 // https://github.com/htmlacademy-ecmascript/taskmanager-15/pull/3/commits/e5b37903905e6b3896d48563a1880456ced4c04d
-const renderElement = (container, element, place) => {
+const renderElement = (container, element, place = RenderPosition.BEFOREEND) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
