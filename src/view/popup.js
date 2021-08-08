@@ -25,7 +25,7 @@ const createControlsTemplate = (filmStatus) => {
 };
 
 const createFilmDetailsTemplate = (film) => {
-  const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description} = film;
+  const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description, comments} = film;
   const releaseDate = getReleaseDate(release);
 
   return (`<section class="film-details">
@@ -90,7 +90,7 @@ const createFilmDetailsTemplate = (film) => {
           ${createControlsTemplate(film)}
         </div>
 
-        <div class="film-details__bottom-container">${new FilmComments(film).getTemplate()}</div>
+        <div class="film-details__bottom-container">${new FilmComments(comments).getTemplate()}</div>
       </form>
     </section>`
   );
