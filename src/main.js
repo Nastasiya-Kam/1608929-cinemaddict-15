@@ -150,23 +150,3 @@ for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
 }
 
 renderElement(footerStatistics, new StatisticsView(numberFilms).getElement(), RenderPosition.BEFOREEND);
-
-
-// todo кнопку закрытия попапа (крестик) во втором компоненте (не нужно ходить за ними в document, используйте метод getElement)
-// Навесьте на них пустые обработчики события click.
-
-// todo действия для открытия попапа с подробной информацией о фильме
-// функция отрисовки (?) в обработчик события кликов по ТЗ: Клик по обложке фильма, заголовку, количеству комментариев открывает попап с подробной информацией о фильме;
-
-
-// renderElement(site, new FilmDetailsView(films[0]).getElement(), RenderPosition.BEFOREEND);
-
-// const filmDetails = site.querySelector('.film-details');
-// const filmDetailsControls = filmDetails.querySelector('.film-details__controls');
-// const filmDetailsCloseButton = filmDetails.querySelector('.film-details__close-btn');
-
-// filmDetailsControls.addEventListener('click', (evt) => {
-//   if (evt.target.tagName === 'BUTTON') {
-//     evt.target.classList.toggle('film-details__control-button--active');
-//   }
-// });
