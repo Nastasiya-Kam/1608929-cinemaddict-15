@@ -58,4 +58,6 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export {getRandomInteger, getInteger, getRandomFloat, renderTemplate, RenderPosition, renderElement, createElement};
+const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export {getRandomInteger, getInteger, getRandomFloat, renderTemplate, RenderPosition, renderElement, createElement, isEscEvent};
