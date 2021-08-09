@@ -3,6 +3,7 @@ import SiteMenuView from './view/site-menu.js';
 import SortTemplateView from './view/sort.js';
 import FilmsView from './view/films.js';
 import FilmsListView from './view/films-list.js';
+import NoFilmsView from './view/no-films.js';
 import CardFilmView from './view/card-film.js';
 import ShowMoreView from './view/show-more.js';
 import StatisticsView from './view/statistics.js';
@@ -10,8 +11,8 @@ import FilmDetailsView from './view/popup.js';
 import {generateFilm} from './mock/film.js';
 import {generateFilter} from './utils/filter.js';
 import {getRating} from './utils/users.js';
-import {getNumberFilms} from './utils/films.js';
-import {renderElement, isEscEvent, TITLES} from './utils/dom.js';
+import {getNumberFilms, Title} from './utils/films.js';
+import {renderElement, isEscEvent} from './utils/dom.js';
 
 const EXTRA_FILM_COUNT = 2;
 const FILM_DEVELOPER_COUNT = 22;
@@ -97,52 +98,60 @@ const renderFilm = (filmsListElement, film) => {
 renderElement(siteHeader, new ProfileView(rating).getElement());
 renderElement(siteMain, new SiteMenuView(filter).getElement());
 renderElement(siteMain, new SortTemplateView().getElement());
-renderElement(siteMain, new FilmsView().getElement());
+// ?Нужно ли перенести все создания экземпляров классов наверх (критерий Б14. Объявление переменных, значение которых известно до начала работы программы)
+const filmsComponent = new FilmsView();
 
-const filmsContainer = siteMain.querySelector('.films');
+renderElement(siteMain, filmsComponent.getElement());
 
-const filmsListComponent = new FilmsListView(TITLES.mainList.isExtraList, TITLES.mainList.title);
-renderElement(filmsContainer, filmsListComponent.getElement());
+const renderFilmsLists = () => {
+  if (films.length === 0) {
+    // todo Значение отображаемого текста зависит от выбранного фильтра
+    renderElement(filmsComponent.getElement(), new NoFilmsView().getElement());
+    return;
+  }
 
-const filmsList = filmsContainer.querySelector('.films-list');
+  const filmsListComponent = new FilmsListView(Title.MAIN.title, Title.MAIN.isExtraList);
+  renderElement(filmsComponent.getElement(), filmsListComponent.getElement());
 
-for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i ++) {
-  renderFilm(filmsListComponent.getElement().querySelector('.films-list__container'), films[i]);
-}
+  for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i ++) {
+    renderFilm(filmsComponent.getElement().querySelector('.films-list__container'), films[i]);
+  }
 
-if (films.length > FILM_COUNT_PER_STEP) {
-  let renderedFilmCount = FILM_COUNT_PER_STEP;
+  if (films.length > FILM_COUNT_PER_STEP) {
+    let renderedFilmCount = FILM_COUNT_PER_STEP;
 
-  renderElement(filmsList, new ShowMoreView().getElement());
+    renderElement(filmsComponent.getElement().querySelector('.films-list'), new ShowMoreView().getElement());
 
-  const loadMoreButton = filmsContainer.querySelector('.films-list__show-more');
+    filmsComponent.getElement().querySelector('.films-list__show-more').addEventListener('click', (evt) => {
+      evt.preventDefault();
+      films
+        .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
+        .forEach((film) => renderFilm(filmsComponent.getElement().querySelector('.films-list__container'), film));
 
-  loadMoreButton.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    films
-      .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
-      .forEach((film) => renderFilm(filmsListComponent.getElement().querySelector('.films-list__container'), film));
+      renderedFilmCount += FILM_COUNT_PER_STEP;
 
-    renderedFilmCount += FILM_COUNT_PER_STEP;
+      if (renderedFilmCount >= films.length) {
+        filmsComponent.getElement().querySelector('.films-list__show-more').remove();
+      }
+    });
+  }
+  // ?Продолжение про Б14. А это, например, в начало этой функции после условия if (films.length)
+  const topRatedComponent = new FilmsListView(Title.TOP.title, Title.TOP.isExtraList);
+  renderElement(filmsComponent.getElement(), topRatedComponent.getElement());
 
-    if (renderedFilmCount >= films.length) {
-      loadMoreButton.remove();
-    }
-  });
-}
+  for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
+    renderFilm(topRatedComponent.getElement().querySelector('.films-list__container'), films[i]);
+  }
+  // ?Продолжение про Б14. А это, например, в начало этой функции после условия if (films.length)
+  const mostCommentedComponent = new FilmsListView(Title.MOST_COMMENTED.title, Title.MOST_COMMENTED.isExtraList);
+  renderElement(filmsComponent.getElement(), mostCommentedComponent.getElement());
 
-const topRatedComponent = new FilmsListView(TITLES.topList.isExtraList, TITLES.topList.title);
-renderElement(filmsContainer, topRatedComponent.getElement());
+  for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
+    renderFilm(mostCommentedComponent.getElement().querySelector('.films-list__container'), films[i]);
+  }
 
-for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-  renderFilm(topRatedComponent.getElement().querySelector('.films-list__container'), films[i]);
-}
-
-const mostCommentedComponent = new FilmsListView(TITLES.mostCommentedList.isExtraList, TITLES.mostCommentedList.title);
-renderElement(filmsContainer, mostCommentedComponent.getElement());
-
-for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-  renderFilm(mostCommentedComponent.getElement().querySelector('.films-list__container'), films[i]);
-}
+};
 
 renderElement(footerStatistics, new StatisticsView(numberFilms).getElement());
+
+renderFilmsLists();

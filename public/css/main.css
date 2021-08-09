@@ -361,9 +361,6 @@ button {
 
 .film-card__title {
   margin-right: 0.5em;
-}
-
-.film-card__title:hover {
   cursor: pointer;
 }
 

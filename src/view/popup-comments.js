@@ -2,44 +2,26 @@ import {getCommentDate} from '../utils/dates.js';
 import {EMOJI} from '../const.js';
 import {createElement} from '../utils/dom.js';
 
-const createComments = (comments) => {
-  let commentsList = '';
+const createComments = (comments) => comments.map(({text, emoji, author, date}) => `<li class="film-details__comment">
+    <span class="film-details__comment-emoji">
+      <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
+    </span>
+    <div>
+      <p class="film-details__comment-text">${text}</p>
+      <p class="film-details__comment-info">
+        <span class="film-details__comment-author">${author}</span>
+        <span class="film-details__comment-day">${getCommentDate(date)}</span>
+        <button class="film-details__comment-delete">Delete</button>
+      </p>
+    </div>
+  </li>`).join('');
 
-  for (const comment of comments) {
-    const {text, emoji, author, date} = comment;
-
-    commentsList += (
-      `<li class="film-details__comment">
-      <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
-      </span>
-      <div>
-        <p class="film-details__comment-text">${text}</p>
-        <p class="film-details__comment-info">
-          <span class="film-details__comment-author">${author}</span>
-          <span class="film-details__comment-day">${getCommentDate(date)}</span>
-          <button class="film-details__comment-delete">Delete</button>
-        </p>
-      </div>
-    </li>`
-    );
-  }
-
-  return commentsList;
-};
-
-const createEmojiList = (emoji) => {
-  let emojiTemplate = '';
-
-  for (const element of emoji) {
-    emojiTemplate += `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-    <label class="film-details__emoji-label" for="emoji-${element}">
-      <img src="./images/emoji/${element}.png" width="30" height="30" alt="emoji">
-    </label>`;
-  }
-
-  return emojiTemplate;
-};
+const createEmojiList = (emoji) => emoji.map((element) => (`
+  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${element}" value="${element}">
+  <label class="film-details__emoji-label" for="emoji-${element}">
+    <img src="./images/emoji/${element}.png" width="30" height="30" alt="emoji">
+  </label>`
+));
 
 const createFilmCommentsTemplate = (comments) => (
   `<section class="film-details__comments-wrap">
