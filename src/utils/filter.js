@@ -1,40 +1,40 @@
-const Filter = {watchList: 'watchList', watched: 'watched', favorite: 'favorite'};
+const Filter = {ALL: 'all', WATCH_LIST: 'watchList', WATCHED: 'watched', FAVORITE: 'favorite'};
 
 const Filters = [
   {
-    typeFilter: 'all',
+    typeFilter: Filter.ALL,
     href: '#all',
     isActive: true,
     title: 'All movies',
-    isCount: false,
+    hasCount: false,
   },
   {
-    typeFilter: Filter.watchList,
+    typeFilter: Filter.WATCH_LIST,
     href: '#watchlist',
     isActive: false,
     title: 'Watchlist',
-    isCount: true,
+    hasCount: true,
   },
   {
-    typeFilter: Filter.watched,
+    typeFilter: Filter.WATCHED,
     href: '#history',
     isActive: false,
     title: 'History',
-    isCount: true,
+    hasCount: true,
   },
   {
-    typeFilter: Filter.favorite,
+    typeFilter: Filter.FAVORITE,
     href: '#favorites',
     isActive: false,
     title: 'Favorites',
-    isCount: true,
+    hasCount: true,
   },
 ];
 
 const filmToFilterMap = {
-  [Filter.watchList]: (films) => films.filter((film) => film.isWatchList).length,
-  [Filter.watched]: (films) => films.filter((film) => film.isWatched).length,
-  [Filter.favorite]: (films) => films.filter((film) => film.isFavorite).length,
+  [Filter.WATCH_LIST]: (films) => films.filter((film) => film.isWatchList).length,
+  [Filter.WATCHED]: (films) => films.filter((film) => film.isWatched).length,
+  [Filter.FAVORITE]: (films) => films.filter((film) => film.isFavorite).length,
 };
 
 const generateFilter = (films) => {

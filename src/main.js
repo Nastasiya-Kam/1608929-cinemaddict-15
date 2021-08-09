@@ -3,7 +3,7 @@ import SiteMenuView from './view/site-menu.js';
 import SortTemplateView from './view/sort.js';
 import FilmsView from './view/films.js';
 import FilmsListView from './view/films-list.js';
-// import NoFilmView from './view/no-film.js';
+import NoFilmsView from './view/no-films.js';
 import CardFilmView from './view/card-film.js';
 import ShowMoreView from './view/show-more.js';
 import StatisticsView from './view/statistics.js';
@@ -11,11 +11,11 @@ import FilmDetailsView from './view/popup.js';
 import {generateFilm} from './mock/film.js';
 import {generateFilter} from './utils/filter.js';
 import {getRating} from './utils/users.js';
-import {getNumberFilms, TITLES} from './utils/films.js';
+import {getNumberFilms, Title} from './utils/films.js';
 import {renderElement, isEscEvent} from './utils/dom.js';
 
 const EXTRA_FILM_COUNT = 2;
-const FILM_DEVELOPER_COUNT = 0;
+const FILM_DEVELOPER_COUNT = 22;
 const FILM_COUNT_PER_STEP = 5;
 
 const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
@@ -98,7 +98,7 @@ const renderFilm = (filmsListElement, film) => {
 renderElement(siteHeader, new ProfileView(rating).getElement());
 renderElement(siteMain, new SiteMenuView(filter).getElement());
 renderElement(siteMain, new SortTemplateView().getElement());
-
+// ?Нужно ли перенести все создания экземпляров классов наверх (критерий Б14. Объявление переменных, значение которых известно до начала работы программы)
 const filmsComponent = new FilmsView();
 
 renderElement(siteMain, filmsComponent.getElement());
@@ -106,11 +106,11 @@ renderElement(siteMain, filmsComponent.getElement());
 const renderFilmsLists = () => {
   if (films.length === 0) {
     // todo Значение отображаемого текста зависит от выбранного фильтра
-    renderElement(filmsComponent.getElement(), new FilmsListView(TITLES.emptyList.title, TITLES.emptyList.isExtraList, TITLES.emptyList.isEmptyList).getElement());
+    renderElement(filmsComponent.getElement(), new NoFilmsView().getElement());
     return;
   }
 
-  const filmsListComponent = new FilmsListView(TITLES.mainList.title, TITLES.mainList.isExtraList);
+  const filmsListComponent = new FilmsListView(Title.MAIN.title, Title.MAIN.isExtraList);
   renderElement(filmsComponent.getElement(), filmsListComponent.getElement());
 
   for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i ++) {
@@ -135,15 +135,15 @@ const renderFilmsLists = () => {
       }
     });
   }
-
-  const topRatedComponent = new FilmsListView(TITLES.topList.title, TITLES.topList.isExtraList);
+  // ?Продолжение про Б14. А это, например, в начало этой функции после условия if (films.length)
+  const topRatedComponent = new FilmsListView(Title.TOP.title, Title.TOP.isExtraList);
   renderElement(filmsComponent.getElement(), topRatedComponent.getElement());
 
   for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
     renderFilm(topRatedComponent.getElement().querySelector('.films-list__container'), films[i]);
   }
-
-  const mostCommentedComponent = new FilmsListView(TITLES.mostCommentedList.title, TITLES.mostCommentedList.isExtraList);
+  // ?Продолжение про Б14. А это, например, в начало этой функции после условия if (films.length)
+  const mostCommentedComponent = new FilmsListView(Title.MOST_COMMENTED.title, Title.MOST_COMMENTED.isExtraList);
   renderElement(filmsComponent.getElement(), mostCommentedComponent.getElement());
 
   for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {

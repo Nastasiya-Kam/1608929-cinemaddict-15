@@ -2,11 +2,9 @@ import {createElement} from '../utils/dom.js';
 import {Filters} from '../utils/filter.js';
 
 const createSiteMenuTemplate = (filter) => {
-  let filterTemplate = '';
-
-  for (const element of Filters) {
-    filterTemplate += `<a href="${element.href}" class="main-navigation__item ${(element.isActive) ? 'main-navigation__item--active' : ''}">${element.title}${(element.isCount) ? `<span class="main-navigation__item-count">${filter[element.typeFilter]}</span>` : ''}</a>`;
-  }
+  const filterTemplate = Filters
+    .map((element) => `<a href="${element.href}" class="main-navigation__item ${(element.isActive) ? 'main-navigation__item--active' : ''}">${element.title}${(element.hasCount) ? `<span class="main-navigation__item-count">${filter[element.typeFilter]}</span>` : ''}</a>`)
+    .join('');
 
   return (`<nav class="main-navigation">
     <div class="main-navigation__items">${filterTemplate}</div>

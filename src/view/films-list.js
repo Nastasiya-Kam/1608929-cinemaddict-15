@@ -1,14 +1,12 @@
 import {createElement} from '../utils/dom.js';
 
-// todo Значение отображаемого текста зависит от выбранного фильтра
-const createFilmsListTemplate = (title, isExtraList = false, isEmptyList = false) => {
+const createFilmsListTemplate = (title, isExtraList = false) => {
   const classList = (isExtraList) ? 'films-list films-list--extra' : 'films-list';
-  const emptyList = (isEmptyList) ? '' : '<div class="films-list__container"></div>';
 
   return (
     `<section class="${classList}">
-      <h2 class="films-list__title ${(isExtraList || isEmptyList) ? '' : 'visually-hidden'}">${title}</h2>
-      ${emptyList}
+      <h2 class="films-list__title ${(isExtraList) ? '' : 'visually-hidden'}">${title}</h2>
+      <div class="films-list__container"></div>
     </section>`
   );
 };

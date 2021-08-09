@@ -8,7 +8,9 @@ const createNoFilmTemplate = () => '<section class="films-list"><h2 class="films
 //   * History — 'There are no watched movies now';
 //   * Favorites — 'There are no favorite movies now'.
 
-class NoFilm {
+// переменная с наименованиями фильтров находится в модуле filter.js
+
+class NoFilms {
   constructor() {
   // constructor(filter, type) {
     // this._filter = filter;
@@ -34,4 +36,4 @@ class NoFilm {
   }
 }
 
-export default NoFilm;
+export default NoFilms;

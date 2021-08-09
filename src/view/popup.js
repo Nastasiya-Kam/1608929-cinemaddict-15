@@ -2,15 +2,7 @@ import {getReleaseDate} from '../utils/dates.js';
 import {createElement} from '../utils/dom.js';
 import FilmComments from './popup-comments.js';
 
-const createGenresTemplate = (genres) => {
-  let genresTemplate = '';
-
-  for (const genre of genres) {
-    genresTemplate += `<span class="film-details__genre">${genre}</span>`;
-  }
-
-  return genresTemplate;
-};
+const createGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
 const createControlsTemplate = (filmStatus) => {
   const {isWatchList, isWatched, isFavorite} = filmStatus;
