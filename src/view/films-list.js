@@ -7,7 +7,7 @@ const createFilmsListTemplate = (title, isExtraList = false, isEmptyList = false
 
   return (
     `<section class="${classList}">
-      <h2 class="films-list__title ${(!isExtraList) ? 'visually-hidden' : ''}">${title}</h2>
+      <h2 class="films-list__title ${(isExtraList || isEmptyList) ? '' : 'visually-hidden'}">${title}</h2>
       ${emptyList}
     </section>`
   );

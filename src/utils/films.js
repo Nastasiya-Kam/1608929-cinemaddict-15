@@ -4,7 +4,7 @@ const TITLES = {
   mainList: {title: 'All movies. Upcoming', isExtraList: false, isEmptyList: false},
   topList: {title: 'Top rated', isExtraList: true, isEmptyList: false},
   mostCommentedList: {title: 'Most commented', isExtraList: true, isEmptyList: false},
-  emptyList: {title: 'There are no movies in our database', isExtraList: true, isEmptyList: true},
+  emptyList: {title: 'There are no movies in our database', isExtraList: false, isEmptyList: true},
 };
 
 // todo Значение отображаемого текста зависит от выбранного фильтра:
