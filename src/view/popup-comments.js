@@ -1,6 +1,6 @@
 import {getCommentDate} from '../utils/dates.js';
 import {EMOJI} from '../const.js';
-import {createElement} from '../utils/dom.js';
+import AbstractView from './abstract.js';
 
 const createComments = (comments) => comments
   .map(({text, emoji, author, date}) =>
@@ -44,26 +44,15 @@ const createFilmCommentsTemplate = (comments) => (
   </section>`
 );
 
-class FilmComments {
+class FilmComments extends AbstractView {
   constructor(comments) {
+    super();
+
     this._comments = comments;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmCommentsTemplate(this._comments);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

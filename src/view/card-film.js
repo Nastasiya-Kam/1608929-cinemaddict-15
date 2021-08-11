@@ -1,5 +1,5 @@
 import {getCardDate} from '../utils/dates.js';
-import {createElement} from '../utils/dom.js';
+import AbstractView from './abstract.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 
@@ -32,26 +32,15 @@ const createCardFilmTemplate = (film) => {
   );
 };
 
-class CardFilm {
+class CardFilm extends AbstractView {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createCardFilmTemplate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

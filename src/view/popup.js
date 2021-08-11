@@ -1,5 +1,5 @@
 import {getReleaseDate} from '../utils/dates.js';
-import {createElement} from '../utils/dom.js';
+import AbstractView from './abstract.js';
 import FilmComments from './popup-comments.js';
 
 const createGenresTemplate = (genres) => genres
@@ -91,26 +91,15 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
-class FilmDetails {
+class FilmDetails extends AbstractView {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

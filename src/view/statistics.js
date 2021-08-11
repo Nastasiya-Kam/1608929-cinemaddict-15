@@ -1,27 +1,16 @@
-import {createElement} from '../utils/dom.js';
+import AbstractView from './abstract.js';
 
 const createStatisticsTemplate = (number) => `<p>${number} movies inside</p>`;
 
-class Statistics {
+class Statistics extends AbstractView {
   constructor(number) {
+    super();
+
     this._number = number;
-    this._element = null;
   }
 
   getTemplate() {
     return createStatisticsTemplate(this._number);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
