@@ -6,7 +6,9 @@ const MAX_LENGTH_DESCRIPTION = 140;
 const createCardFilmTemplate = (film) => {
   const {name, rating, release, duration, genres, img, description, comments, isWatchList, isWatched, isFavorite} = film;
 
-  const descriptionSliced = (description.length > 140) ? `${description.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...` : description;
+  const descriptionSliced = (description.length > 140)
+    ? `${description.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...`
+    : description;
   const date = getCardDate(release);
 
   return (

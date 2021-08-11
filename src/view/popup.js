@@ -2,7 +2,9 @@ import {getReleaseDate} from '../utils/dates.js';
 import {createElement} from '../utils/dom.js';
 import FilmComments from './popup-comments.js';
 
-const createGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
+const createGenresTemplate = (genres) => genres
+  .map((genre) => `<span class="film-details__genre">${genre}</span>`)
+  .join('');
 
 const createControlsTemplate = (filmStatus) => {
   const {isWatchList, isWatched, isFavorite} = filmStatus;
@@ -20,7 +22,8 @@ const createFilmDetailsTemplate = (film) => {
   const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description, comments} = film;
   const releaseDate = getReleaseDate(release);
 
-  return (`<section class="film-details">
+  return (
+    `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="film-details__top-container">
           <div class="film-details__close">

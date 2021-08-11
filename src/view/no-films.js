@@ -1,6 +1,6 @@
 import {createElement} from '../utils/dom';
 
-const createNoFilmTemplate = () => '<section class="films-list"><h2 class="films-list__title">There are no movies in our database</h2></section>';
+const createNoFilmsTemplate = () => '<section class="films-list"><h2 class="films-list__title">There are no movies in our database</h2></section>';
 // const createNoFilmTemplate = (filter, type) => `<h2 class="films-list__title">${filter[type].text}</h2>`;
 // todo Значение отображаемого текста зависит от выбранного фильтра:
 //   * All movies – 'There are no movies in our database'
@@ -19,7 +19,7 @@ class NoFilms {
   }
 
   getTemplate() {
-    return createNoFilmTemplate();
+    return createNoFilmsTemplate();
     // return createNoFilmTemplate(this._filter, this._type);
   }
 

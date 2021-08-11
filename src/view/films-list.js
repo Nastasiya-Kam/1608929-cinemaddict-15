@@ -1,6 +1,6 @@
 import {createElement} from '../utils/dom.js';
 
-const createFilmsListTemplate = (title, isExtraList = false) => {
+const createFilmsListTemplate = (title, isExtraList) => {
   const classList = (isExtraList) ? 'films-list films-list--extra' : 'films-list';
 
   return (
@@ -12,15 +12,14 @@ const createFilmsListTemplate = (title, isExtraList = false) => {
 };
 
 class FilmsList {
-  constructor(title, isExtraList, isEmptyList) {
+  constructor(title, isExtraList = false) {
     this._title = title;
     this._isExtraList = isExtraList;
-    this._isEmptyList = isEmptyList;
     this._element = null;
   }
 
   getTemplate() {
-    return createFilmsListTemplate(this._title, this._isExtraList, this._isEmptyList);
+    return createFilmsListTemplate(this._title, this._isExtraList);
   }
 
   getElement() {
