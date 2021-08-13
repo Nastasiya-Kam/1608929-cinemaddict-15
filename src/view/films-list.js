@@ -1,6 +1,6 @@
-import {createElement} from '../utils/dom.js';
+import AbstractView from './abstract.js';
 
-const createFilmsListTemplate = (title, isExtraList = false) => {
+const createFilmsListTemplate = (title, isExtraList) => {
   const classList = (isExtraList) ? 'films-list films-list--extra' : 'films-list';
 
   return (
@@ -11,28 +11,26 @@ const createFilmsListTemplate = (title, isExtraList = false) => {
   );
 };
 
-class FilmsList {
-  constructor(title, isExtraList, isEmptyList) {
+class FilmsList extends AbstractView {
+  constructor(title, isExtraList = false) {
+    super();
+
     this._title = title;
     this._isExtraList = isExtraList;
-    this._isEmptyList = isEmptyList;
-    this._element = null;
+
+    this._containerElement = null;
   }
 
   getTemplate() {
-    return createFilmsListTemplate(this._title, this._isExtraList, this._isEmptyList);
+    return createFilmsListTemplate(this._title, this._isExtraList);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
+  getContainer() {
+    if (!this._containerElement) {
+      this._containerElement = this.getElement().querySelector('.films-list__container');
     }
 
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return this._containerElement;
   }
 }
 

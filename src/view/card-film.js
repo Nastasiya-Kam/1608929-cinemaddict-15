@@ -1,12 +1,14 @@
 import {getCardDate} from '../utils/dates.js';
-import {createElement} from '../utils/dom.js';
+import AbstractView from './abstract.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 
 const createCardFilmTemplate = (film) => {
   const {name, rating, release, duration, genres, img, description, comments, isWatchList, isWatched, isFavorite} = film;
 
-  const descriptionSliced = (description.length > 140) ? `${description.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...` : description;
+  const descriptionSliced = (description.length > 140)
+    ? `${description.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...`
+    : description;
   const date = getCardDate(release);
 
   return (
@@ -30,26 +32,56 @@ const createCardFilmTemplate = (film) => {
   );
 };
 
-class CardFilm {
+class CardFilm extends AbstractView {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
+    this._onPosterClick = this._onPosterClick.bind(this);
+    this._onTitleClick = this._onTitleClick.bind(this);
+    this._onCommentsClick = this._onCommentsClick.bind(this);
+    this._onControlsClick = this._onControlsClick.bind(this);
   }
 
   getTemplate() {
     return createCardFilmTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _onPosterClick() {
+    this._callback.posterClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setOnPosterClick(callback) {
+    this._callback.posterClick = callback;
+    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._onPosterClick);
+  }
+
+  _onTitleClick() {
+    this._callback.titleClick();
+  }
+
+  setOnTitleClick(callback) {
+    this._callback.titleClick = callback;
+    this.getElement().querySelector('.film-card__title').addEventListener('click', this._onTitleClick);
+  }
+
+  _onCommentsClick(evt) {
+    evt.preventDefault();
+    this._callback.commentsClick();
+  }
+
+  setOnCommentsClick(callback) {
+    this._callback.commentsClick = callback;
+    this.getElement().querySelector('.film-card__comments').addEventListener('click', this._onCommentsClick);
+  }
+
+  _onControlsClick(evt) {
+    this._callback.controlsClick(evt);
+  }
+
+  setOnControlsClick(callback) {
+    this._callback.controlsClick = callback;
+    this.getElement().querySelector('.film-card__controls').addEventListener('click', this._onControlsClick);
   }
 }
 

@@ -1,8 +1,10 @@
 import {getReleaseDate} from '../utils/dates.js';
-import {createElement} from '../utils/dom.js';
-import FilmComments from './popup-comments.js';
+import AbstractView from './abstract.js';
+import FilmComments from './film-comments.js';
 
-const createGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
+const createGenresTemplate = (genres) => genres
+  .map((genre) => `<span class="film-details__genre">${genre}</span>`)
+  .join('');
 
 const createControlsTemplate = (filmStatus) => {
   const {isWatchList, isWatched, isFavorite} = filmStatus;
@@ -20,7 +22,8 @@ const createFilmDetailsTemplate = (film) => {
   const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description, comments} = film;
   const releaseDate = getReleaseDate(release);
 
-  return (`<section class="film-details">
+  return (
+    `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="film-details__top-container">
           <div class="film-details__close">
@@ -88,26 +91,35 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
-class FilmDetails {
+class FilmDetails extends AbstractView {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
+    this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
+    this._onFilmDetailsClick = this._onFilmDetailsClick.bind(this);
   }
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _onCloseButtonClick() {
+    this._callback.closeButtonClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setOnCloseButtonClick(callback) {
+    this._callback.closeButtonClick = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
+  }
+
+  _onFilmDetailsClick(evt) {
+    this._callback.filmDetailsClick(evt);
+  }
+
+  setOnFilmDetailsClick(callback) {
+    this._callback.filmDetailsClick = callback;
+    this.getElement().querySelector('.film-details__controls').addEventListener('click', this._onFilmDetailsClick);
   }
 }
 
