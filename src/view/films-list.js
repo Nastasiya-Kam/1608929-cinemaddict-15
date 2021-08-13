@@ -17,10 +17,20 @@ class FilmsList extends AbstractView {
 
     this._title = title;
     this._isExtraList = isExtraList;
+
+    this._containerElement = null;
   }
 
   getTemplate() {
     return createFilmsListTemplate(this._title, this._isExtraList);
+  }
+
+  getContainer() {
+    if (!this._containerElement) {
+      this._containerElement = this.getElement().querySelector('.films-list__container');
+    }
+
+    return this._containerElement;
   }
 }
 

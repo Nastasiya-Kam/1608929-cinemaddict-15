@@ -98,30 +98,28 @@ const renderFilmsLists = () => {
   }
 
   const filmsListComponent = new FilmsListView(Title.MAIN.title, Title.MAIN.isExtraList);
+
   renderElement(filmsComponent.getElement(), filmsListComponent.getElement());
 
   for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i ++) {
-    // ?На сколько я поняла, перенос всего всего в класс нужен для того, чтобы мы перестали знать, что находится внутри компонента.
-    // ?Но у меня до сих пор в main.js есть куски кода, которые ищёт что-то в компоненте: getElement().querySelector('....');
-    // ?ВОПРОС: Значит ли это, что мне нужно "разбить" код на более мелкие компоненты, чтобы не искать внутри компонента?
-    renderFilm(filmsComponent.getElement().querySelector('.films-list__container'), films[i]);
+    renderFilm(filmsListComponent.getContainer(), films[i]);
   }
 
   if (films.length > FILM_COUNT_PER_STEP) {
     let renderedFilmCount = FILM_COUNT_PER_STEP;
-    // ?И здесь
-    renderElement(filmsComponent.getElement().querySelector('.films-list'), new ShowMoreView().getElement());
 
-    filmsComponent.setOnShowMoreClick(() => {
+    const showMoreComponent = new ShowMoreView();
+    renderElement(filmsListComponent.getElement(), showMoreComponent.getElement());
+
+    showMoreComponent.setOnShowMoreClick(() => {
       films
         .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
-        // ?И здесь и т.д.
-        .forEach((film) => renderFilm(filmsComponent.getElement().querySelector('.films-list__container'), film));
+        .forEach((film) => renderFilm(filmsListComponent.getContainer(), film));
 
       renderedFilmCount += FILM_COUNT_PER_STEP;
 
       if (renderedFilmCount >= films.length) {
-        filmsComponent.getElement().querySelector('.films-list__show-more').remove();
+        showMoreComponent.getElement().remove();
       }
     });
   }
@@ -130,16 +128,15 @@ const renderFilmsLists = () => {
   renderElement(filmsComponent.getElement(), topRatedComponent.getElement());
 
   for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-    renderFilm(topRatedComponent.getElement().querySelector('.films-list__container'), films[i]);
+    renderFilm(topRatedComponent.getContainer(), films[i]);
   }
 
   const mostCommentedComponent = new FilmsListView(Title.MOST_COMMENTED.title, Title.MOST_COMMENTED.isExtraList);
   renderElement(filmsComponent.getElement(), mostCommentedComponent.getElement());
 
   for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-    renderFilm(mostCommentedComponent.getElement().querySelector('.films-list__container'), films[i]);
+    renderFilm(mostCommentedComponent.getContainer(), films[i]);
   }
-
 };
 
 renderElement(footerStatistics, new StatisticsView(numberFilms).getElement());
