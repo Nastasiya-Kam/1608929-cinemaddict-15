@@ -1,6 +1,6 @@
 import {getReleaseDate} from '../utils/dates.js';
 import AbstractView from './abstract.js';
-import FilmComments from './popup-comments.js';
+import FilmComments from './film-comments.js';
 
 const createGenresTemplate = (genres) => genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -96,10 +96,30 @@ class FilmDetails extends AbstractView {
     super();
 
     this._film = film;
+    this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
+    this._onFilmDetailsClick = this._onFilmDetailsClick.bind(this);
   }
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film);
+  }
+
+  _onCloseButtonClick() {
+    this._callback.closeButtonClick();
+  }
+
+  setOnCloseButtonClick(callback) {
+    this._callback.closeButtonClick = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
+  }
+
+  _onFilmDetailsClick(evt) {
+    this._callback.filmDetailsClick(evt);
+  }
+
+  setOnFilmDetailsClick(callback) {
+    this._callback.filmDetailsClick = callback;
+    this.getElement().querySelector('.film-details__controls').addEventListener('click', this._onFilmDetailsClick);
   }
 }
 
