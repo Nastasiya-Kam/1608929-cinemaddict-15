@@ -8,6 +8,7 @@ import {Title} from '../utils/films.js'; //getNumberFilms
 import FilmDetailsView from '../view/film-details.js';
 
 const FILM_COUNT_PER_STEP = 5;
+const site = document.body;
 
 class FilmsBoard {
   constructor(filmContainer) {
@@ -19,13 +20,12 @@ class FilmsBoard {
     this._filmsComponent = new FilmsView();
     this._noFilmsComponent = new NoFilmsView();
     this._showMoreComponent = new ShowMoreView();
+    this._filmDetailsComponent = null;
 
-    // нужно связать обработчики кликов по:
-    // названию фильма
-    // постеру
-    // комментариям
-    // Обработчик клика по "нравится, смотрел, буду смотреть"
+    this._handleFilmDetails = this._handleFilmDetails.bind(this);
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
+    this._onEscKeydown = this._onEscKeydown.bind(this);
+    this._handlePosterClick = this._handlePosterClick.bind(this);
   }
 
   init(films) {
@@ -37,42 +37,50 @@ class FilmsBoard {
     this._renderFilmsBoard();
   }
 
+  _handleFilmDetailsClick(evt) {
+    if (evt.target.tagName === 'BUTTON') {
+      evt.target.classList.toggle('film-details__control-button--active');
+    }
+  }
+
+  _handleFilmDetails() {
+    document.removeEventListener('keydown', this._onEscKeydown);
+    site.classList.remove('hide-overflow');
+    site.removeChild(this._filmDetailsComponent.getElement());
+  }
+
+  _onEscKeydown(evt) {
+    if (isEscEvent(evt)) {
+      evt.preventDefault();
+      this._handleFilmDetails();
+    }
+  }
+
   _renderFilmDetails(film) {
-    const filmDetailsComponent = new FilmDetailsView(film);
+    this._filmDetailsComponent = new FilmDetailsView(film);
 
-    this._filmContainer.appendChild(filmDetailsComponent.getElement());
-    this._filmContainer.classList.add('hide-overflow');
+    site.appendChild(this._filmDetailsComponent.getElement());
+    site.classList.add('hide-overflow');
+    document.addEventListener('keydown', this._onEscKeydown);
 
-    filmDetailsComponent.setOnFilmDetailsClick((evt) => {
-      if (evt.target.tagName === 'BUTTON') {
-        evt.target.classList.toggle('film-details__control-button--active');
-      }
-    });
+    this._filmDetailsComponent.setOnFilmDetailsClick(this._handleFilmDetailsClick);
+    this._filmDetailsComponent.setOnCloseButtonClick(this._handleFilmDetails);
 
-    const onFilmDetailsEscKeydown = (evt) => {
-      if (isEscEvent(evt)) {
-        evt.preventDefault();
-        document.removeEventListener('keydown', onFilmDetailsEscKeydown);
-        this._filmContainer.classList.remove('hide-overflow');
-        this._filmContainer.removeChild(filmDetailsComponent.getElement());
-      }
-    };
-
-    document.addEventListener('keydown', onFilmDetailsEscKeydown);
-
-    filmDetailsComponent.setOnCloseButtonClick(() => {
-      document.removeEventListener('keydown', onFilmDetailsEscKeydown);
-      this._filmContainer.classList.remove('hide-overflow');
-      this._filmContainer.removeChild(filmDetailsComponent.getElement());
-    });
-
-    // !Одновременно может быть открыт только один попап.
     // todo При открытии нового попапа прежний закрывается, например при клике на другую карточку при открытом попапе.
+    // !Одновременно может быть открыт только один попап.
     // !Несохранённые изменения (неотправленный комментарий) пропадают.
   }
 
   _checkClass(item) {
     return item === 'film-card__controls-item';
+  }
+
+  _handlePosterClick(evt) {
+    const buttonClasses = Array.from(evt.target.classList);
+
+    if (buttonClasses.some(this._checkClass)) {
+      evt.target.classList.toggle('film-card__controls-item--active');
+    }
   }
 
   _renderFilm(filmsListElement, film) {
@@ -83,15 +91,8 @@ class FilmsBoard {
     filmComponent.setOnPosterClick(() => this._renderFilmDetails(film));
     filmComponent.setOnTitleClick(() => this._renderFilmDetails(film));
     filmComponent.setOnCommentsClick(() => this._renderFilmDetails(film));
-
     // Обработчик клика по "нравится, смотрел, буду смотреть"
-    filmComponent.setOnControlsClick((evt) => {
-      const buttonClasses = Array.from(evt.target.classList);
-
-      if (buttonClasses.some(this._checkClass)) {
-        evt.target.classList.toggle('film-card__controls-item--active');
-      }
-    });
+    filmComponent.setOnControlsClick(this._handlePosterClick);
     // Когда вся картчка отрисована, вставляем её в разметку
     // ?На подумать. Зачем вставлять каждую карточку в разметку, когда можно отрисовать сразу 5 (или меньше, если их меньше) и вставить "блок"?
     // ?Можно использовать document.createDocumentFragment()
@@ -169,18 +170,3 @@ class FilmsBoard {
 }
 
 export default FilmsBoard;
-
-//   const topRatedComponent = new FilmsListView(Title.TOP.title, Title.TOP.isExtraList);
-//   renderElement(filmsComponent.getElement(), topRatedComponent.getElement());
-
-//   for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-//     renderFilm(topRatedComponent.getContainer(), films[i]);
-//   }
-
-//   const mostCommentedComponent = new FilmsListView(Title.MOST_COMMENTED.title, Title.MOST_COMMENTED.isExtraList);
-//   renderElement(filmsComponent.getElement(), mostCommentedComponent.getElement());
-
-//   for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-//     renderFilm(mostCommentedComponent.getContainer(), films[i]);
-//   }
-// };
