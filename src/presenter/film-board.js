@@ -8,6 +8,7 @@ import {Title} from '../utils/films.js'; //getNumberFilms
 import FilmPresenter from './film.js';
 
 const FILM_COUNT_PER_STEP = 5;
+const EXTRA_FILM_COUNT = 2;
 
 class FilmsBoard {
   constructor(filmsContainer) {
@@ -22,7 +23,8 @@ class FilmsBoard {
     this._showMoreComponent = new ShowMoreView();
 
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
-    this._handleTaskChange = this._handleTaskChange.bind(this);
+    this._handleFilmChange = this._handleFilmChange.bind(this);
+    // this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(films) {
@@ -34,7 +36,11 @@ class FilmsBoard {
     this._renderFilmsBoard();
   }
 
-  _handleTaskChange(updatedFilm) {
+  _handleModeChange() {
+    this._filmPresenter.forEach((presenter) => presenter.resetView());
+  }
+
+  _handleFilmChange(updatedFilm) {
     this._films = updateItem(this._films, updatedFilm);
     this._filmPresenter.get(updatedFilm.id).init(updatedFilm);
   }
@@ -45,7 +51,7 @@ class FilmsBoard {
   }
 
   _renderFilm(container, film) {
-    const filmPresenter = new FilmPresenter(container, this._handleTaskChange);
+    const filmPresenter = new FilmPresenter(container, this._handleFilmChange, this._handleModeChange); //, this._handleModeChange
     filmPresenter.init(film);
     this._filmPresenter.set(film.id, filmPresenter); //?У меня три списка. Нужно ли создать ещё две переменные?
   }
@@ -98,11 +104,22 @@ class FilmsBoard {
   }
 
   _renderTopRated() {
+    this._topRatedComponent = new FilmsListView(Title.TOP.title, Title.TOP.isExtraList);
+    renderElement(this._filmsComponent.getElement(), this._topRatedComponent.getElement());
 
+    for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
+      this._renderFilm(this._topRatedComponent.getContainer(), this._films[i]);
+    }
   }
 
+  // !ПРОБЛЕМА. Все клики обрабатываются "на поселднем" списке. Т.е. при клике на первый и второй кнопки в основном и Top списках, изменения происходят только в MostCommented
   _renderMostCommented() {
+    this._mostCommentedComponent = new FilmsListView(Title.MOST_COMMENTED.title, Title.MOST_COMMENTED.isExtraList);
+    renderElement(this._filmsComponent.getElement(), this._mostCommentedComponent.getElement());
 
+    for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
+      this._renderFilm(this._mostCommentedComponent.getContainer(), this._films[i]);
+    }
   }
 
   _renderFilmsBoard() {
