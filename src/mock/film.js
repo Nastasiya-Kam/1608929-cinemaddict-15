@@ -1,4 +1,5 @@
 import {EMOJI} from '../const.js';
+import {nanoid} from 'nanoid';
 import {getRandomInteger, getRandomFloat} from '../utils/random.js';
 
 const MAX_COMMENTS_COUNT = 50;
@@ -101,6 +102,7 @@ const generateComments = (count) => new Array(count).fill().map(() => ({
 }));
 
 const generateFilm = () => ({
+  id: nanoid(),
   name: generateFilmName(),
   original: generateFilmName(),
   img: generateFilmImage(),

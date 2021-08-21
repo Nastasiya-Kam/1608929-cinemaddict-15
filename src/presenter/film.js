@@ -1,12 +1,13 @@
 import FilmDetailsView from '../view/film-details.js';
 import CardFilmView from '../view/card-film.js';
-import {renderElement, isEscEvent} from '../utils/dom.js';
+import {renderElement, isEscEvent, remove, replace} from '../utils/dom.js';
 
 const site = document.body; //? Корректно делать так?
 
 class Film {
   constructor(filmContainer) {
     this._filmContainer = filmContainer;
+    this._filmComponent = null;
     this._filmDetailsComponent = null;
 
     this._handleFilmDetails = this._handleFilmDetails.bind(this);
@@ -14,21 +15,38 @@ class Film {
     this._handlePosterClick = this._handlePosterClick.bind(this);
   }
 
-  init(filmsListContainer, film) {
+  init(film) {
     // Отрисовываем карточку фильма (мини)
+    this._film = film;
+
+    const prevFilmComponent = this._filmComponent;
     // Т.к. нам нужно много разных карточек, то мы не выносим new CardFilmView в конструктор, а создаём "на месте"
-    const filmComponent = new CardFilmView(film);
+    this._filmComponent = new CardFilmView(this._film);
+
     // Обработчики кликов по названию, картинке и комментариям
-    filmComponent.setOnPosterClick(() => this._renderFilmDetails(film));
-    filmComponent.setOnTitleClick(() => this._renderFilmDetails(film));
-    filmComponent.setOnCommentsClick(() => this._renderFilmDetails(film));
+    this._filmComponent.setOnPosterClick(() => this._renderFilmDetails(this._film));
+    this._filmComponent.setOnTitleClick(() => this._renderFilmDetails(this._film));
+    this._filmComponent.setOnCommentsClick(() => this._renderFilmDetails(this._film));
     // Обработчик клика по "нравится, смотрел, буду смотреть"
-    filmComponent.setOnControlsClick(this._handlePosterClick);
+    this._filmComponent.setOnControlsClick(this._handlePosterClick);
     // Когда вся картчка отрисована, вставляем её в разметку
     // ?На подумать. Зачем вставлять каждую карточку в разметку, когда можно отрисовать сразу 5 (или меньше, если их меньше) и вставить "блок"?
     // ?Можно использовать document.createDocumentFragment()
     // ??или вообще возвращать template, который потом отрисовывать на лист
-    renderElement(filmsListContainer, filmComponent.getElement());
+    if (prevFilmComponent === null) {
+      renderElement(this._filmContainer, this._filmComponent.getElement());
+      return;
+    }
+
+    if (this._filmContainer.contains(prevFilmComponent.getElement())) {
+      replace(this._filmComponent, prevFilmComponent);
+    }
+
+    remove(prevFilmComponent);
+  }
+
+  destroy() {
+    remove(this._filmDetailsComponent);
   }
 
   _handleFilmDetailsClick(evt) {
@@ -40,7 +58,7 @@ class Film {
   _handleFilmDetails() {
     document.removeEventListener('keydown', this._onEscKeydown);
     site.classList.remove('hide-overflow');
-    site.removeChild(this._filmDetailsComponent.getElement());
+    remove(this._filmDetailsComponent);
   }
 
   _onEscKeydown(evt) {

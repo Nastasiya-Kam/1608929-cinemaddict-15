@@ -2,7 +2,7 @@ import FilmsListView from '../view/films-list.js';
 import NoFilmsView from '../view/no-films.js';
 import ShowMoreView from '../view/show-more.js';
 import FilmsView from '../view/films.js';
-import {renderElement} from '../utils/dom.js';
+import {renderElement, remove} from '../utils/dom.js';
 import {Title} from '../utils/films.js'; //getNumberFilms
 import FilmPresenter from './film.js';
 
@@ -12,6 +12,7 @@ class FilmsBoard {
   constructor(filmsContainer) {
     this._filmsContainer = filmsContainer;
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
+    this._filmPresenter = new Map();
     // Т.к. основной список фильмов используется для отрисовки ShowMore кнопки, то сделаем её видимой для всего класса
     this._mainFilmsListComponent = null;
 
@@ -37,8 +38,16 @@ class FilmsBoard {
   }
 
   _renderFilm(container, film) {
-    const filmPresenter = new FilmPresenter();
-    filmPresenter.init(container, film);
+    const filmPresenter = new FilmPresenter(container);
+    filmPresenter.init(film);
+    this._filmPresenter.set(film.id, filmPresenter); //?У меня три списка. Нужно ли создать ещё две переменные?
+  }
+
+  _clearFilmList() {
+    this._filmPresenter.forEach((presenter) => presenter.destroy());
+    this._filmPresenter.clear();
+    this._renderedFilmCount = FILM_COUNT_PER_STEP;
+    remove(this._showMoreComponent);
   }
 
   _renderMainFilmsList() {
@@ -70,7 +79,7 @@ class FilmsBoard {
     this._renderedFilmCount += FILM_COUNT_PER_STEP;
     // Проверяем, остались ли в списке ещё фильмы. Если нет, то удаляем кнопку showMore
     if (this._renderedFilmCount >= this._films.length) {
-      this._showMoreComponent.getElement().remove(); // todo в демонстрации использован другой метод. Посмотреть
+      remove(this._showMoreComponent);
     }
   }
 
