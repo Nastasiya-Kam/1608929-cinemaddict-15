@@ -1,6 +1,6 @@
 import {EMOJI} from '../const.js';
 import {nanoid} from 'nanoid';
-import {getRandomInteger, getRandomFloat} from '../utils/random.js';
+import {getRandomInteger, getRandomFloat} from '../utils/common.js';
 
 const MAX_COMMENTS_COUNT = 50;
 const MAX_DESCRIPTION_COUNT = 5;

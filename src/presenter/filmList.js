@@ -2,6 +2,7 @@ import FilmsListView from '../view/films-list.js';
 import NoFilmsView from '../view/no-films.js';
 import ShowMoreView from '../view/show-more.js';
 import FilmsView from '../view/films.js';
+import {updateItem} from '../utils/common.js';
 import {renderElement, remove} from '../utils/dom.js';
 import {Title} from '../utils/films.js'; //getNumberFilms
 import FilmPresenter from './film.js';
@@ -21,6 +22,7 @@ class FilmsBoard {
     this._showMoreComponent = new ShowMoreView();
 
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
+    this._handleTaskChange = this._handleTaskChange.bind(this);
   }
 
   init(films) {
@@ -30,6 +32,11 @@ class FilmsBoard {
     renderElement(this._filmsContainer, this._filmsComponent.getElement());
     // Переходим к отрисовке содержимого
     this._renderFilmsBoard();
+  }
+
+  _handleTaskChange(updatedFilm) {
+    this._films = updateItem(this._films, updatedFilm);
+    this._filmPresenter.get(updatedFilm.id).init(updatedFilm);
   }
 
   _renderNoFilms() {
