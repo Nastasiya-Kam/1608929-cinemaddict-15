@@ -1,17 +1,22 @@
 import FilmDetailsView from '../view/film-details.js';
 import CardFilmView from '../view/card-film.js';
 import {renderElement, isEscEvent, remove, replace} from '../utils/dom.js';
+import {Mode} from '../const.js';
 
 const site = document.body; //? Корректно делать так?
 
 class Film {
-  constructor(filmContainer, changeData) {
+  constructor(filmContainer, changeData, changeMode) { //
     this._filmContainer = filmContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
+
+    this._mode = Mode.DEFAULT;
 
     this._filmComponent = null;
     this._filmDetailsComponent = null;
 
+    this._renderFilmDetails = this._renderFilmDetails.bind(this);
     this._onEscKeydown = this._onEscKeydown.bind(this);
     this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
@@ -29,17 +34,19 @@ class Film {
     this._filmDetailsComponent = new FilmDetailsView(film);
 
     // Обработчики кликов по названию, картинке и комментариям
-    this._filmComponent.setOnPosterClick(() => this._renderFilmDetails(this._film));
-    this._filmComponent.setOnTitleClick(() => this._renderFilmDetails(this._film));
-    this._filmComponent.setOnCommentsClick(() => this._renderFilmDetails(this._film));
+    this._filmComponent.setOnPosterClick(this._renderFilmDetails);
+    this._filmComponent.setOnTitleClick(this._renderFilmDetails);
+    this._filmComponent.setOnCommentsClick(this._renderFilmDetails);
     // Обработчик клика по "нравится, смотрел, буду смотреть"
-    this._filmComponent.setOnFavoriteClick(this._handleFavoriteClick);
     this._filmComponent.setOnWatchListClick(this._handleWatchListClick);
     this._filmComponent.setOnWatchedClick(this._handleWatchedClick);
+    this._filmComponent.setOnFavoriteClick(this._handleFavoriteClick);
 
-    this._filmDetailsComponent.setOnFavoriteClick(this._handleFavoriteClick);
+    // !Повторный вызов одного и того же фильма не навешивает обработчики. Почему
+    // Продублировала код в двух местах
     this._filmDetailsComponent.setOnWatchListClick(this._handleWatchListClick);
     this._filmDetailsComponent.setOnWatchedClick(this._handleWatchedClick);
+    this._filmDetailsComponent.setOnFavoriteClick(this._handleFavoriteClick);
     this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
 
     // Когда вся картчка отрисована, вставляем её в разметку
@@ -48,11 +55,13 @@ class Film {
       return;
     }
 
-    if (this._filmContainer.contains(prevFilmComponent.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._filmComponent, prevFilmComponent);
     }
 
-    if (site.contains(prevFilmDetailsComponent.getElement())) {
+    if (this._mode === Mode.PREVIEW) {
+      // !Убивает обработчики в том числе?
+      replace(this._filmComponent, prevFilmComponent);
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
     }
 
@@ -60,18 +69,31 @@ class Film {
     remove(prevFilmDetailsComponent);
   }
 
+  _resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._handleCloseButtonClick();
+    }
+  }
+
   _renderFilmDetails() {
-    site.appendChild(this._filmDetailsComponent.getElement());
     site.classList.add('hide-overflow');
     document.addEventListener('keydown', this._onEscKeydown);
 
+    this._filmDetailsComponent.setOnWatchListClick(this._handleWatchListClick);
+    this._filmDetailsComponent.setOnWatchedClick(this._handleWatchedClick);
+    this._filmDetailsComponent.setOnFavoriteClick(this._handleFavoriteClick);
+    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
+
+    renderElement(site, this._filmDetailsComponent.getElement());
+
+    this._mode = Mode.PREVIEW;
     // todo При открытии нового попапа прежний закрывается, например при клике на другую карточку при открытом попапе.
     // !Одновременно может быть открыт только один попап.
     // !Несохранённые изменения (неотправленный комментарий) пропадают.
   }
 
   destroy() {
-    remove(this._filmDetailsComponent);
+    remove(this._filmComponent);
   }
 
   _handleWatchListClick() {
@@ -114,6 +136,7 @@ class Film {
     document.removeEventListener('keydown', this._onEscKeydown);
     site.classList.remove('hide-overflow');
     remove(this._filmDetailsComponent);
+    this._mode = Mode.DEFAULT;
   }
 
   _onEscKeydown(evt) {
@@ -121,10 +144,6 @@ class Film {
       evt.preventDefault();
       this._handleCloseButtonClick();
     }
-  }
-
-  _checkClass(item) {
-    return item === 'film-card__controls-item';
   }
 }
 
