@@ -115,16 +115,16 @@ class FilmDetails extends AbstractView {
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
   }
 
-  _onWatchListClick(evt) {
-    this._callback.watchListClick(evt);
+  _onWatchListClick() {
+    this._callback.watchListClick();
   }
 
-  _onWatchedClick(evt) {
-    this._callback.watchedClick(evt);
+  _onWatchedClick() {
+    this._callback.watchedClick();
   }
 
-  _onFavoriteClick(evt) {
-    this._callback.favoriteClick(evt);
+  _onFavoriteClick() {
+    this._callback.favoriteClick();
   }
 
   setOnWatchListClick(callback) {
