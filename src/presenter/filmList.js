@@ -45,7 +45,7 @@ class FilmsBoard {
   }
 
   _renderFilm(container, film) {
-    const filmPresenter = new FilmPresenter(container);
+    const filmPresenter = new FilmPresenter(container, this._handleTaskChange);
     filmPresenter.init(film);
     this._filmPresenter.set(film.id, filmPresenter); //?У меня три списка. Нужно ли создать ещё две переменные?
   }
