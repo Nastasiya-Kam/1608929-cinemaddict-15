@@ -18,9 +18,13 @@ class FilmsBoard {
     this._filmsContainer = filmsContainer;
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     this._filmPresenter = new Map();
+    this._filmTopPresenter = new Map();
+    this._filmMostCommentedPresenter = new Map();
     // Т.к. основной список фильмов используется для отрисовки ShowMore кнопки, то сделаем её видимой для всего класса
     this._currentSortType = SortType.DEFAULT;
     this._mainFilmsListComponent = null;
+    this._mostCommentedComponent = null;
+    this._topRatedComponent = null;
 
     this._sortComponent = new SortView();
     this._filmsComponent = new FilmsView();
@@ -36,11 +40,13 @@ class FilmsBoard {
   init(films) {
     this._films = films.slice();
     this._sourcedFilms = films.slice();
+    this._mostCommentedFilms = films.slice().sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
+    this._topRatedFilms = films.slice().sort(compareRating).slice(0, EXTRA_FILM_COUNT);
 
     this._renderSort();
-    // Отрисовываем контейнер, в котором будут списки фильмов
+
     renderElement(this._filmsContainer, this._filmsComponent.getElement());
-    // Переходим к отрисовке содержимого
+
     this._renderFilmsBoard();
   }
 
@@ -67,6 +73,8 @@ class FilmsBoard {
     this._sortFilms(sortType);
     this._clearFilmList();
     this._renderMainFilmsList();
+    this._renderTopRated();
+    this._renderMostCommented();
   }
 
   _renderSort() {
@@ -81,39 +89,58 @@ class FilmsBoard {
   _handleFilmChange(updatedFilm) {
     this._films = updateItem(this._films, updatedFilm);
     this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
-    this._filmPresenter.get(updatedFilm.id).init(updatedFilm);
+    this._mostCommentedFilms = updateItem(this._mostCommentedFilms, updatedFilm);
+    this._topRatedFilms = updateItem(this._topRatedFilms, updatedFilm);
+
+    if (this._filmPresenter.has(updatedFilm.id)) {
+      this._filmPresenter.get(updatedFilm.id).init(updatedFilm);
+    }
+
+    if (this._filmTopPresenter.has(updatedFilm.id)) {
+      this._filmTopPresenter.get(updatedFilm.id).init(updatedFilm);
+    }
+
+    if (this._filmMostCommentedPresenter.has(updatedFilm.id)) {
+      this._filmMostCommentedPresenter.get(updatedFilm.id).init(updatedFilm);
+    }
   }
 
   _renderNoFilms() {
-    // Отрисовываем заглушку для списка без фильмов
     renderElement(this._filmsComponent.getElement(), this._noFilmsComponent.getElement());
   }
 
-  _renderFilm(container, film) {
+  _renderFilm(container, film, presenter) {
     const filmPresenter = new FilmPresenter(container, this._handleFilmChange, this._handleModeChange); //, this._handleModeChange
+
     filmPresenter.init(film);
-    this._filmPresenter.set(film.id, filmPresenter); //?У меня три списка. Нужно ли создать ещё две переменные?
+
+    presenter.set(film.id, filmPresenter);
   }
 
   _clearFilmList() {
     this._filmPresenter.forEach((presenter) => presenter.destroy());
+    this._filmTopPresenter.forEach((presenter) => presenter.destroy());
+    this._filmMostCommentedPresenter.forEach((presenter) => presenter.destroy());
+
     this._filmPresenter.clear();
+    this._filmTopPresenter.clear();
+    this._filmMostCommentedPresenter.clear();
+
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     remove(this._showMoreComponent);
   }
 
   _renderMainFilmsList() {
-    // Отрисовываем основной список фильмов
     if (this._mainFilmsListComponent === null) {
       this._mainFilmsListComponent = new FilmsListView(Title.MAIN.title, Title.MAIN.isExtraList);
     }
 
+    for (let i = 0; i < Math.min(this._films.length, this._renderedFilmCount); i ++) {
+      this._renderFilm(this._mainFilmsListComponent.getContainer(), this._films[i], this._filmPresenter);
+    }
+
     renderElement(this._filmsComponent.getElement(), this._mainFilmsListComponent.getElement(), RenderPosition.AFTERBEGIN);
 
-    for (let i = 0; i < Math.min(this._films.length, this._renderedFilmCount); i ++) {
-      this._renderFilm(this._mainFilmsListComponent.getContainer(), this._films[i]);
-    }
-    // Если фильмов больше 5, то отрисовываем кнопку
     if (this._films.length > this._renderedFilmCount) {
       this._renderShowMore();
     }
@@ -122,28 +149,25 @@ class FilmsBoard {
   _renderFilms(container, from, to) {
     this._films
       .slice(from, to)
-      .forEach((film) => this._renderFilm(container.getContainer(), film));
+      .forEach((film) => this._renderFilm(container.getContainer(), film, this._filmPresenter));
   }
 
   _handleShowMoreClick() {
-    // Обработка кликов по кнопке и её удаление, если открыты все фильмы
-    // Отрезаем новый кусок фильмов, учитывая уже имеющиеся. this._renderedFilmCount находится в конструкторе, поэтому она помнит сколько фильмов уже отрисовано
     this._renderFilms(this._mainFilmsListComponent, this._renderedFilmCount, this._renderedFilmCount + FILM_COUNT_PER_STEP);
-    // увеличиваем наш счётчик
+
     this._renderedFilmCount += FILM_COUNT_PER_STEP;
-    // Проверяем, остались ли в списке ещё фильмы. Если нет, то удаляем кнопку showMore
+
     if (this._renderedFilmCount >= this._films.length) {
       remove(this._showMoreComponent);
     }
   }
 
   _renderShowMore() {
-    // Отрисовываем кнопку показа остальных фильмов
     renderElement(this._mainFilmsListComponent.getElement(), this._showMoreComponent.getElement());
-    // Вешаем обработчик для кнопки
     this._showMoreComponent.setOnShowMoreClick(this._handleShowMoreClick);
   }
 
+  // todo вынести проверку на наличие комментируемых и фильмов с рейтингов в отдельную функцию
   _checkZeroRating(film) {
     return film.rating === 0;
   }
@@ -152,49 +176,46 @@ class FilmsBoard {
     return film.comments.length === 0;
   }
 
+  // todo соединить отрисовку одинаковых списков?
   _renderTopRated() {
     if (this._films.every(this._checkZeroRating)) {
       return;
     }
 
-    this._topRatedComponent = new FilmsListView(Title.TOP.title, Title.TOP.isExtraList);
-    renderElement(this._filmsComponent.getElement(), this._topRatedComponent.getElement());
-
-    const topRatedFilms = this._films.slice().sort(compareRating).slice(0, EXTRA_FILM_COUNT);
-    // !ПРОБЛЕМА не "видит", что в основном списке тот же фильм, которому также необходимо изменить значения кнопок
-    for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-      this._renderFilm(this._topRatedComponent.getContainer(), topRatedFilms[i]);
+    if (this._topRatedComponent === null) {
+      this._topRatedComponent = new FilmsListView(Title.TOP.title, Title.TOP.isExtraList);
     }
+
+    for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
+      this._renderFilm(this._topRatedComponent.getContainer(), this._topRatedFilms[i], this._filmTopPresenter);
+    }
+
+    renderElement(this._filmsComponent.getElement(), this._topRatedComponent.getElement());
   }
 
-  // !ПРОБЛЕМА. Все клики обрабатываются "на последнем" списке. Т.е. при клике на первый и второй кнопки в основном и Top списках, изменения происходят только в MostCommented
   _renderMostCommented() {
     if (this._films.every(this._checkZeroComments)) {
       return;
     }
 
-    this._mostCommentedComponent = new FilmsListView(Title.MOST_COMMENTED.title, Title.MOST_COMMENTED.isExtraList);
-    renderElement(this._filmsComponent.getElement(), this._mostCommentedComponent.getElement());
-
-    const topRatedFilms = this._films.slice().sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
+    if (this._mostCommentedComponent === null) {
+      this._mostCommentedComponent = new FilmsListView(Title.MOST_COMMENTED.title, Title.MOST_COMMENTED.isExtraList);
+    }
 
     for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-      this._renderFilm(this._mostCommentedComponent.getContainer(), topRatedFilms[i]);
+      this._renderFilm(this._mostCommentedComponent.getContainer(), this._mostCommentedFilms[i], this._filmMostCommentedPresenter);
     }
+
+    renderElement(this._filmsComponent.getElement(), this._mostCommentedComponent.getElement());
   }
 
   _renderFilmsBoard() {
-    // Отрисовываем списки фильмов
-    // Если фильмов нет, то делаем заглушку и выходим из отрисовки списков
     if (this._films.length === 0) {
       this._renderNoFilms; // todo Значение отображаемого текста зависит от выбранного фильтра
       return;
     }
-    // Если фильмы есть, то рисуем основной список
     this._renderMainFilmsList();
-    // если TOP есть, то рисуем TOP список
     this._renderTopRated();
-    // если MOST COMMENT есть, то рисуем MOST COMMENT список
     this._renderMostCommented();
   }
 }
