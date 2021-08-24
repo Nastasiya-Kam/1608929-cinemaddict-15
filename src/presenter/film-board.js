@@ -9,6 +9,7 @@ import {Title} from '../utils/films.js'; //getNumberFilms
 import FilmPresenter from './film.js';
 import {SortType} from '../const.js';
 import {sortDate, compareRating, compareCommentsAmount} from '../utils/filter.js';
+import FilmDetailsPresenter from './film-details.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
@@ -82,8 +83,8 @@ class FilmsBoard {
     this._sortComponent.setOnSortTypeChange(this._handleSortTypeChange);
   }
 
-  _handleModeChange() {
-    this._filmPresenter.forEach((presenter) => presenter.resetView());
+  _handleModeChange(updatedFilm) {
+    this._filmDetailsPresenter.init(updatedFilm);
   }
 
   _handleFilmChange(updatedFilm) {
@@ -92,6 +93,7 @@ class FilmsBoard {
     this._mostCommentedFilms = updateItem(this._mostCommentedFilms, updatedFilm);
     this._topRatedFilms = updateItem(this._topRatedFilms, updatedFilm);
 
+    // todo Вынести в функцию?
     if (this._filmPresenter.has(updatedFilm.id)) {
       this._filmPresenter.get(updatedFilm.id).init(updatedFilm);
     }
@@ -103,6 +105,9 @@ class FilmsBoard {
     if (this._filmMostCommentedPresenter.has(updatedFilm.id)) {
       this._filmMostCommentedPresenter.get(updatedFilm.id).init(updatedFilm);
     }
+
+    // ?Куда это нужно перенести, чтобы закрытие/открытие попапа происходило по клику на постер, титульный или комменты
+    // this._filmDetailsPresenter.init(updatedFilm);
   }
 
   _renderNoFilms() {
@@ -110,7 +115,8 @@ class FilmsBoard {
   }
 
   _renderFilm(container, film, presenter) {
-    const filmPresenter = new FilmPresenter(container, this._handleFilmChange, this._handleModeChange); //, this._handleModeChange
+    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleFilmChange, this._handleModeChange);
+    const filmPresenter = new FilmPresenter(container, this._handleFilmChange, this._filmDetailsPresenter);
 
     filmPresenter.init(film);
 

@@ -2,7 +2,7 @@ const EMOJI = ['smile', 'sleeping', 'puke', 'angry'];
 
 const Mode = {
   DEFAULT: 'DEFAULT',
-  PREVIEW: 'PREVIEW',
+  OPENED: 'OPENED',
 };
 
 const SortType = {
