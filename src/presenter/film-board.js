@@ -27,8 +27,6 @@ class FilmsBoard {
     this._mostCommentedComponent = null;
     this._topRatedComponent = null;
 
-    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleModeChange, this._handleFilmChange);
-
     this._sortComponent = new SortView();
     this._filmsComponent = new FilmsView();
     this._noFilmsComponent = new NoFilmsView();
@@ -39,6 +37,8 @@ class FilmsBoard {
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._openDetails = this._openDetails.bind(this);
+
+    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleModeChange, this._handleFilmChange);
   }
 
   init(films) {
@@ -87,9 +87,7 @@ class FilmsBoard {
   }
 
   _handleModeChange(updatedFilm) {
-    // ?А так можно? колбэк на filmDetailsPresenter
-    // ?Почему тут вместо this film-board сидит this FilmDetails? Почему связывание не работает?
-    this.init(updatedFilm);
+    this._filmDetailsPresenter.init(updatedFilm);
     this._handleFilmChange(updatedFilm);
   }
 
@@ -110,6 +108,11 @@ class FilmsBoard {
 
     if (this._filmMostCommentedPresenter.has(updatedFilm.id)) {
       this._filmMostCommentedPresenter.get(updatedFilm.id).init(updatedFilm);
+    }
+
+    // !При кликах на кнопочки - обновляется попап. Исправить
+    if (this._filmDetailsPresenter.isOpened()) {
+      this._filmDetailsPresenter.init(updatedFilm);
     }
   }
 

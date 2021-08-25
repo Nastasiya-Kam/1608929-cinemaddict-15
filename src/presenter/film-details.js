@@ -32,9 +32,7 @@ class FilmDetails {
 
     this._open();
 
-    // todo При открытии нового попапа прежний закрывается, например при клике на другую карточку при открытом попапе.
-    // !Одновременно может быть открыт только один попап.
-    // !Несохранённые изменения (неотправленный комментарий) пропадают.
+    // todo Несохранённые изменения (неотправленный комментарий) пропадают.
   }
 
   _open() {
@@ -60,7 +58,21 @@ class FilmDetails {
     this._mode = Mode.CLOSED;
   }
 
+  isOpened() {
+    return this._mode === Mode.OPENED;
+  }
+
   // todo Вынести в одну функцию?
+  _getUpdateFilm() {
+    return (Object.assign(
+      {},
+      this._film,
+      {
+        isWatched: !this._film.isWatched,
+      },
+    ));
+  }
+
   _handleWatchListClick() {
     this._changeData(
       Object.assign(
@@ -74,16 +86,7 @@ class FilmDetails {
   }
 
   _handleWatchedClick() {
-    const updateFilm = Object.assign(
-      {},
-      this._film,
-      {
-        isWatched: !this._film.isWatched,
-      },
-    );
-
-    this._changeData(updateFilm); //обновляем сам попап
-    this._changeFilm(updateFilm); //обновляем карточку
+    this._changeData(this._getUpdateFilm());
   }
 
   _handleFavoriteClick() {
