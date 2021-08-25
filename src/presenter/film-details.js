@@ -9,27 +9,25 @@ const Mode = {
 const site = document.body; //? Корректно делать так?
 
 class FilmDetails {
-  constructor(changeData, changeMode) {
+  constructor(changeData, changeFilm) {
     this._changeData = changeData;
-    this._changeMode = changeMode;
+    this._changeFilm = changeFilm;
     this._mode = null;
 
     this._open = this._open.bind(this);
-    this._onEscKeydown = this._onEscKeydown.bind(this);
-    this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
+    this._close = this._close.bind(this);
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
+    this._onEscKeydown = this._onEscKeydown.bind(this);
   }
 
   init(film) {
     this._film = film;
 
     if (this._mode === Mode.OPENED) {
-      this.destroy();
-      this._mode = Mode.CLOSED;
-      this._changeMode(this._film);
-      return;
+      this._close();
     }
 
     this._open();
@@ -56,11 +54,10 @@ class FilmDetails {
   }
 
   _close() {
-
-  }
-
-  destroy() {
+    document.removeEventListener('keydown', this._onEscKeydown);
+    site.classList.remove('hide-overflow');
     remove(this._filmDetailsComponent);
+    this._mode = Mode.CLOSED;
   }
 
   // todo Вынести в одну функцию?
@@ -77,15 +74,16 @@ class FilmDetails {
   }
 
   _handleWatchedClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._film,
-        {
-          isWatched: !this._film.isWatched,
-        },
-      ),
+    const updateFilm = Object.assign(
+      {},
+      this._film,
+      {
+        isWatched: !this._film.isWatched,
+      },
     );
+
+    this._changeData(updateFilm); //обновляем сам попап
+    this._changeFilm(updateFilm); //обновляем карточку
   }
 
   _handleFavoriteClick() {
@@ -100,11 +98,8 @@ class FilmDetails {
     );
   }
 
-  _handleCloseButtonClick(element = this._filmDetailsComponent) {
-    document.removeEventListener('keydown', this._onEscKeydown);
-    site.classList.remove('hide-overflow');
-    remove(element);
-    this._mode = Mode.CLOSED;
+  _handleCloseButtonClick() {
+    this._close();
   }
 
   _onEscKeydown(evt) {

@@ -27,6 +27,8 @@ class FilmsBoard {
     this._mostCommentedComponent = null;
     this._topRatedComponent = null;
 
+    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleModeChange, this._handleFilmChange);
+
     this._sortComponent = new SortView();
     this._filmsComponent = new FilmsView();
     this._noFilmsComponent = new NoFilmsView();
@@ -36,6 +38,7 @@ class FilmsBoard {
     this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._openDetails = this._openDetails.bind(this);
   }
 
   init(films) {
@@ -84,7 +87,10 @@ class FilmsBoard {
   }
 
   _handleModeChange(updatedFilm) {
-    this._filmDetailsPresenter.init(updatedFilm);
+    // ?А так можно? колбэк на filmDetailsPresenter
+    // ?Почему тут вместо this film-board сидит this FilmDetails? Почему связывание не работает?
+    this.init(updatedFilm);
+    this._handleFilmChange(updatedFilm);
   }
 
   _handleFilmChange(updatedFilm) {
@@ -105,9 +111,6 @@ class FilmsBoard {
     if (this._filmMostCommentedPresenter.has(updatedFilm.id)) {
       this._filmMostCommentedPresenter.get(updatedFilm.id).init(updatedFilm);
     }
-
-    // ?Куда это нужно перенести, чтобы закрытие/открытие попапа происходило по клику на постер, титульный или комменты
-    // this._filmDetailsPresenter.init(updatedFilm);
   }
 
   _renderNoFilms() {
@@ -115,12 +118,15 @@ class FilmsBoard {
   }
 
   _renderFilm(container, film, presenter) {
-    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleFilmChange, this._handleModeChange);
-    const filmPresenter = new FilmPresenter(container, this._handleFilmChange, this._filmDetailsPresenter);
+    const filmPresenter = new FilmPresenter(container, this._handleFilmChange, this._openDetails);
 
     filmPresenter.init(film);
 
     presenter.set(film.id, filmPresenter);
+  }
+
+  _openDetails(film) {
+    this._filmDetailsPresenter.init(film);
   }
 
   _clearFilmList() {

@@ -1,17 +1,14 @@
 import CardFilmView from '../view/card-film.js';
-import {renderElement, remove, replace} from '../utils/dom.js'; //, isEscEvent
-// import {Mode} from '../const.js';
+import {renderElement, remove, replace} from '../utils/dom.js';
 
 class Film {
-  constructor(filmContainer, changeData, presenter) { //, changeMode
+  constructor(filmContainer, changeData, openPresenter) {
     this._filmContainer = filmContainer;
     this._changeData = changeData;
-    this._presenter = presenter;
+    this._openPresenter = openPresenter;
 
     this._filmComponent = null;
-    this._filmDetailsComponent = presenter;
 
-    this._openDetails = this._openDetails.bind(this);
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -25,9 +22,9 @@ class Film {
     this._filmComponent = new CardFilmView(this._film);
 
     // Обработчики кликов по названию, картинке и комментариям
-    this._filmComponent.setOnPosterClick(this._openDetails);
-    this._filmComponent.setOnTitleClick(this._openDetails);
-    this._filmComponent.setOnCommentsClick(this._openDetails);
+    this._filmComponent.setOnPosterClick(() => this._openPresenter(this._film));
+    this._filmComponent.setOnTitleClick(() => this._openPresenter(this._film));
+    this._filmComponent.setOnCommentsClick(() => this._openPresenter(this._film));
     // Обработчик клика по "нравится, смотрел, буду смотреть"
     this._filmComponent.setOnWatchListClick(this._handleWatchListClick);
     this._filmComponent.setOnWatchedClick(this._handleWatchedClick);
@@ -42,10 +39,6 @@ class Film {
     replace(this._filmComponent, prevFilmComponent);
 
     remove(prevFilmComponent);
-  }
-
-  _openDetails() {
-    this._presenter.init(this._film);
   }
 
   destroy() {
