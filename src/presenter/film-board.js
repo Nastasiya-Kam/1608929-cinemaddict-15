@@ -110,7 +110,7 @@ class FilmsBoard {
       this._filmMostCommentedPresenter.get(updatedFilm.id).init(updatedFilm);
     }
 
-    if (this._filmDetailsPresenter.isOpened() && this._filmDetailsPresenter.getFilmId === updatedFilm.id) {
+    if (this._filmDetailsPresenter.isOpened() && this._filmDetailsPresenter.isIdEqual(updatedFilm.id)) {
       this._filmDetailsPresenter.init(updatedFilm);
     }
   }

@@ -63,8 +63,8 @@ class FilmDetails {
     return this._mode === Mode.OPENED;
   }
 
-  getFilmId() {
-    return this._film.id;
+  isIdEqual(id) {
+    return this._film.id === id;
   }
 
   _handleWatchListClick() {
