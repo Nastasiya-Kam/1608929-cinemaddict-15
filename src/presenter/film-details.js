@@ -63,6 +63,10 @@ class FilmDetails {
     return this._mode === Mode.OPENED;
   }
 
+  getFilmId() {
+    return this._film.id;
+  }
+
   _handleWatchListClick() {
     this._changeData(getUpdateFilm(this._film, Settings.WATCH_LIST));
   }
