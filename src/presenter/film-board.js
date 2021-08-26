@@ -5,7 +5,7 @@ import FilmsView from '../view/films.js';
 import SortView from '../view/sort.js';
 import {updateItem} from '../utils/common.js';
 import {renderElement, remove, RenderPosition} from '../utils/dom.js';
-import {Title} from '../utils/films.js'; //getNumberFilms
+import {ListType} from '../utils/films.js'; //getNumberFilms
 import FilmPresenter from './film.js';
 import {SortType} from '../const.js';
 import {sortDate, compareRating, compareCommentsAmount} from '../utils/filter.js';
@@ -147,7 +147,7 @@ class FilmsBoard {
 
   _renderMainFilmsList() {
     if (this._mainFilmsListComponent === null) {
-      this._mainFilmsListComponent = new FilmsListView(Title.MAIN.title, Title.MAIN.isExtraList);
+      this._mainFilmsListComponent = new FilmsListView(ListType.MAIN.title, ListType.MAIN.isExtraList);
     }
 
     for (let i = 0; i < Math.min(this._films.length, this._renderedFilmCount); i ++) {
@@ -198,7 +198,7 @@ class FilmsBoard {
     }
 
     if (this._topRatedComponent === null) {
-      this._topRatedComponent = new FilmsListView(Title.TOP.title, Title.TOP.isExtraList);
+      this._topRatedComponent = new FilmsListView(ListType.TOP.title, ListType.TOP.isExtraList);
     }
 
     for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
@@ -214,7 +214,7 @@ class FilmsBoard {
     }
 
     if (this._mostCommentedComponent === null) {
-      this._mostCommentedComponent = new FilmsListView(Title.MOST_COMMENTED.title, Title.MOST_COMMENTED.isExtraList);
+      this._mostCommentedComponent = new FilmsListView(ListType.MOST_COMMENTED.title, ListType.MOST_COMMENTED.isExtraList);
     }
 
     for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {

@@ -1,5 +1,6 @@
 import CardFilmView from '../view/card-film.js';
 import {renderElement, remove, replace} from '../utils/dom.js';
+import {Settings, getUpdateFilm} from '../utils/films.js';
 
 class Film {
   constructor(filmContainer, changeData, openPresenter) {
@@ -45,41 +46,16 @@ class Film {
     remove(this._filmComponent);
   }
 
-  // todo Вынести в одну функцию?
   _handleWatchListClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._film,
-        {
-          isWatchList: !this._film.isWatchList,
-        },
-      ),
-    );
+    this._changeData(getUpdateFilm(this._film, Settings.WATCH_LIST));
   }
 
   _handleWatchedClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._film,
-        {
-          isWatched: !this._film.isWatched,
-        },
-      ),
-    );
+    this._changeData(getUpdateFilm(this._film, Settings.WATCHED));
   }
 
   _handleFavoriteClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._film,
-        {
-          isFavorite: !this._film.isFavorite,
-        },
-      ),
-    );
+    this._changeData(getUpdateFilm(this._film, Settings.FAVORITE));
   }
 }
 
