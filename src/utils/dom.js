@@ -7,13 +7,21 @@ const RenderPosition = {
 
 // Функция из интернета по вставке элемента в начало или в конец родительского элемента
 // https://github.com/htmlacademy-ecmascript/taskmanager-15/pull/3/commits/e5b37903905e6b3896d48563a1880456ced4c04d
-const renderElement = (container, element, place = RenderPosition.BEFOREEND) => {
+const render = (container, child, place = RenderPosition.BEFOREEND) => {
+  if (container instanceof Abstract) {
+    container = container.getElement();
+  }
+
+  if (child instanceof Abstract) {
+    child = child.getElement();
+  }
+
   switch (place) {
     case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+      container.prepend(child);
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.append(child);
       break;
   }
 };
@@ -61,4 +69,4 @@ const replace = (newChild, oldChild) => {
 };
 
 
-export {RenderPosition, renderElement, createElement, isEscEvent, remove, replace};
+export {RenderPosition, render, createElement, isEscEvent, remove, replace};

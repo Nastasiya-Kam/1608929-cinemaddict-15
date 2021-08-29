@@ -1,6 +1,6 @@
 import CardFilmView from '../view/card-film.js';
-import {renderElement, remove, replace} from '../utils/dom.js';
-import {Settings, getUpdateFilm} from '../utils/films.js';
+import {render, remove, replace} from '../utils/dom.js';
+import {Settings, getUpdatedFilm} from '../utils/films.js';
 
 class Film {
   constructor(filmContainer, changeData, openPresenter) {
@@ -33,7 +33,7 @@ class Film {
 
     // Когда вся карточка отрисована, вставляем её в разметку
     if (prevFilmComponent === null) {
-      renderElement(this._filmContainer, this._filmComponent.getElement());
+      render(this._filmContainer, this._filmComponent);
       return;
     }
 
@@ -47,15 +47,15 @@ class Film {
   }
 
   _handleWatchListClick() {
-    this._changeData(getUpdateFilm(this._film, Settings.WATCH_LIST));
+    this._changeData(getUpdatedFilm(this._film, Settings.WATCH_LIST));
   }
 
   _handleWatchedClick() {
-    this._changeData(getUpdateFilm(this._film, Settings.WATCHED));
+    this._changeData(getUpdatedFilm(this._film, Settings.WATCHED));
   }
 
   _handleFavoriteClick() {
-    this._changeData(getUpdateFilm(this._film, Settings.FAVORITE));
+    this._changeData(getUpdatedFilm(this._film, Settings.FAVORITE));
   }
 }
 

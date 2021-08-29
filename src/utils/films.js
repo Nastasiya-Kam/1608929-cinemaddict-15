@@ -12,7 +12,7 @@ const Settings = {
   FAVORITE: 'isFavorite',
 };
 
-const getUpdateFilm = (film, setting) => (Object.assign(
+const getUpdatedFilm = (film, setting) => (Object.assign(
   {},
   film,
   {
@@ -21,4 +21,4 @@ const getUpdateFilm = (film, setting) => (Object.assign(
 ));
 
 
-export {getNumberFilms, ListType, Settings, getUpdateFilm};
+export {getNumberFilms, ListType, Settings, getUpdatedFilm};

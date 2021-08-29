@@ -4,7 +4,7 @@ import ShowMoreView from '../view/show-more.js';
 import FilmsView from '../view/films.js';
 import SortView from '../view/sort.js';
 import {updateItem} from '../utils/common.js';
-import {renderElement, remove, RenderPosition} from '../utils/dom.js';
+import {render, remove, RenderPosition} from '../utils/dom.js';
 import {ListType} from '../utils/films.js'; //getNumberFilms
 import FilmPresenter from './film.js';
 import {SortType} from '../const.js';
@@ -21,13 +21,13 @@ class FilmsBoard {
     this._filmPresenter = new Map();
     this._filmTopPresenter = new Map();
     this._filmMostCommentedPresenter = new Map();
-    // Т.к. основной список фильмов используется для отрисовки ShowMore кнопки, то сделаем её видимой для всего класса
+
     this._currentSortType = SortType.DEFAULT;
     this._mainFilmsListComponent = null;
     this._mostCommentedComponent = null;
     this._topRatedComponent = null;
+    this._sortComponent = null;
 
-    this._sortComponent = new SortView();
     this._filmsComponent = new FilmsView();
     this._noFilmsComponent = new NoFilmsView();
     this._showMoreComponent = new ShowMoreView();
@@ -49,7 +49,7 @@ class FilmsBoard {
 
     this._renderSort();
 
-    renderElement(this._filmsContainer, this._filmsComponent.getElement());
+    render(this._filmsContainer, this._filmsComponent);
 
     this._renderFilmsBoard();
   }
@@ -67,6 +67,9 @@ class FilmsBoard {
     }
 
     this._currentSortType = sortType;
+
+    remove(this._sortComponent);
+    this._renderSort();
   }
 
   _handleSortTypeChange(sortType) {
@@ -82,7 +85,9 @@ class FilmsBoard {
   }
 
   _renderSort() {
-    renderElement(this._filmsContainer, this._sortComponent.getElement());
+    this._sortComponent = new SortView(this._currentSortType);
+
+    render(this._filmsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
     this._sortComponent.setOnSortTypeChange(this._handleSortTypeChange);
   }
 
@@ -116,7 +121,7 @@ class FilmsBoard {
   }
 
   _renderNoFilms() {
-    renderElement(this._filmsComponent.getElement(), this._noFilmsComponent.getElement());
+    render(this._filmsComponent, this._noFilmsComponent);
   }
 
   _renderFilm(container, film, presenter) {
@@ -153,7 +158,7 @@ class FilmsBoard {
       this._renderFilm(this._mainFilmsListComponent.getContainer(), this._films[i], this._filmPresenter);
     }
 
-    renderElement(this._filmsComponent.getElement(), this._mainFilmsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+    render(this._filmsComponent, this._mainFilmsListComponent, RenderPosition.AFTERBEGIN);
 
     if (this._films.length > this._renderedFilmCount) {
       this._renderShowMore();
@@ -177,7 +182,7 @@ class FilmsBoard {
   }
 
   _renderShowMore() {
-    renderElement(this._mainFilmsListComponent.getElement(), this._showMoreComponent.getElement());
+    render(this._mainFilmsListComponent, this._showMoreComponent);
     this._showMoreComponent.setOnShowMoreClick(this._handleShowMoreClick);
   }
 
@@ -192,10 +197,6 @@ class FilmsBoard {
 
   // todo соединить отрисовку одинаковых списков?
   _renderTopRated() {
-    if (this._films.every(this._checkZeroRating)) {
-      return;
-    }
-
     if (this._topRatedComponent === null) {
       this._topRatedComponent = new FilmsListView(ListType.TOP.title, ListType.TOP.isExtraList);
     }
@@ -204,14 +205,10 @@ class FilmsBoard {
       this._renderFilm(this._topRatedComponent.getContainer(), this._topRatedFilms[i], this._filmTopPresenter);
     }
 
-    renderElement(this._filmsComponent.getElement(), this._topRatedComponent.getElement());
+    render(this._filmsComponent, this._topRatedComponent);
   }
 
   _renderMostCommented() {
-    if (this._films.every(this._checkZeroComments)) {
-      return;
-    }
-
     if (this._mostCommentedComponent === null) {
       this._mostCommentedComponent = new FilmsListView(ListType.MOST_COMMENTED.title, ListType.MOST_COMMENTED.isExtraList);
     }
@@ -220,7 +217,7 @@ class FilmsBoard {
       this._renderFilm(this._mostCommentedComponent.getContainer(), this._mostCommentedFilms[i], this._filmMostCommentedPresenter);
     }
 
-    renderElement(this._filmsComponent.getElement(), this._mostCommentedComponent.getElement());
+    render(this._filmsComponent, this._mostCommentedComponent);
   }
 
   _renderFilmsBoard() {
@@ -228,9 +225,16 @@ class FilmsBoard {
       this._renderNoFilms; // todo Значение отображаемого текста зависит от выбранного фильтра
       return;
     }
+
     this._renderMainFilmsList();
-    this._renderTopRated();
-    this._renderMostCommented();
+
+    if (!this._films.every(this._checkZeroRating)) {
+      this._renderTopRated();
+    }
+
+    if (!this._films.every(this._checkZeroComments)) {
+      this._renderMostCommented();
+    }
   }
 }
 

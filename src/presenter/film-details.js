@@ -1,6 +1,6 @@
 import FilmDetailsView from '../view/film-details.js';
-import {renderElement, isEscEvent, remove} from '../utils/dom.js';
-import {Settings, getUpdateFilm} from '../utils/films.js';
+import {render, isEscEvent, remove} from '../utils/dom.js';
+import {Settings, getUpdatedFilm} from '../utils/films.js';
 
 const Mode = {
   CLOSED: 'CLOSED',
@@ -47,7 +47,7 @@ class FilmDetails {
     this._filmDetailsComponent.setOnFavoriteClick(this._handleFavoriteClick);
     this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
 
-    renderElement(site, this._filmDetailsComponent.getElement());
+    render(site, this._filmDetailsComponent);
 
     this._mode = Mode.OPENED;
   }
@@ -68,15 +68,15 @@ class FilmDetails {
   }
 
   _handleWatchListClick() {
-    this._changeData(getUpdateFilm(this._film, Settings.WATCH_LIST));
+    this._changeData(getUpdatedFilm(this._film, Settings.WATCH_LIST));
   }
 
   _handleWatchedClick() {
-    this._changeData(getUpdateFilm(this._film, Settings.WATCHED));
+    this._changeData(getUpdatedFilm(this._film, Settings.WATCHED));
   }
 
   _handleFavoriteClick() {
-    this._changeData(getUpdateFilm(this._film, Settings.FAVORITE));
+    this._changeData(getUpdatedFilm(this._film, Settings.FAVORITE));
   }
 
   _handleCloseButtonClick() {
