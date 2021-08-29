@@ -26,11 +26,7 @@ class FilmsList extends AbstractView {
   }
 
   getContainer() {
-    if (!this._containerElement) {
-      this._containerElement = this.getElement().querySelector('.films-list__container');
-    }
-
-    return this._containerElement;
+    return this.getElement().querySelector('.films-list__container');
   }
 }
 

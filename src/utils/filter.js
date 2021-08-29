@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const Filter = {ALL: 'all', WATCH_LIST: 'watchList', WATCHED: 'watched', FAVORITE: 'favorite'};
 
 const Filters = [
@@ -44,4 +46,25 @@ const generateFilter = (films) => {
   return filter;
 };
 
-export {generateFilter, Filters};
+const sortDate = (filmA, filmB) => {
+  const dateA = dayjs(filmA.release);
+  const dateB = dayjs(filmB.release);
+
+  return dateB.diff(dateA);
+};
+
+const compareRating = (filmA, filmB) => {
+  const ratingA = filmA.rating;
+  const ratingB = filmB.rating;
+
+  return ratingB - ratingA;
+};
+
+const compareCommentsAmount = (filmA, filmB) => {
+  const commentsAmountA = filmA.comments.length;
+  const commentsAmountB = filmB.comments.length;
+
+  return commentsAmountB - commentsAmountA;
+};
+
+export {generateFilter, Filters, sortDate, compareRating, compareCommentsAmount};

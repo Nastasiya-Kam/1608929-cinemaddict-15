@@ -1,16 +1,36 @@
 import AbstractView from './abstract.js';
+import {SortType} from '../const.js';
 
-const createSortTemplate = () => (
+const createSortTemplate = (sortType) => (
   `<ul class="sort">
-    <li><a href="#" class="sort__button">Sort by default</a></li>
-    <li><a href="#" class="sort__button">Sort by date</a></li>
-    <li><a href="#" class="sort__button sort__button--active">Sort by rating</a></li>
+    <li><a href="#" class="sort__button${(sortType === SortType.DEFAULT) ? ' sort__button--active' : ''}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+    <li><a href="#" class="sort__button${(sortType === SortType.DATE) ? ' sort__button--active' : ''}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
+    <li><a href="#" class="sort__button${(sortType === SortType.RATING) ? ' sort__button--active' : ''}" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
   </ul>`
-);
+); // sort__button--active
 
 class Sort extends AbstractView {
+  constructor(sortType) {
+    super();
+    this._sortType = sortType;
+
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
+  }
+
   getTemplate() {
-    return createSortTemplate();
+    return createSortTemplate(this._sortType);
+  }
+
+  _onSortTypeChange(evt) {
+    if (evt.target.tagName === 'A') {
+      evt.preventDefault();
+      this._callback.sortTypeChange(evt.target.dataset.sortType);
+    }
+  }
+
+  setOnSortTypeChange(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('click', this._onSortTypeChange);
   }
 }
 
