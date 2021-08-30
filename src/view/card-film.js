@@ -3,13 +3,8 @@ import AbstractView from './abstract.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 
-const createCardFilmTemplate = (film) => {
-  const {name, rating, release, duration, genres, img, description, comments, isWatchList, isWatched, isFavorite} = film;
-
-  const descriptionSliced = (description.length > 140)
-    ? `${description.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...`
-    : description;
-  const date = getCardDate(release);
+const createCardFilmTemplate = (data) => {
+  const {name, rating, duration, genres, img, description, isWatchList, isWatched, isFavorite, commentsLength, date} = data;
 
   return (
     `<article class="film-card">
@@ -21,8 +16,8 @@ const createCardFilmTemplate = (film) => {
         <span class="film-card__genre">${genres[0]}</span>
       </p>
       <img src="./images/posters/${img}" alt="" class="film-card__poster">
-      <p class="film-card__description">${descriptionSliced}</p>
-      <a class="film-card__comments">${comments.length} comments</a>
+      <p class="film-card__description">${description}</p>
+      <a class="film-card__comments">${commentsLength} comments</a>
       <div class="film-card__controls">
         <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${(isWatchList) ? 'film-card__controls-item--active' : ''}" type="button">Add to watchlist</button>
         <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${(isWatched) ? 'film-card__controls-item--active' : ''}" type="button">Mark as watched</button>
@@ -36,7 +31,7 @@ class CardFilm extends AbstractView {
   constructor(film) {
     super();
 
-    this._film = film;
+    this._data = CardFilm.parseFilmToData(film);
 
     this._onPosterClick = this._onPosterClick.bind(this);
     this._onTitleClick = this._onTitleClick.bind(this);
@@ -47,7 +42,7 @@ class CardFilm extends AbstractView {
   }
 
   getTemplate() {
-    return createCardFilmTemplate(this._film);
+    return createCardFilmTemplate(this._data);
   }
 
   _onPosterClick() {
@@ -103,6 +98,32 @@ class CardFilm extends AbstractView {
   setOnFavoriteClick(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._onFavoriteClick);
+  }
+
+  static parseFilmToData(film) {
+    return Object.assign(
+      {},
+      film,
+      {
+        isLongDescription: film.description > 140,
+        commentsLength: film.comments.length,
+        date: getCardDate(film.release),
+      },
+    );
+  }
+
+  static parseDataToFilm(data) {
+    data = Object.assign({}, data);
+
+    if (data.isLongDescription) {
+      data.description = data.description.slice(0, MAX_LENGTH_DESCRIPTION - 1);
+    }
+
+    delete data.isLongDescription;
+    delete data.commentsLength;
+    delete data.date;
+
+    return data;
   }
 }
 
