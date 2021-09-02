@@ -7,7 +7,7 @@ const createSortTemplate = (sortType) => (
     <li><a href="#" class="sort__button${(sortType === SortType.DATE) ? ' sort__button--active' : ''}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
     <li><a href="#" class="sort__button${(sortType === SortType.RATING) ? ' sort__button--active' : ''}" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
   </ul>`
-); // sort__button--active
+);
 
 class Sort extends AbstractView {
   constructor(sortType) {
