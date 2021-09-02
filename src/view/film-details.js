@@ -95,15 +95,49 @@ class FilmDetails extends SmartView {
   constructor(film) {
     super();
 
-    this._film = film;
+    this._data = FilmDetails.parseFilmToData(film);
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onWatchListClick = this._onWatchListClick.bind(this);
     this._onWatchedClick = this._onWatchedClick.bind(this);
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
+    this._onEmojiClick = this._onEmojiClick.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film);
+    return createFilmDetailsTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this.setOnWatchListClick(this._callback.watchListClick);
+    this.setOnWatchedClick(this._callback.watchedClick);
+    this.setOnFavoriteClick(this._callback.favoriteClick);
+    this.setOnCloseButtonClick(this._callback.closeButtonClick);
+    this._setInnerHandlers();
+
+    this.getElement().querySelector('.film-details__inner').scrollIntoView(false);
+    // ? Хотела запоминть элемент, на котором произошёл клик (записала в _data в _onEmojiClick). А почему не работает прокрутка к кликнотому элементу?
+    // this._data.elementPosition.scrollIntoView(true);
+  }
+
+  _onEmojiClick(evt) {
+    if (evt.target.tagName === 'IMG') {
+      const emoji = evt.target;
+
+      this.updateData({
+        isEditCommentExist: true,
+        newComment: {
+          src: emoji.src,
+          alt: emoji.alt, //alt везде одинаковый
+        },
+        elementPosition: emoji,
+      });
+    }
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._onEmojiClick);
   }
 
   _onCloseButtonClick() {
@@ -140,6 +174,28 @@ class FilmDetails extends SmartView {
   setOnFavoriteClick(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._onFavoriteClick);
+  }
+
+  static parseFilmToData(film) {
+    return Object.assign(
+      {},
+      film,
+      {
+        isEditCommentExist: false,
+        newComment: {},
+        elementPosition: null,
+      },
+    );
+  }
+
+  static parseDataToFilm(data) {
+    data = Object.assign({}, data);
+
+    delete data.isEditCommentExist;
+    delete data.newComment;
+    delete data.elementPosition;
+
+    return data;
   }
 }
 
