@@ -2,18 +2,13 @@ import FilmDetailsView from '../view/film-details.js';
 import {render, isEscEvent, remove} from '../utils/dom.js';
 import {Settings, getUpdatedFilm} from '../utils/films.js';
 
-const Mode = {
-  CLOSED: 'CLOSED',
-  OPENED: 'OPENED',
-};
-
-const site = document.body; //? Корректно делать так?
+const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
   constructor(changeData, changeFilm) {
     this._changeData = changeData;
     this._changeFilm = changeFilm;
-    this._mode = null;
+    this._isOpen = false;
 
     this._open = this._open.bind(this);
     this._close = this._close.bind(this);
@@ -27,7 +22,7 @@ class FilmDetails {
   init(film) {
     this._film = film;
 
-    if (this._mode === Mode.OPENED) {
+    if (this._isOpen) {
       this._close();
     }
 
@@ -49,18 +44,21 @@ class FilmDetails {
 
     render(site, this._filmDetailsComponent);
 
-    this._mode = Mode.OPENED;
+    this._isOpen = true;
   }
 
   _close() {
     document.removeEventListener('keydown', this._onEscKeydown);
     site.classList.remove('hide-overflow');
     remove(this._filmDetailsComponent);
-    this._mode = Mode.CLOSED;
+    this._isOpen = false;
   }
 
+  // ?Вопросик. Переделала Mode на булин isOpen.
+  // ?Тогда можно ли (лучше ли) сделать переменную доступной (т.е. переименовать в isOpen),
+  // ?чтобы в презентере обращаться не к методу this._filmDetailsPresenter.isOpened(), а просто к переменной this._filmDetailsPresenter.isOpen?
   isOpened() {
-    return this._mode === Mode.OPENED;
+    return this._isOpen;
   }
 
   isIdEqual(id) {
