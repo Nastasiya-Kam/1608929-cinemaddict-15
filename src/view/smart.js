@@ -1,7 +1,12 @@
 import Abstract from './abstract';
 
 class Smart extends Abstract {
-  // абстрактный метод restoreHandlers, его нужно будет реализовать в наследнике. Его задача — восстанавливать обработчики событий после перерисовки;
+  constructor() {
+    super();
+
+    this._data = {};
+  }
+
   restoreHandlers() {
     throw new Error('Smart method not implemented: restoreHandlers');
   }
@@ -9,18 +14,17 @@ class Smart extends Abstract {
   updateElement() {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
-    // удалить старый DOM-элемент компонента;
+
     this.removeElement();
-    // создать новый DOM-элемент;
+
     const newElement = this.getElement();
-    // поместить новый элемент вместо старого;
+
     parent.replaceChild(newElement, prevElement);
-    // восстановить обработчики событий, вызвав restoreHandlers.
+
     this.restoreHandlers();
   }
 
-  // обычный метод updateData, который будет обновлять данные и, если нужно, вызывать метод updateElement.
-  updateData(update) {
+  updateData(update, justDataUpdating) {
     if (!update) {
       return;
     }
@@ -30,6 +34,10 @@ class Smart extends Abstract {
       this._data,
       update,
     );
+
+    if (justDataUpdating) {
+      return;
+    }
 
     this.updateElement();
   }

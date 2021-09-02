@@ -101,6 +101,7 @@ class FilmDetails extends SmartView {
     this._onWatchedClick = this._onWatchedClick.bind(this);
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
     this._onEmojiClick = this._onEmojiClick.bind(this);
+    this._onDescriptionTextareaChange = this._onDescriptionTextareaChange.bind(this);
 
     this._setInnerHandlers();
   }
@@ -114,11 +115,33 @@ class FilmDetails extends SmartView {
     this.setOnWatchedClick(this._callback.watchedClick);
     this.setOnFavoriteClick(this._callback.favoriteClick);
     this.setOnCloseButtonClick(this._callback.closeButtonClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
     this._setInnerHandlers();
 
     this.getElement().querySelector('.film-details__inner').scrollIntoView(false);
     // ? Хотела запоминть элемент, на котором произошёл клик (записала в _data в _onEmojiClick). А почему не работает прокрутка к кликнотому элементу?
     // this._data.elementPosition.scrollIntoView(true);
+  }
+
+  _onFormSubmit(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit(FilmDetails.parseDataToFilm(this._data));
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._onFormSubmit);
+  }
+
+  _onDescriptionTextareaChange(evt) {
+    evt.preventDefault();
+    this.updateData({
+      isEditCommentExist: true,
+      newComment: {
+        src: this._data.newComment.src,
+        description: evt.target.value,
+      },
+    }, true);
   }
 
   _onEmojiClick(evt) {
@@ -129,15 +152,16 @@ class FilmDetails extends SmartView {
         isEditCommentExist: true,
         newComment: {
           src: emoji.src,
-          alt: emoji.alt, //alt везде одинаковый
+          description: this._data.newComment.description,
         },
-        elementPosition: emoji,
+        // elementPosition: emoji,
       });
     }
   }
 
   _setInnerHandlers() {
     this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._onEmojiClick);
+    this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._onDescriptionTextareaChange);
   }
 
   _onCloseButtonClick() {
@@ -182,8 +206,10 @@ class FilmDetails extends SmartView {
       film,
       {
         isEditCommentExist: false,
-        newComment: {},
-        elementPosition: null,
+        newComment: {
+          src: '',
+          description: '',
+        },
       },
     );
   }
@@ -193,7 +219,6 @@ class FilmDetails extends SmartView {
 
     delete data.isEditCommentExist;
     delete data.newComment;
-    delete data.elementPosition;
 
     return data;
   }

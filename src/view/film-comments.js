@@ -2,7 +2,7 @@ import {getCommentDate} from '../utils/dates.js';
 import {EMOJI} from '../const.js';
 import AbstractView from './abstract.js';
 
-const createNewComment = (comment) => `<img src="${comment.src}" width="55" height="55" alt="${comment.alt}"></img>`;
+const createNewComment = (comment) => `<img src="${comment.src}" width="55" height="55" alt="emoji"></img>`;
 
 const createComments = (comments) => comments
   .map(({text, emoji, author, date}) =>
@@ -39,7 +39,7 @@ const createFilmCommentsTemplate = (comments, isEditCommentExist, newComment) =>
       <div class="film-details__add-emoji-label">${(isEditCommentExist) ? createNewComment(newComment) : ''}</div>
 
       <label class="film-details__comment-label">
-        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newComment.description}</textarea>
       </label>
 
       <div class="film-details__emoji-list">${createEmojiList(EMOJI)}</div>
