@@ -5,9 +5,8 @@ import {Settings, getUpdatedFilm} from '../utils/films.js';
 const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
-  constructor(changeData, changeFilm) {
+  constructor(changeData) {
     this._changeData = changeData;
-    this._changeFilm = changeFilm;
     this._isOpen = false;
 
     this._open = this._open.bind(this);

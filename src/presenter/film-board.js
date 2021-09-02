@@ -24,6 +24,7 @@ class FilmsBoard {
     this._filmMostCommentedPresenter = new Map();
 
     this._currentSortType = SortType.DEFAULT;
+
     this._mainFilmsListComponent = null;
     this._mostCommentedComponent = null;
     this._topRatedComponent = null;
@@ -39,7 +40,7 @@ class FilmsBoard {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._openDetails = this._openDetails.bind(this);
 
-    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleModeChange, this._handleFilmChange);
+    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleModeChange);
   }
 
   init(films) {
@@ -114,21 +115,17 @@ class FilmsBoard {
     this._mostCommentedFilms = updateItem(this._mostCommentedFilms, updatedFilm);
     this._topRatedFilms = updateItem(this._topRatedFilms, updatedFilm);
 
-    // todo Вынести в функцию?
-    if (this._filmPresenter.has(updatedFilm.id)) {
-      this._filmPresenter.get(updatedFilm.id).init(updatedFilm);
-    }
-
-    if (this._filmTopPresenter.has(updatedFilm.id)) {
-      this._filmTopPresenter.get(updatedFilm.id).init(updatedFilm);
-    }
-
-    if (this._filmMostCommentedPresenter.has(updatedFilm.id)) {
-      this._filmMostCommentedPresenter.get(updatedFilm.id).init(updatedFilm);
-    }
+    this._getFilmPresenters
+      .map((presenter) => this._getUpdatedFilmsList(presenter, updatedFilm));
 
     if (this._filmDetailsPresenter.isOpened() && this._filmDetailsPresenter.isIdEqual(updatedFilm.id)) {
       this._filmDetailsPresenter.init(updatedFilm);
+    }
+  }
+
+  _getUpdatedFilmsList(presenter, film) {
+    if (presenter.has(film.id)) {
+      presenter.get(film.id).init(film);
     }
   }
 
@@ -148,14 +145,16 @@ class FilmsBoard {
     this._filmDetailsPresenter.init(film);
   }
 
-  _clearFilmList() {
-    this._filmPresenter.forEach((presenter) => presenter.destroy());
-    this._filmTopPresenter.forEach((presenter) => presenter.destroy());
-    this._filmMostCommentedPresenter.forEach((presenter) => presenter.destroy());
+  _getFilmPresenters() {
+    return [this._filmPresenter, this._filmTopPresenter, this._filmMostCommentedPresenter];
+  }
 
-    this._filmPresenter.clear();
-    this._filmTopPresenter.clear();
-    this._filmMostCommentedPresenter.clear();
+  _clearFilmList() {
+    this._getFilmPresenters
+      .map((presenter) => {
+        presenter.forEach((element) => element.destroy());
+        presenter.clear();
+      });
 
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     remove(this._showMoreComponent);
