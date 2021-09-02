@@ -1,6 +1,6 @@
 import {getReleaseDate} from '../utils/dates.js';
-import AbstractView from './abstract.js';
-import FilmComments from './film-comments.js';
+import SmartView from './smart.js';
+import FilmCommentsView from './film-comments.js';
 
 const createGenresTemplate = (genres) => genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -18,8 +18,8 @@ const createControlsTemplate = (filmStatus) => {
   );
 };
 
-const createFilmDetailsTemplate = (film) => {
-  const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description, comments} = film;
+const createFilmDetailsTemplate = (data) => {
+  const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description, comments, isEditCommentExist, newComment} = data;
   const releaseDate = getReleaseDate(release);
 
   return (
@@ -82,16 +82,16 @@ const createFilmDetailsTemplate = (film) => {
               <p class="film-details__film-description">${description}</p>
             </div>
           </div>
-          ${createControlsTemplate(film)}
+          ${createControlsTemplate(data)}
         </div>
 
-        <div class="film-details__bottom-container">${new FilmComments(comments).getTemplate()}</div>
+        <div class="film-details__bottom-container">${new FilmCommentsView(comments, isEditCommentExist, newComment).getTemplate()}</div>
       </form>
     </section>`
   );
 };
 
-class FilmDetails extends AbstractView {
+class FilmDetails extends SmartView {
   constructor(film) {
     super();
 

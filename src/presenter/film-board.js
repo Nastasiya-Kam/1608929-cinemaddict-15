@@ -47,10 +47,9 @@ class FilmsBoard {
     this._mostCommentedFilms = films.slice().sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
     this._topRatedFilms = films.slice().sort(compareRating).slice(0, EXTRA_FILM_COUNT);
 
-    this._renderSort();
-
     render(this._filmsContainer, this._filmsComponent);
 
+    this._renderSort();
     this._renderFilmsBoard();
   }
 
@@ -87,7 +86,7 @@ class FilmsBoard {
   _renderSort() {
     this._sortComponent = new SortView(this._currentSortType);
 
-    render(this._filmsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    this._filmsContainer.insertBefore(this._sortComponent.getElement(), this._filmsComponent.getElement());
     this._sortComponent.setOnSortTypeChange(this._handleSortTypeChange);
   }
 

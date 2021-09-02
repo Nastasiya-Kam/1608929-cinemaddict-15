@@ -1,15 +1,11 @@
 import Abstract from './abstract';
 
-// Создайте абстрактный класс Smart, унаследовав его от Abstract, с несколькими методами:
 class Smart extends Abstract {
-
-
   // абстрактный метод restoreHandlers, его нужно будет реализовать в наследнике. Его задача — восстанавливать обработчики событий после перерисовки;
   restoreHandlers() {
     throw new Error('Smart method not implemented: restoreHandlers');
   }
 
-  // обычный метод updateElement, его задачи:
   updateElement() {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
@@ -28,11 +24,13 @@ class Smart extends Abstract {
     if (!update) {
       return;
     }
+
     this._data = Object.assign(
       {},
       this._data,
       update,
     );
+
     this.updateElement();
   }
 
