@@ -1,19 +1,18 @@
 import FilmDetailsView from '../view/film-details.js';
+import FilmCommentsView from '../view/film-comments.js';
+import ControlsView from '../view/controls.js';
 import {render, isEscEvent, remove} from '../utils/dom.js';
 import {Settings, getUpdatedFilm} from '../utils/films.js';
 
-const Mode = {
-  CLOSED: 'CLOSED',
-  OPENED: 'OPENED',
-};
-
-const site = document.body; //? Корректно делать так?
+const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
-  constructor(changeData, changeFilm) {
+  constructor(changeData) {
     this._changeData = changeData;
-    this._changeFilm = changeFilm;
-    this._mode = null;
+    this._isOpen = false;
+
+    this._filmCommentsComponent = null;
+    this._controlsComponent = null;
 
     this._open = this._open.bind(this);
     this._close = this._close.bind(this);
@@ -27,56 +26,70 @@ class FilmDetails {
   init(film) {
     this._film = film;
 
-    if (this._mode === Mode.OPENED) {
+    if (this._isOpen) {
       this._close();
     }
 
     this._open();
-
-    // todo Несохранённые изменения (неотправленный комментарий) пропадают.
-  }
-
-  _open() {
-    this._filmDetailsComponent = new FilmDetailsView(this._film);
-
-    site.classList.add('hide-overflow');
-    document.addEventListener('keydown', this._onEscKeydown);
-
-    this._filmDetailsComponent.setOnWatchListClick(this._handleWatchListClick);
-    this._filmDetailsComponent.setOnWatchedClick(this._handleWatchedClick);
-    this._filmDetailsComponent.setOnFavoriteClick(this._handleFavoriteClick);
-    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
-
-    render(site, this._filmDetailsComponent);
-
-    this._mode = Mode.OPENED;
-  }
-
-  _close() {
-    document.removeEventListener('keydown', this._onEscKeydown);
-    site.classList.remove('hide-overflow');
-    remove(this._filmDetailsComponent);
-    this._mode = Mode.CLOSED;
   }
 
   isOpened() {
-    return this._mode === Mode.OPENED;
+    return this._isOpen;
   }
 
   isIdEqual(id) {
     return this._film.id === id;
   }
 
-  _handleWatchListClick() {
-    this._changeData(getUpdatedFilm(this._film, Settings.WATCH_LIST));
+  renderControls(film) {
+    if (this._isOpen) {
+      remove(this._controlsComponent);
+    }
+
+    const {isWatchList, isWatched, isFavorite} = film;
+
+    this._controlsComponent = new ControlsView({isWatchList, isWatched, isFavorite});
+
+    render(this._filmDetailsComponent.getElement().querySelector('.film-details__top-container'), this._controlsComponent);
+
+    this._controlsComponent.setOnWatchListClick(() => this._handleWatchListClick(film));
+    this._controlsComponent.setOnWatchedClick(() => this._handleWatchedClick(film));
+    this._controlsComponent.setOnFavoriteClick(() => this._handleFavoriteClick(film));
   }
 
-  _handleWatchedClick() {
-    this._changeData(getUpdatedFilm(this._film, Settings.WATCHED));
+  _open() {
+    this._filmDetailsComponent = new FilmDetailsView(this._film);
+    this._filmCommentsComponent = new FilmCommentsView(this._film.comments);
+
+    site.classList.add('hide-overflow');
+    document.addEventListener('keydown', this._onEscKeydown);
+
+    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
+
+    render(site, this._filmDetailsComponent);
+    render(this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container'), this._filmCommentsComponent);
+    this.renderControls(this._film);
+
+    this._isOpen = true;
   }
 
-  _handleFavoriteClick() {
-    this._changeData(getUpdatedFilm(this._film, Settings.FAVORITE));
+  _close() {
+    document.removeEventListener('keydown', this._onEscKeydown);
+    site.classList.remove('hide-overflow');
+    remove(this._filmDetailsComponent);
+    this._isOpen = false;
+  }
+
+  _handleWatchListClick(film) {
+    this._changeData(getUpdatedFilm(film, Settings.WATCH_LIST));
+  }
+
+  _handleWatchedClick(film) {
+    this._changeData(getUpdatedFilm(film, Settings.WATCHED));
+  }
+
+  _handleFavoriteClick(film) {
+    this._changeData(getUpdatedFilm(film, Settings.FAVORITE));
   }
 
   _handleCloseButtonClick() {
