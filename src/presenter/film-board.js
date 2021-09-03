@@ -115,18 +115,20 @@ class FilmsBoard {
     this._mostCommentedFilms = updateItem(this._mostCommentedFilms, updatedFilm);
     this._topRatedFilms = updateItem(this._topRatedFilms, updatedFilm);
 
-    this._getFilmPresenters
-      .map((presenter) => this._getUpdatedFilmsList(presenter, updatedFilm));
+    this._getFilmPresenters().map((presenter) => {
+      if (presenter.has(updatedFilm.id)) {
+        presenter.get(updatedFilm.id).init(updatedFilm);
+      }
+    });
 
     if (this._filmDetailsPresenter.isOpened() && this._filmDetailsPresenter.isIdEqual(updatedFilm.id)) {
-      this._filmDetailsPresenter.init(updatedFilm);
+      // this._filmDetailsPresenter.init(updatedFilm);
+      this._filmDetailsPresenter.updateControls(updatedFilm);
     }
   }
 
-  _getUpdatedFilmsList(presenter, film) {
-    if (presenter.has(film.id)) {
-      presenter.get(film.id).init(film);
-    }
+  _getFilmPresenters() {
+    return [this._filmPresenter, this._filmTopPresenter, this._filmMostCommentedPresenter];
   }
 
   _renderNoFilms() {
@@ -145,12 +147,8 @@ class FilmsBoard {
     this._filmDetailsPresenter.init(film);
   }
 
-  _getFilmPresenters() {
-    return [this._filmPresenter, this._filmTopPresenter, this._filmMostCommentedPresenter];
-  }
-
   _clearFilmList() {
-    this._getFilmPresenters
+    this._getFilmPresenters()
       .map((presenter) => {
         presenter.forEach((element) => element.destroy());
         presenter.clear();
