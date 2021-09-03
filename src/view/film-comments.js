@@ -45,11 +45,15 @@ const createFilmCommentsTemplate = (comments, data) => (
 );
 
 class FilmComments extends SmartView {
-  constructor(comments, data) {
+  constructor(comments) {
     super();
 
     this._comments = comments;
-    this._data = data;
+    this._data = {
+      comment: '',
+      emotion: '',
+      isEmpty: true,
+    };
 
     this._onFormSubmit = this._onFormSubmit.bind(this);
     this._onDescriptionTextareaChange = this._onDescriptionTextareaChange.bind(this);

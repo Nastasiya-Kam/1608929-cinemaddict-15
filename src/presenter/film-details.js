@@ -10,12 +10,6 @@ class FilmDetails {
   constructor(changeData) {
     this._changeData = changeData;
     this._isOpen = false;
-    this._initialComment = {
-      id: '',
-      comment: '',
-      emotion: '',
-      isEmpty: true,
-    };
 
     this._filmCommentsComponent = null;
     this._controlsComponent = null;
@@ -32,17 +26,11 @@ class FilmDetails {
   init(film) {
     this._film = film;
 
-    if (this._initialComment.id === '') {
-      this._initialComment.id = this._film.id;
-    }
-
     if (this._isOpen) {
       this._close();
     }
 
     this._open();
-
-    // todo Несохранённые изменения (неотправленный комментарий) пропадают.
   }
 
   isOpened() {
@@ -64,17 +52,14 @@ class FilmDetails {
 
     render(this._filmDetailsComponent.getElement().querySelector('.film-details__top-container'), this._controlsComponent);
 
-    this._controlsComponent.setOnWatchListClick(this._handleWatchListClick);
-    this._controlsComponent.setOnWatchedClick(this._handleWatchedClick);
-    this._controlsComponent.setOnFavoriteClick(this._handleFavoriteClick);
+    this._controlsComponent.setOnWatchListClick(() => this._handleWatchListClick(film));
+    this._controlsComponent.setOnWatchedClick(() => this._handleWatchedClick(film));
+    this._controlsComponent.setOnFavoriteClick(() => this._handleFavoriteClick(film));
   }
 
   _open() {
     this._filmDetailsComponent = new FilmDetailsView(this._film);
-    this._filmCommentsComponent = new FilmCommentsView(this._film.comments, this._initialComment);
-    // const {isWatchList, isWatched, isFavorite} = this._film;
-
-    // this._controlsComponent = new ControlsView({isWatchList, isWatched, isFavorite});
+    this._filmCommentsComponent = new FilmCommentsView(this._film.comments);
 
     site.classList.add('hide-overflow');
     document.addEventListener('keydown', this._onEscKeydown);
@@ -83,7 +68,6 @@ class FilmDetails {
 
     render(site, this._filmDetailsComponent);
     render(this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container'), this._filmCommentsComponent);
-    // render(this._filmDetailsComponent.getElement().querySelector('.film-details__top-container'), this._controlsComponent);
     this.renderControls(this._film);
 
     this._isOpen = true;
@@ -96,16 +80,16 @@ class FilmDetails {
     this._isOpen = false;
   }
 
-  _handleWatchListClick() {
-    this._changeData(getUpdatedFilm(this._film, Settings.WATCH_LIST));
+  _handleWatchListClick(film) {
+    this._changeData(getUpdatedFilm(film, Settings.WATCH_LIST));
   }
 
-  _handleWatchedClick() {
-    this._changeData(getUpdatedFilm(this._film, Settings.WATCHED));
+  _handleWatchedClick(film) {
+    this._changeData(getUpdatedFilm(film, Settings.WATCHED));
   }
 
-  _handleFavoriteClick() {
-    this._changeData(getUpdatedFilm(this._film, Settings.FAVORITE));
+  _handleFavoriteClick(film) {
+    this._changeData(getUpdatedFilm(film, Settings.FAVORITE));
   }
 
   _handleCloseButtonClick() {
