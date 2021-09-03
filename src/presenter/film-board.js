@@ -1,16 +1,18 @@
 import SiteMenuView from '../view/site-menu.js';
-import FilmsListView from '../view/films-list.js';
-import NoFilmsView from '../view/no-films.js';
-import ShowMoreView from '../view/show-more.js';
-import FilmsView from '../view/films.js';
 import SortView from '../view/sort.js';
+import NoFilmsView from '../view/no-films.js';
+import FilmsView from '../view/films.js';
+import FilmsListView from '../view/films-list.js';
+import ShowMoreView from '../view/show-more.js';
+
 import {updateItem} from '../utils/common.js';
 import {render, remove, RenderPosition} from '../utils/dom.js';
 import {ListType} from '../utils/films.js';
+
 import FilmPresenter from './film.js';
+import FilmDetailsPresenter from './film-details.js';
 import {SortType} from '../const.js';
 import {sortDate, compareRating, compareCommentsAmount, generateFilter} from '../utils/filter.js';
-import FilmDetailsPresenter from './film-details.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
@@ -105,7 +107,7 @@ class FilmsBoard {
   }
 
   _handleModeChange(updatedFilm) {
-    this._filmDetailsPresenter.init(updatedFilm);
+    this._filmDetailsPresenter.renderControls(updatedFilm);
     this._handleFilmChange(updatedFilm);
   }
 
@@ -122,8 +124,7 @@ class FilmsBoard {
     });
 
     if (this._filmDetailsPresenter.isOpened() && this._filmDetailsPresenter.isIdEqual(updatedFilm.id)) {
-      // this._filmDetailsPresenter.init(updatedFilm);
-      this._filmDetailsPresenter.updateControls(updatedFilm);
+      this._filmDetailsPresenter.renderControls(updatedFilm);
     }
   }
 
