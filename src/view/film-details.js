@@ -1,25 +1,13 @@
 import {getReleaseDate} from '../utils/dates.js';
-import SmartView from './smart.js';
-import FilmCommentsView from './film-comments.js';
+import AbstractView from './abstract.js';
+// import SmartView from './smart.js';
 
 const createGenresTemplate = (genres) => genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
   .join('');
 
-const createControlsTemplate = (filmStatus) => {
-  const {isWatchList, isWatched, isFavorite} = filmStatus;
-
-  return (
-    `<section class="film-details__controls">
-      <button type="button" class="film-details__control-button${(isWatchList) ? ' film-details__control-button--active ' : ' '}film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-      <button type="button" class="film-details__control-button${(isWatched) ? ' film-details__control-button--active ' : ' '}film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-      <button type="button" class="film-details__control-button${(isFavorite) ? ' film-details__control-button--active ' : ' '}film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
-    </section>`
-  );
-};
-
 const createFilmDetailsTemplate = (data) => {
-  const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description, comments, isEditCommentExist, newComment} = data;
+  const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description} = data;
   const releaseDate = getReleaseDate(release);
 
   return (
@@ -82,86 +70,24 @@ const createFilmDetailsTemplate = (data) => {
               <p class="film-details__film-description">${description}</p>
             </div>
           </div>
-          ${createControlsTemplate(data)}
         </div>
 
-        <div class="film-details__bottom-container">${new FilmCommentsView(comments, isEditCommentExist, newComment).getTemplate()}</div>
+        <div class="film-details__bottom-container"></div>
       </form>
     </section>`
   );
 };
 
-class FilmDetails extends SmartView {
+class FilmDetails extends AbstractView {
   constructor(film) {
     super();
 
-    this._data = FilmDetails.parseFilmToData(film);
+    this._film = film;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
-    this._onWatchListClick = this._onWatchListClick.bind(this);
-    this._onWatchedClick = this._onWatchedClick.bind(this);
-    this._onFavoriteClick = this._onFavoriteClick.bind(this);
-    this._onEmojiClick = this._onEmojiClick.bind(this);
-    this._onDescriptionTextareaChange = this._onDescriptionTextareaChange.bind(this);
-
-    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._data);
-  }
-
-  restoreHandlers() {
-    this.setOnWatchListClick(this._callback.watchListClick);
-    this.setOnWatchedClick(this._callback.watchedClick);
-    this.setOnFavoriteClick(this._callback.favoriteClick);
-    this.setOnCloseButtonClick(this._callback.closeButtonClick);
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this._setInnerHandlers();
-
-    this.getElement().querySelector('.film-details__inner').scrollIntoView(false);
-    // ? Хотела запоминть элемент, на котором произошёл клик (записала в _data в _onEmojiClick). А почему не работает прокрутка к кликнотому элементу?
-    // this._data.elementPosition.scrollIntoView(true);
-  }
-
-  _onFormSubmit(evt) {
-    evt.preventDefault();
-    this._callback.formSubmit(FilmDetails.parseDataToFilm(this._data));
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._onFormSubmit);
-  }
-
-  _onDescriptionTextareaChange(evt) {
-    evt.preventDefault();
-    this.updateData({
-      isEditCommentExist: true,
-      newComment: {
-        src: this._data.newComment.src,
-        description: evt.target.value,
-      },
-    }, true);
-  }
-
-  _onEmojiClick(evt) {
-    if (evt.target.tagName === 'IMG') {
-      const emoji = evt.target;
-
-      this.updateData({
-        isEditCommentExist: true,
-        newComment: {
-          src: emoji.src,
-          description: this._data.newComment.description,
-        },
-        // elementPosition: emoji,
-      });
-    }
-  }
-
-  _setInnerHandlers() {
-    this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._onEmojiClick);
-    this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._onDescriptionTextareaChange);
+    return createFilmDetailsTemplate(this._film);
   }
 
   _onCloseButtonClick() {
@@ -171,56 +97,6 @@ class FilmDetails extends SmartView {
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
-  }
-
-  _onWatchListClick() {
-    this._callback.watchListClick();
-  }
-
-  _onWatchedClick() {
-    this._callback.watchedClick();
-  }
-
-  _onFavoriteClick() {
-    this._callback.favoriteClick();
-  }
-
-  setOnWatchListClick(callback) {
-    this._callback.watchListClick = callback;
-    this.getElement().querySelector('.film-details__control-button--watchlist').addEventListener('click', this._onWatchListClick);
-  }
-
-  setOnWatchedClick(callback) {
-    this._callback.watchedClick = callback;
-    this.getElement().querySelector('.film-details__control-button--watched').addEventListener('click', this._onWatchedClick);
-  }
-
-  setOnFavoriteClick(callback) {
-    this._callback.favoriteClick = callback;
-    this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._onFavoriteClick);
-  }
-
-  static parseFilmToData(film) {
-    return Object.assign(
-      {},
-      film,
-      {
-        isEditCommentExist: false,
-        newComment: {
-          src: '',
-          description: '',
-        },
-      },
-    );
-  }
-
-  static parseDataToFilm(data) {
-    data = Object.assign({}, data);
-
-    delete data.isEditCommentExist;
-    delete data.newComment;
-
-    return data;
   }
 }
 
