@@ -1,4 +1,4 @@
-import {getReleaseDate} from '../utils/dates.js';
+import {getReleaseDate, getDuration} from '../utils/dates.js';
 import AbstractView from './abstract.js';
 // import SmartView from './smart.js';
 
@@ -55,7 +55,7 @@ const createFilmDetailsTemplate = (data) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${duration}</td>
+                  <td class="film-details__cell">${getDuration(duration)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>

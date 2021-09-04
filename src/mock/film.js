@@ -92,7 +92,7 @@ const generateAuthor = () => {
   return getRandomArrayItem(AUTHORS);
 };
 
-const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)} `;
+const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)}`;
 
 const generateComments = (count) => new Array(count).fill().map(() => ({
   text: generateText(),
@@ -110,7 +110,7 @@ const generateFilm = () => ({
   comments: generateComments(getRandomInteger(MIN_COMMENTS_COUNT, MAX_COMMENTS_COUNT)),
   rating: getRandomFloat(0, 10, 1),
   release: generateDate(),
-  duration: `${getRandomInteger(0, 2)}h ${getRandomInteger(0, 59)}m`, //?число (минуты)
+  duration: getRandomInteger(0, 220),
   genres: generateGenres(getRandomInteger(1, 3)),
   director:	'Anthony Mann', //?массив
   writers:	'Anne Wigton, Heinz Herald, Richard Weil', //?массив
