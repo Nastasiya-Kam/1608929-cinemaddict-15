@@ -1,4 +1,4 @@
-import {getCardDate} from '../utils/dates.js';
+import {getFormattedCardDate} from '../utils/dates.js';
 import {getShortDescription} from '../utils/films.js';
 import AbstractView from './abstract.js';
 
@@ -10,7 +10,7 @@ const createCardFilmTemplate = (data) => {
       <h3 class="film-card__title">${name}</h3>
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${getCardDate(release)}</span>
+        <span class="film-card__year">${getFormattedCardDate(release)}</span>
         <span class="film-card__duration">${duration}</span>
         <span class="film-card__genre">${genres[0]}</span>
       </p>

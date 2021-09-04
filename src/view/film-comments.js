@@ -1,4 +1,4 @@
-import {getCommentDate} from '../utils/dates.js';
+import {getFormattedCommentDate} from '../utils/dates.js';
 import {EMOJI} from '../const.js';
 import SmartView from './smart.js';
 
@@ -12,7 +12,7 @@ const createComments = (comments) => comments
         <p class="film-details__comment-text">${text}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
-          <span class="film-details__comment-day">${getCommentDate(date)}</span>
+          <span class="film-details__comment-day">${getFormattedCommentDate(date)}</span>
           <button class="film-details__comment-delete">Delete</button>
         </p>
       </div>

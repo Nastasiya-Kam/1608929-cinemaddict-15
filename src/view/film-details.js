@@ -1,4 +1,5 @@
-import {getReleaseDate, getDuration} from '../utils/dates.js';
+import {getFormattedReleaseDate} from '../utils/dates.js';
+import {getDuration} from '../utils/films.js';
 import AbstractView from './abstract.js';
 
 const createGenresTemplate = (genres) => genres
@@ -49,7 +50,7 @@ const createFilmDetailsTemplate = (film) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${getReleaseDate(release)}</td>
+                  <td class="film-details__cell">${getFormattedReleaseDate(release)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
