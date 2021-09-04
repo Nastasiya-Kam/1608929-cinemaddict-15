@@ -1,14 +1,12 @@
 import {getReleaseDate, getDuration} from '../utils/dates.js';
 import AbstractView from './abstract.js';
-// import SmartView from './smart.js';
 
 const createGenresTemplate = (genres) => genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
   .join('');
 
-const createFilmDetailsTemplate = (data) => {
-  const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description} = data;
-  const releaseDate = getReleaseDate(release);
+const createFilmDetailsTemplate = (film) => {
+  const {img, age, name, original, rating, director, writers, actors, release, duration, country, genres, description} = film;
 
   return (
     `<section class="film-details">
@@ -51,7 +49,7 @@ const createFilmDetailsTemplate = (data) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${releaseDate}</td>
+                  <td class="film-details__cell">${getReleaseDate(release)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
@@ -97,6 +95,14 @@ class FilmDetails extends AbstractView {
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
+  }
+
+  getTopContainer() {
+    return this.getElement().querySelector('.film-details__top-container');
+  }
+
+  getBottomContainer() {
+    return this.getElement().querySelector('.film-details__bottom-container');
   }
 }
 

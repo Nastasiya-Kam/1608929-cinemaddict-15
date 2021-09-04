@@ -50,7 +50,7 @@ class FilmDetails {
 
     this._controlsComponent = new ControlsView({isWatchList, isWatched, isFavorite});
 
-    render(this._filmDetailsComponent.getElement().querySelector('.film-details__top-container'), this._controlsComponent);
+    render(this._filmDetailsComponent.getTopContainer(), this._controlsComponent);
 
     this._controlsComponent.setOnWatchListClick(() => this._handleWatchListClick(film));
     this._controlsComponent.setOnWatchedClick(() => this._handleWatchedClick(film));
@@ -67,7 +67,7 @@ class FilmDetails {
     this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
 
     render(site, this._filmDetailsComponent);
-    render(this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container'), this._filmCommentsComponent);
+    render(this._filmDetailsComponent.getBottomContainer(), this._filmCommentsComponent);
     this.renderControls(this._film);
 
     this._isOpen = true;
