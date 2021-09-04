@@ -19,12 +19,14 @@ const createComments = (comments) => comments
     </li>`)
   .join('');
 
-const createEmojiList = (emoji) => emoji.map((element) => (
-  `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${element}" value="${element}">
-  <label class="film-details__emoji-label" for="emoji-${element}">
-    <img src="./images/emoji/${element}.png" width="30" height="30" alt="emoji">
-  </label>`
-));
+const createEmojiList = (emoji) => emoji
+  .map((element) => (
+    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${element}" value="${element}">
+    <label class="film-details__emoji-label" for="emoji-${element}">
+      <img src="./images/emoji/${element}.png" width="30" height="30" alt="emoji">
+    </label>`
+  ))
+  .join('');
 
 const createFilmCommentsTemplate = (comments, data) => (
   `<section class="film-details__comments-wrap">

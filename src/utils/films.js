@@ -1,3 +1,5 @@
+const MAX_LENGTH_DESCRIPTION = 140;
+
 const getNumberFilms = (films) => films.length;
 
 const ListType = {
@@ -20,5 +22,8 @@ const getUpdatedFilm = (film, setting) => (Object.assign(
   },
 ));
 
+const getShortDescription = (text) => (text.length > MAX_LENGTH_DESCRIPTION)
+  ? `${text.slice(0, MAX_LENGTH_DESCRIPTION - 1).trim()}...`
+  : text;
 
-export {getNumberFilms, ListType, Settings, getUpdatedFilm};
+export {getNumberFilms, ListType, Settings, getUpdatedFilm, getShortDescription};
