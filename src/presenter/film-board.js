@@ -5,7 +5,6 @@ import FilmsView from '../view/films.js';
 import FilmsListView from '../view/films-list.js';
 import ShowMoreView from '../view/show-more.js';
 
-import {updateItem} from '../utils/common.js';
 import {render, remove, RenderPosition} from '../utils/dom.js';
 import {ListType} from '../utils/films.js';
 
@@ -18,7 +17,8 @@ const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
 
 class FilmsBoard {
-  constructor(filmsContainer) {
+  constructor(filmsContainer, filmsModel) {
+    this._filmsModel = filmsModel;
     this._filmsContainer = filmsContainer;
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     this._filmPresenter = new Map();
@@ -45,12 +45,7 @@ class FilmsBoard {
     this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleModeChange);
   }
 
-  init(films) {
-    this._films = films.slice();
-    this._sourcedFilms = films.slice();
-    this._mostCommentedFilms = films.slice().sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
-    this._topRatedFilms = films.slice().sort(compareRating).slice(0, EXTRA_FILM_COUNT);
-
+  init() {
     this._renderSort();
     this._renderSiteMenu();
 
@@ -59,19 +54,23 @@ class FilmsBoard {
     this._renderFilmsBoard();
   }
 
-  _sortFilms(sortType) {
-    switch (sortType) {
+  _getFilms() {
+    switch (this._currentSortType) {
       case SortType.DATE:
-        this._films.sort(sortDate);
-        break;
+        return this._filmsModel.films.slice().sort(sortDate);
       case SortType.RATING:
-        this._films.sort(compareRating);
-        break;
-      default:
-        this._films = this._sourcedFilms.slice();
+        return this._filmsModel.films.slice().sort(compareRating);
     }
 
-    this._currentSortType = sortType;
+    return this._filmsModel.films;
+  }
+
+  _getTopRatedFilms() {
+    return this._getFilms().sort(compareRating).slice(0, EXTRA_FILM_COUNT);
+  }
+
+  _getMostCommentedFilms() {
+    return this._getFilms().sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
   }
 
   _handleSortTypeChange(sortType) {
@@ -79,7 +78,7 @@ class FilmsBoard {
       return;
     }
 
-    this._sortFilms(sortType);
+    this._currentSortType = sortType;
     this._clearFilmList();
 
     remove(this._sortComponent);
@@ -93,7 +92,7 @@ class FilmsBoard {
   }
 
   _renderSiteMenu() {
-    const filter = generateFilter(this._films);
+    const filter = generateFilter(this._getFilms());
     this._siteMenuComponent = new SiteMenuView(filter);
 
     render(this._filmsContainer, this._siteMenuComponent, RenderPosition.AFTERBEGIN);
@@ -112,11 +111,7 @@ class FilmsBoard {
   }
 
   _handleFilmChange(updatedFilm) {
-    this._films = updateItem(this._films, updatedFilm);
-    this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
-    this._mostCommentedFilms = updateItem(this._mostCommentedFilms, updatedFilm);
-    this._topRatedFilms = updateItem(this._topRatedFilms, updatedFilm);
-
+    // todo Вызов обновления модели
     this._getFilmPresenters().map((presenter) => {
       if (presenter.has(updatedFilm.id)) {
         presenter.get(updatedFilm.id).init(updatedFilm);
@@ -160,33 +155,35 @@ class FilmsBoard {
   }
 
   _renderMainFilmsList() {
+    const filmCount = this._getFilms().length;
+    const films = this._getFilms().slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP));
+
     if (this._mainFilmsListComponent === null) {
       this._mainFilmsListComponent = new FilmsListView(ListType.MAIN.title, ListType.MAIN.isExtraList);
     }
 
-    for (let i = 0; i < Math.min(this._films.length, this._renderedFilmCount); i ++) {
-      this._renderFilm(this._mainFilmsListComponent.getContainer(), this._films[i], this._filmPresenter);
-    }
+    this._renderFilms(this._mainFilmsListComponent, films);
 
     render(this._filmsComponent, this._mainFilmsListComponent, RenderPosition.AFTERBEGIN);
 
-    if (this._films.length > this._renderedFilmCount) {
+    if (filmCount > FILM_COUNT_PER_STEP) {
       this._renderShowMore();
     }
   }
 
-  _renderFilms(container, from, to) {
-    this._films
-      .slice(from, to)
-      .forEach((film) => this._renderFilm(container.getContainer(), film, this._filmPresenter));
+  _renderFilms(container, films, presenter = this._filmPresenter) {
+    films.forEach((film) => this._renderFilm(container.getContainer(), film, presenter));
   }
 
   _handleShowMoreClick() {
-    this._renderFilms(this._mainFilmsListComponent, this._renderedFilmCount, this._renderedFilmCount + FILM_COUNT_PER_STEP);
+    const filmCount = this._getFilms().length;
+    const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmCount + FILM_COUNT_PER_STEP);
+    const films = this._getFilms().slice(this._renderedFilmCount, newRenderedFilmCount);
 
-    this._renderedFilmCount += FILM_COUNT_PER_STEP;
+    this._renderFilms(this._mainFilmsListComponent, films);
+    this._renderedFilmCount = newRenderedFilmCount;
 
-    if (this._renderedFilmCount >= this._films.length) {
+    if (this._renderedFilmCount >= filmCount) {
       remove(this._showMoreComponent);
     }
   }
@@ -206,14 +203,22 @@ class FilmsBoard {
   }
 
   // todo соединить отрисовку одинаковых списков?
+  // _renderExtraFilmsList(component, type, films, presenter) {
+  //   if (component === null) {
+  //     component = new FilmsListView(type.TOP.title, type.TOP.isExtraList);
+  //   }
+
+  //   this._renderFilms(component, films, presenter);
+
+  //   render(this._filmsComponent, component);
+  // }
+
   _renderTopRated() {
     if (this._topRatedComponent === null) {
       this._topRatedComponent = new FilmsListView(ListType.TOP.title, ListType.TOP.isExtraList);
     }
 
-    for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-      this._renderFilm(this._topRatedComponent.getContainer(), this._topRatedFilms[i], this._filmTopPresenter);
-    }
+    this._renderFilms(this._topRatedComponent, this._getTopRatedFilms(), this._filmTopPresenter);
 
     render(this._filmsComponent, this._topRatedComponent);
   }
@@ -223,26 +228,26 @@ class FilmsBoard {
       this._mostCommentedComponent = new FilmsListView(ListType.MOST_COMMENTED.title, ListType.MOST_COMMENTED.isExtraList);
     }
 
-    for (let i = 0; i < EXTRA_FILM_COUNT; i ++) {
-      this._renderFilm(this._mostCommentedComponent.getContainer(), this._mostCommentedFilms[i], this._filmMostCommentedPresenter);
-    }
+    this._renderFilms(this._mostCommentedComponent, this._getMostCommentedFilms(), this._filmMostCommentedPresenter);
 
     render(this._filmsComponent, this._mostCommentedComponent);
   }
 
   _renderFilmsBoard() {
-    if (this._films.length === 0) {
+    const filmCount = this._getFilms().length;
+
+    if (filmCount === 0) {
       this._renderNoFilms; // todo Значение отображаемого текста зависит от выбранного фильтра
       return;
     }
 
     this._renderMainFilmsList();
 
-    if (!this._films.every(this._checkZeroRating)) {
+    if (!this._getFilms().every(this._checkZeroRating)) {
       this._renderTopRated();
     }
 
-    if (!this._films.every(this._checkZeroComments)) {
+    if (!this._getFilms().every(this._checkZeroComments)) {
       this._renderMostCommented();
     }
   }

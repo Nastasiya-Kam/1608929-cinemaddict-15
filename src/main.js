@@ -5,12 +5,16 @@ import {getRating} from './utils/users.js';
 import {getNumberFilms} from './utils/films.js';
 import {render} from './utils/dom.js';
 import FilmBoardPresenter from './presenter/film-board.js';
+import FilmModel from './model/films.js';
 
 const FILM_DEVELOPER_COUNT = 22;
 
 const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
 const numberFilms = getNumberFilms(films);
 const rating = getRating(films);
+
+const filmModel = new FilmModel();
+filmModel.films = films;
 
 const site = document.body;
 const siteHeader = site.querySelector('.header');
@@ -21,6 +25,6 @@ render(siteHeader, new ProfileView(rating));
 
 render(footerStatistics, new StatisticsView(numberFilms));
 
-const filmBoardPresenter = new FilmBoardPresenter(siteMain);
+const filmBoardPresenter = new FilmBoardPresenter(siteMain, filmModel);
 
-filmBoardPresenter.init(films);
+filmBoardPresenter.init();
