@@ -95,6 +95,7 @@ const generateAuthor = () => {
 const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)}`;
 
 const generateComments = (count) => new Array(count).fill().map(() => ({
+  id: nanoid(),
   text: generateText(),
   emoji: generateEmoji(),
   author: generateAuthor(),
