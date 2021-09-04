@@ -36,6 +36,7 @@ const createElement = (template) => {
 };
 
 const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+const isCtrlEnterEvent = (evt) => evt.keyCode === 13 && evt.ctrlKey;
 
 // Функция из интернета по удалению элемента
 // https://github.com/htmlacademy-ecmascript/taskmanager-15/blob/master/src/utils/render.js
@@ -69,4 +70,4 @@ const replace = (newChild, oldChild) => {
 };
 
 
-export {RenderPosition, render, createElement, isEscEvent, remove, replace};
+export {RenderPosition, render, createElement, isEscEvent, isCtrlEnterEvent, remove, replace};

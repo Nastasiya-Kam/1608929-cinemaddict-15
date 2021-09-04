@@ -89,6 +89,14 @@ class FilmDetails extends AbstractView {
     return createFilmDetailsTemplate(this._film);
   }
 
+  getTopContainer() {
+    return this.getElement().querySelector('.film-details__top-container');
+  }
+
+  getBottomContainer() {
+    return this.getElement().querySelector('.film-details__bottom-container');
+  }
+
   _onCloseButtonClick() {
     this._callback.closeButtonClick();
   }
@@ -96,14 +104,6 @@ class FilmDetails extends AbstractView {
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
-  }
-
-  getTopContainer() {
-    return this.getElement().querySelector('.film-details__top-container');
-  }
-
-  getBottomContainer() {
-    return this.getElement().querySelector('.film-details__bottom-container');
   }
 }
 

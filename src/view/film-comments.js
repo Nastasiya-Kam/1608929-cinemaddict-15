@@ -1,4 +1,5 @@
 import {getFormattedCommentDate} from '../utils/dates.js';
+import {isCtrlEnterEvent} from '../utils/dom.js';
 import {EMOJI} from '../const.js';
 import SmartView from './smart.js';
 
@@ -35,7 +36,7 @@ const createFilmCommentsTemplate = (comments, data) => (
     <ul class="film-details__comments-list">${createComments(comments)}</ul>
 
     <div class="film-details__new-comment">
-      <div class="film-details__add-emoji-label">${(!data.isEmpty) ? `<img src="${data.emotion}" width="55" height="55" alt="emoji"></img>` : ''}</div>
+      <div class="film-details__add-emoji-label">${(!data.emotion === null) ? `<img src="${data.emotion}" width="55" height="55" alt="emoji"></img>` : ''}</div>
 
       <label class="film-details__comment-label">
         <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${data.comment}</textarea>
@@ -53,28 +54,18 @@ class FilmComments extends SmartView {
     this._comments = comments;
     this._data = {
       comment: '',
-      emotion: '',
-      isEmpty: true,
+      emotion: null,
     };
 
-    this._onFormSubmit = this._onFormSubmit.bind(this);
     this._onDescriptionTextareaChange = this._onDescriptionTextareaChange.bind(this);
     this._onEmojiClick = this._onEmojiClick.bind(this);
+    this._onCommentSubmit = this._onCommentSubmit.bind(this);
+    this._onCommentDelete = this._onCommentDelete.bind(this);
     this._setInnerHandlers();
   }
 
   getTemplate() {
     return createFilmCommentsTemplate(this._comments, this._data);
-  }
-
-  _onFormSubmit(evt) {
-    evt.preventDefault();
-    this._callback.formSubmit(this._data);
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement().querySelector('form').addEventListener('keydown', this._onFormSubmit);
   }
 
   restoreHandlers() {
@@ -89,7 +80,6 @@ class FilmComments extends SmartView {
   _onDescriptionTextareaChange(evt) {
     evt.preventDefault();
     this.updateData({
-      isEmpty: false,
       comment: evt.target.value,
     }, true);
   }
@@ -101,10 +91,33 @@ class FilmComments extends SmartView {
 
     if (evt.target.tagName === 'IMG') {
       this.updateData({
-        isEmpty: false,
         emotion: evt.target.src,
       });
     }
+  }
+
+  _onCommentSubmit(evt) {
+    if(isCtrlEnterEvent(evt)){
+      evt.preventDefault();
+      this._callback.commentSubmit(this._data);
+    }
+  }
+
+  setOnCommentSubmit(callback) {
+    this._callback.commentSubmit = callback;
+    this.getElement().querySelector('textarea').addEventListener('keydown', this._onCommentSubmit);
+  }
+
+  _onCommentDelete(evt) {
+    if (evt.target.tagName === 'BUTTON') {
+      evt.preventDefault();
+      this._callback.commentDelete(this._data);
+    }
+  }
+
+  setOnCommentDelete(callback) {
+    this._callback.commentDelete = callback;
+    this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._onCommentDelete);
   }
 }
 
