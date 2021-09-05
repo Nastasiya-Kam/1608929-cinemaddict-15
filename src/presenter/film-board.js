@@ -251,7 +251,7 @@ class FilmsBoard {
 
     this._renderProfile();
     if (filmCount === 0) {
-      this._renderNoFilms; // todo Значение отображаемого текста зависит от выбранного фильтра
+      this._renderNoFilms(); // todo Значение отображаемого текста зависит от выбранного фильтра
       return;
     }
 
