@@ -41,6 +41,10 @@ const isCtrlEnterEvent = (evt) => evt.keyCode === 13 && evt.ctrlKey;
 // Функция из интернета по удалению элемента
 // https://github.com/htmlacademy-ecmascript/taskmanager-15/blob/master/src/utils/render.js
 const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
   if (!(component instanceof Abstract)) {
     throw new Error('Can remove only components');
   }
