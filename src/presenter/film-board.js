@@ -4,6 +4,9 @@ import NoFilmsView from '../view/no-films.js';
 import FilmsView from '../view/films.js';
 import FilmsListView from '../view/films-list.js';
 import ShowMoreView from '../view/show-more.js';
+import ProfileView from '../view/profile.js';
+
+import CommentsModel from '../model/comments.js';
 
 import {render, remove, RenderPosition} from '../utils/dom.js';
 import {ListType} from '../utils/films.js';
@@ -17,9 +20,11 @@ const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
 
 class FilmsBoard {
-  constructor(filmsContainer, filmsModel) {
-    this._filmsModel = filmsModel;
+  constructor(filmsContainer, headerContainer, filmsModel) {
     this._filmsContainer = filmsContainer;
+    this._headerContainer = headerContainer;
+    this._filmsModel = filmsModel;
+
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     this._filmPresenter = new Map();
     this._filmTopPresenter = new Map();
@@ -27,6 +32,7 @@ class FilmsBoard {
 
     this._currentSortType = SortType.DEFAULT;
 
+    this._profileComponent = null;
     this._mainFilmsListComponent = null;
     this._mostCommentedComponent = null;
     this._topRatedComponent = null;
@@ -150,7 +156,7 @@ class FilmsBoard {
         presenter.clear();
       });
 
-    this._renderedFilmCount = FILM_COUNT_PER_STEP;
+    remove(this._profileComponent);
     remove(this._showMoreComponent);
   }
 
@@ -233,9 +239,17 @@ class FilmsBoard {
     render(this._filmsComponent, this._mostCommentedComponent);
   }
 
+  _renderProfile() {
+    const rating = generateFilter(this._getFilms()).watched;
+    this._profileComponent = new ProfileView(rating);
+
+    render(this._headerContainer, this._profileComponent);
+  }
+
   _renderFilmsBoard() {
     const filmCount = this._getFilms().length;
 
+    this._renderProfile();
     if (filmCount === 0) {
       this._renderNoFilms; // todo Значение отображаемого текста зависит от выбранного фильтра
       return;
