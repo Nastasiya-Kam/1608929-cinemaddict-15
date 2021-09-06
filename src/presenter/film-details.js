@@ -1,3 +1,8 @@
+// Временная замена сервера по генерации случайной даты и случайного id
+import {nanoid} from 'nanoid';
+import {getRandomInteger} from '../utils/common.js';
+const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)}`;
+
 import FilmDetailsView from '../view/film-details.js';
 
 import CommentsWrapView from '../view/comments/comments-wrap.js';
@@ -172,10 +177,20 @@ class FilmDetails {
     this._isOpen = false;
   }
 
+  _getUpdatedComment(properties) {
+    return {
+      id: nanoid(),
+      author: 'Ilya O\'Reilly',
+      text: properties.comment,
+      date: generateDate(),
+      emoji: properties.emotion,
+    };
+  }
+
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update);
+        this._commentsModel.addComment(updateType, this._getUpdatedComment(update));
         break;
       case UserAction.DELETE_COMMENT:
         this._commentsModel.deleteComment(updateType, update);

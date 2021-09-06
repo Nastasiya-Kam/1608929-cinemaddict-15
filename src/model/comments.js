@@ -1,10 +1,5 @@
 import AbstractObserver from '../utils/abstract-observer.js';
 
-// Временная замена сервера по генерации случайной даты и случайного id
-import {nanoid} from 'nanoid';
-import {getRandomInteger} from '../utils/common.js';
-const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)}`;
-
 class Comments extends AbstractObserver {
   constructor() {
     super();
@@ -19,26 +14,13 @@ class Comments extends AbstractObserver {
     return this._comments;
   }
 
-  _getComment(newComment) {
-    return {
-      id: nanoid(),
-      author: 'Ilya O\'Reilly',
-      text: newComment.comment,
-      date: generateDate(),
-      emoji: newComment.emotion,
-    };
-  }
-
   addComment(updateType, update) {
-    const comment = this._getComment(update);
-
     this._comments = [
       ...this._comments,
-      comment,
+      update,
     ];
 
-    // ?ВОПРОС: мы же можем на входе принять одно изменение, а вернуть другое?
-    this._notify(updateType, this._comments);
+    this._notify(updateType, update);
   }
 
   deleteComment(updateType, update) {
