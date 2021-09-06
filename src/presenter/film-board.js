@@ -1,10 +1,8 @@
-import SiteMenuView from '../view/site-menu.js';
 import SortView from '../view/sort.js';
 import NoFilmsView from '../view/no-films.js';
 import FilmsView from '../view/films.js';
 import FilmsListView from '../view/films-list.js';
 import ShowMoreView from '../view/show-more.js';
-import ProfileView from '../view/profile.js';
 
 import {render, remove, RenderPosition} from '../utils/dom.js';
 import {ListType} from '../utils/films.js';
@@ -12,7 +10,7 @@ import {ListType} from '../utils/films.js';
 import FilmPresenter from './film.js';
 import FilmDetailsPresenter from './film-details.js';
 import {SortType, UpdateType, UserAction} from '../const.js';
-import {sortDate, compareRating, compareCommentsAmount, generateFilter} from '../utils/filter.js';
+import {sortDate, compareRating, compareCommentsAmount} from '../utils/filter.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
@@ -30,26 +28,25 @@ class FilmsBoard {
 
     this._currentSortType = SortType.DEFAULT;
 
-    this._profileComponent = null;
     this._mainFilmsListComponent = null;
     this._mostCommentedComponent = null;
     this._topRatedComponent = null;
     this._sortComponent = null;
-    this._siteMenuComponent = null;
     this._showMoreComponent = null;
 
     this._filmsComponent = new FilmsView();
     this._noFilmsComponent = new NoFilmsView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-    this._handleViewAction = this._handleViewAction.bind(this);
-    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
     this._openDetails = this._openDetails.bind(this);
 
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
+
     this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction, commentsModel);
 
-    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
   }
 
   init() {
@@ -88,13 +85,6 @@ class FilmsBoard {
     this._renderFilmsBoard();
   }
 
-  _renderSiteMenu() {
-    const filter = generateFilter(this._getFilms());
-    this._siteMenuComponent = new SiteMenuView(filter);
-
-    render(this._filmsContainer, this._siteMenuComponent, RenderPosition.AFTERBEGIN);
-  }
-
   _renderSort() {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
@@ -120,7 +110,7 @@ class FilmsBoard {
     }
   }
 
-  _handleModelEvent(updateType, data) {
+  _handleFilmModelEvent(updateType, data) {
     // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.FAVORITE_WATCHLIST:
@@ -132,8 +122,6 @@ class FilmsBoard {
         });
 
         // - обновить фильтры
-        remove(this._siteMenuComponent);
-        this._renderSiteMenu();
 
         if (this._filmDetailsPresenter.isOpened()) {
           this._filmDetailsPresenter.renderControls(data);
@@ -150,11 +138,7 @@ class FilmsBoard {
         });
 
         // - обновить фильтр
-        remove(this._siteMenuComponent);
         // - обновить рейтинг пользователя
-        remove(this._profileComponent);
-        this._renderSiteMenu();
-        this._renderProfile();
 
         if (this._filmDetailsPresenter.isOpened()) {
           this._filmDetailsPresenter.renderControls(data);
@@ -216,8 +200,6 @@ class FilmsBoard {
         presenter.clear();
       });
 
-    remove(this._profileComponent);
-    remove(this._siteMenuComponent);
     remove(this._sortComponent);
     remove(this._noFilmsComponent);
     remove(this._showMoreComponent);
@@ -321,19 +303,10 @@ class FilmsBoard {
     render(this._filmsComponent, this._mostCommentedComponent);
   }
 
-  _renderProfile() {
-    const rating = generateFilter(this._getFilms()).watched;
-    this._profileComponent = new ProfileView(rating);
-
-    render(this._headerContainer, this._profileComponent);
-  }
-
   _renderFilmsBoard() {
     const filmCount = this._getFilms().length;
 
-    this._renderProfile();
     this._renderSort();
-    this._renderSiteMenu();
 
     if (filmCount === 0) {
       this._renderNoFilms(); // todo Значение отображаемого текста зависит от выбранного фильтра
