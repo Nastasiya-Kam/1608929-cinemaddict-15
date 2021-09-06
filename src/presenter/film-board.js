@@ -18,7 +18,7 @@ const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
 
 class FilmsBoard {
-  constructor(filmsContainer, headerContainer, filmsModel) {
+  constructor(filmsContainer, headerContainer, filmsModel, commentsModel) {
     this._filmsContainer = filmsContainer;
     this._headerContainer = headerContainer;
     this._filmsModel = filmsModel;
@@ -47,7 +47,7 @@ class FilmsBoard {
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
     this._openDetails = this._openDetails.bind(this);
 
-    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction);
+    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction, commentsModel);
 
     this._filmsModel.addObserver(this._handleModelEvent);
   }

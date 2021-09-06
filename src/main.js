@@ -4,6 +4,7 @@ import {getNumberFilms} from './utils/films.js';
 import {render} from './utils/dom.js';
 import FilmBoardPresenter from './presenter/film-board.js';
 import FilmsModel from './model/films.js';
+import CommentsModel from './model/comments.js';
 
 const FILM_DEVELOPER_COUNT = 22;
 
@@ -13,12 +14,14 @@ const numberFilms = getNumberFilms(films);
 const filmModel = new FilmsModel();
 filmModel.films = films;
 
+const commentsModel = new CommentsModel();
+
 const site = document.body;
 const siteHeader = site.querySelector('.header');
 const siteMain = site.querySelector('.main');
 const footerStatistics = site.querySelector('.footer__statistics');
 
-const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmModel);
+const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmModel, commentsModel);
 
 render(footerStatistics, new StatisticsView(numberFilms));
 

@@ -6,11 +6,11 @@ class Comments extends AbstractObserver {
     this._comments = [];
   }
 
-  set comments(comments) {
+  setСomments(comments) {
     this._comments = comments.slice();
   }
 
-  get comments() {
+  getСomments() {
     return this._comments;
   }
 

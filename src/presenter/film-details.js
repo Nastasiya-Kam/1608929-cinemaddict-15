@@ -16,8 +16,6 @@ import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
 import {Settings, getUpdatedFilm} from '../utils/films.js';
 import {UserAction, UpdateType} from '../const.js';
 
-import CommentsModel from '../model/comments.js';
-
 const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
@@ -25,8 +23,6 @@ class FilmDetails {
     this._changeData = changeData;
     this._commentsModel = commentsModel;
     this._isOpen = false;
-
-    this._commentsModel = new CommentsModel();
 
     this._commentsPresenter = new Map();
 
@@ -54,7 +50,7 @@ class FilmDetails {
 
   init(film) {
     this._film = film;
-    this._commentsModel.comments = this._film.comments;
+    this._commentsModel.setСomments(this._film.comments);
 
     if (this._isOpen) {
       this._close();
@@ -64,7 +60,7 @@ class FilmDetails {
   }
 
   _getComments() {
-    return this._commentsModel.comments;
+    return this._commentsModel.getСomments();
   }
 
   isOpened() {
