@@ -1,7 +1,13 @@
 import FilmDetailsView from '../view/film-details.js';
-import FilmCommentsView from '../view/film-comments.js';
+
+import CommentsWrapView from '../view/comments/comments-wrap.js';
+import CommentsListTitleView from '../view/comments/comments-list-title.js';
+import CommentsListView from '../view/comments/comments-list.js';
+import CommentView from '../view/comments/comment.js';
+import CommentNewView from '../view/comments/comment-new.js';
+
 import ControlsView from '../view/controls.js';
-import {render, isEscEvent, remove} from '../utils/dom.js';
+import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
 import {Settings, getUpdatedFilm} from '../utils/films.js';
 import {UserAction, UpdateType} from '../const.js';
 
@@ -10,13 +16,15 @@ import CommentsModel from '../model/comments.js';
 const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
-  constructor(changeData) {
+  constructor(changeData, commentsModel) {
     this._changeData = changeData;
+    this._commentsModel = commentsModel;
     this._isOpen = false;
 
     this._commentsModel = new CommentsModel();
 
-    this._filmCommentsComponent = null;
+    this._commentsPresenter = new Map();
+
     this._controlsComponent = null;
 
     this._commentsWrapComponent = new CommentsWrapView(); //не будем удалять и переопределять. Обёртка для списка, загаловка и нового комментария
@@ -34,19 +42,24 @@ class FilmDetails {
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
     this._handleCommentDelete = this._handleCommentDelete.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
-    // this._handleModelEvent = this._handleModelEvent.bing(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
 
     this._commentsModel.addObserver(this._handleModelEvent);
   }
 
   init(film) {
     this._film = film;
+    this._commentsModel.comments = this._film.comments;
 
     if (this._isOpen) {
       this._close();
     }
 
     this._open();
+  }
+
+  _getComments() {
+    return this._commentsModel.comments;
   }
 
   isOpened() {
@@ -159,23 +172,65 @@ class FilmDetails {
     this._isOpen = false;
   }
 
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.ADD_COMMENT:
+        this._commentsModel.addComment(updateType, update);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this._commentsModel.deleteComment(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.MINOR:
+        // - действие при удалении комментария
+        this._renderComments();
+
+        // передаём кол-во комментариев бордеру фильмов
+        this._film.comments = data;
+        this._changeData(
+          UserAction.UPDATE_COMMENTS,
+          UpdateType.MINOR,
+          this._film,
+        );
+        break;
+      case UpdateType.MAJOR:
+        // - действие при добавлении комментария
+        this._renderComments();
+        this._renderCommentNew();
+
+        // передаём кол-во комментариев бордеру фильмов
+        this._film.comments = data;
+        this._changeData(
+          UserAction.UPDATE_COMMENTS,
+          UpdateType.MINOR,
+          this._film,
+        );
+        break;
+
+    }
+  }
+
   _handleWatchListClick(film) {
     this._changeData(
-      UserAction.UPDATE_FILM,
+      UserAction.UPDATE_CONTROLS,
       UpdateType.FAVORITE_WATCHLIST,
       getUpdatedFilm(film, Settings.WATCH_LIST));
   }
 
   _handleWatchedClick(film) {
     this._changeData(
-      UserAction.UPDATE_FILM,
+      UserAction.UPDATE_CONTROLS,
       UpdateType.WATCHED,
       getUpdatedFilm(film, Settings.WATCHED));
   }
 
   _handleFavoriteClick(film) {
     this._changeData(
-      UserAction.UPDATE_FILM,
+      UserAction.UPDATE_CONTROLS,
       UpdateType.FAVORITE_WATCHLIST,
       getUpdatedFilm(film, Settings.FAVORITE));
   }
@@ -191,23 +246,20 @@ class FilmDetails {
     }
   }
 
-  _handleCommentSubmit() {
-    // this._changeData(
-    //   UserAction.UPDATE_FILM,
-    //   UpdateType.MINOR,
-    //   comment,
-    // );
-
-    // ?добавили комментарий к списку комментариев
+  _handleCommentSubmit(newComment) {
+    this._handleViewAction(
+      UserAction.ADD_COMMENT,
+      UpdateType.MAJOR,
+      newComment,
+    );
   }
 
-  _handleCommentDelete() { //(comment)
-    //удалить комментарий, по которому был клик
-    // this._changeData(
-    //   UserAction.DELETE_TASK,
-    //   UpdateType.MINOR,
-    //   comment,
-    // );
+  _handleCommentDelete(comment) {
+    this._handleViewAction(
+      UserAction.DELETE_COMMENT,
+      UpdateType.MINOR,
+      comment,
+    );
   }
 }
 

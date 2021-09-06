@@ -6,8 +6,6 @@ import FilmsListView from '../view/films-list.js';
 import ShowMoreView from '../view/show-more.js';
 import ProfileView from '../view/profile.js';
 
-// import CommentsModel from '../model/comments.js';
-
 import {render, remove, RenderPosition} from '../utils/dom.js';
 import {ListType} from '../utils/films.js';
 
@@ -29,8 +27,6 @@ class FilmsBoard {
     this._filmPresenter = new Map();
     this._filmTopPresenter = new Map();
     this._filmMostCommentedPresenter = new Map();
-
-    // this._commentsModel = new CommentsModel();
 
     this._currentSortType = SortType.DEFAULT;
 
@@ -73,13 +69,6 @@ class FilmsBoard {
     return this._filmsModel.films;
   }
 
-  // ?Это здесь нужно, чтобы работал _handleViewAction?
-  // _getComments() {
-  //   this._commentsModel.comments = this._getFilms().comments;
-
-  //   return this._commentsModel.comments;
-  // }
-
   _getTopRatedFilms() {
     return this._getFilms().sort(compareRating).slice(0, EXTRA_FILM_COUNT);
   }
@@ -118,23 +107,16 @@ class FilmsBoard {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
     // update - обновленные данные
     switch (actionType) {
-      case UserAction.UPDATE_FILM:
+      case UserAction.UPDATE_CONTROLS:
         this._filmsModel.updateFilm(updateType, update);
-        if (this._filmDetailsPresenter.isOpened()) {
-          this._filmDetailsPresenter.renderControls(update);
-        }
         break;
-      // case UserAction.ADD_COMMENT:
-      //   this._commentsModel.addComment(updateType, update);
-      //   break;
-      // case UserAction.DELETE_COMMENT:
-      //   this._commentsModel.deleteComment(updateType, update);
-      //   break;
+      case UserAction.UPDATE_COMMENTS:
+        this._filmsModel.updateFilm(updateType, update);
+        break;
     }
   }
 
@@ -142,49 +124,63 @@ class FilmsBoard {
     // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.FAVORITE_WATCHLIST:
-        // - обновить карточки в трёх списках и фильтры (когда фильм добавили/убрали в избранное или буду смотреть)
+        // - обновить инфо о фильме
         this._getFilmPresenters().map((presenter) => {
           if (presenter.has(data.id)) {
             presenter.get(data.id).init(data);
           }
         });
 
+        // - обновить фильтры
         remove(this._siteMenuComponent);
         this._renderSiteMenu();
+
+        if (this._filmDetailsPresenter.isOpened()) {
+          this._filmDetailsPresenter.renderControls(data);
+        }
+
         break;
       case UpdateType.WATCHED:
         // Если пользователь добавил/удалил из просмотренного, то нужно
         // - обновить инфо о фильме
-        // - обновить фильтр
-        // - обновить рейтинг пользователя
         this._getFilmPresenters().map((presenter) => {
           if (presenter.has(data.id)) {
             presenter.get(data.id).init(data);
           }
         });
 
+        // - обновить фильтр
         remove(this._siteMenuComponent);
+        // - обновить рейтинг пользователя
         remove(this._profileComponent);
         this._renderSiteMenu();
         this._renderProfile();
+
+        if (this._filmDetailsPresenter.isOpened()) {
+          this._filmDetailsPresenter.renderControls(data);
+        }
+
         break;
       case UpdateType.MINOR:
-        // ?? ОТДЕЛЬНО ВЫНЕСТИ ADD_COMMENT, DELETE_COMMENT? возможно список most commented
-        // (например, когда удалили/добавили комментарий)
-        // перерисовать основной список
-        // если попап открыт, то и его перерисовать
-        // перерисовать список most commented
-        // перерисовать карточку в трёх местах
-
-        this._clearFilmsBoard();
-        this._renderFilmsBoard();
+        // - удалили/добавили комментарий
+        // - перерисовать карточку в трёх местах
+        this._getFilmPresenters().map((presenter) => {
+          if (presenter.has(data.id)) {
+            presenter.get(data.id).init(data);
+          }
+        });
+        // *если попап открыт, то и его перерисовать - перерисовка происходит в film-details
+        // - перерисовать список most commented
+        remove(this._mostCommentedComponent);
+        this._renderMostCommented();
         break;
       case UpdateType.MAJOR:
         // - обновить всю страницу фильмов
         // при смене фильтра (если фильтру соответствует больше 5 фильмов, то первые пять + кнопка)
         // ?ВОПРОС: в ТЗ не указано какое кол-во фильмов должно оставаться при сортировке
+
+        // при переключении с экрана с фильмами на экран статистики и  обратно сортировка сбрасывается до default
         // ?ВОПРОС: а что происходит с кол-вом показанных фильмов, всё схлопывается до 5?
-        // при переключении с экрана с фильмами на экран статистики и обратно сортировка сбрасывается до default
         this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilmsBoard();
         break;
