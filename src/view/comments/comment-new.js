@@ -27,7 +27,7 @@ class CommentNew extends SmartView {
   constructor() {
     super();
 
-    this._commentNew = {
+    this._data = {
       comment: '',
       emotion: null,
     };
@@ -39,7 +39,7 @@ class CommentNew extends SmartView {
   }
 
   getTemplate() {
-    return createCommentNewTemplate(this._commentNew);
+    return createCommentNewTemplate(this._data);
   }
 
   restoreHandlers() {
@@ -60,7 +60,7 @@ class CommentNew extends SmartView {
   }
 
   _onEmojiClick(evt) {
-    if (evt.target.value === this._commentNew.emotion) {
+    if (evt.target.value === this._data.emotion) {
       return;
     }
 
@@ -72,7 +72,7 @@ class CommentNew extends SmartView {
   _onCommentSubmit(evt) {
     if(isCtrlEnterEvent(evt)){
       evt.preventDefault();
-      this._callback.commentSubmit(this._commentNew);
+      this._callback.commentSubmit(this._data);
     }
   }
 
