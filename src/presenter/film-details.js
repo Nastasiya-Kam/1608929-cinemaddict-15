@@ -19,6 +19,11 @@ class FilmDetails {
     this._filmCommentsComponent = null;
     this._controlsComponent = null;
 
+    this._commentsWrapComponent = new CommentsWrapView(); //не будем удалять и переопределять. Обёртка для списка, загаловка и нового комментария
+    this._commentsListTitleComponent = null;
+    this._commentsListComponent = null;
+    this._commentNewComponent = null;
+
     this._open = this._open.bind(this);
     this._close = this._close.bind(this);
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
@@ -53,82 +58,96 @@ class FilmDetails {
   }
 
   renderControls(film) {
-    if (this._isOpen) {
+    if (this._controlsComponent !== null) {
       remove(this._controlsComponent);
     }
 
     const {isWatchList, isWatched, isFavorite} = film;
 
     this._controlsComponent = new ControlsView({isWatchList, isWatched, isFavorite});
-
-    render(this._filmDetailsComponent.getTopContainer(), this._controlsComponent);
-
     this._controlsComponent.setOnWatchListClick(() => this._handleWatchListClick(film));
     this._controlsComponent.setOnWatchedClick(() => this._handleWatchedClick(film));
     this._controlsComponent.setOnFavoriteClick(() => this._handleFavoriteClick(film));
+
+    render(this._filmDetailsComponent.getTopContainer(), this._controlsComponent);
   }
 
-  _getComments() {
-    this._commentsModel.comments = this._film.comments;
+  _renderComments() {
+    const comments = this._getComments();
+    const length = comments.length;
 
-    return this._commentsModel.comments;
+    this._renderCommentsList(comments);
+    this._renderCommentsTitle(length);
   }
 
-  _handleViewAction(actionType, updateType, update) {
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
-    switch (actionType) {
-      case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update);
-        break;
-      case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(updateType, update);
-        break;
+  _renderCommentsTitle(length) {
+    if (this._commentsListTitleComponent !== null) {
+      remove(this._commentsListTitleComponent);
     }
+
+    this._commentsListTitleComponent = new CommentsListTitleView(length);
+
+    render(this._commentsWrapComponent, this._commentsListTitleComponent, RenderPosition.AFTERBEGIN);
   }
 
-  // _handleModelEvent(updateType, data) {
-  //   В зависимости от типа изменений решаем, что делать:
-  // - действие при удалении комментария
-  // - действие при добавлении комментария
-  //   switch (updateType) {
-  //   case UpdateType.PATCH:
-  //     // - обновить часть списка (всех трёх) (например, когда удалили/добавили комментарий)
-  //     this._getFilmPresenters().map((presenter) => {
-  //       if (presenter.has(data.id)) {
-  //         presenter.get(data.id).init(data);
-  //       }
-  //     });
-  //     break;
-  //   case UpdateType.MINOR:
-  //     // - обновить список (например, когда фильм добавили в избранное, просмотренное или буду смотреть)
-  //     this._clearFilmsBoard();
-  //     this._renderFilmsBoard();
-  //     break;
-  //   case UpdateType.MAJOR:
-  //     // - обновить всю страницу фильмов (например, при переключении фильтра)
-  //     this._clearFilmsBoard({resetSortType: true});
-  //     this._renderFilmsBoard();
-  //     break;
-  //   }
+  _renderCommentsList(comments) {
+    if (this._commentsListComponent !== null) {
+      remove(this._commentsListComponent);
+      if (this._commentsPresenter) {
+        this._commentsPresenter.forEach((element) => element.destroy());
+        this._commentsPresenter.clear();
+      }
+    }
+
+    this._commentsListComponent = new CommentsListView(length);
+    render(this._commentsWrapComponent, this._commentsListComponent, RenderPosition.AFTERBEGIN);
+
+    comments.map((comment) => this._renderComment(comment));
+  }
+
+  _renderComment(comment) {
+    const commentPresenter = new CommentView(comment);
+    commentPresenter.setOnCommentDelete(this._handleCommentDelete);
+
+    this._commentsPresenter.set(comment.id, commentPresenter);
+
+    render(this._commentsListComponent, commentPresenter);
+  }
+
+  _renderCommentNew() {
+    if (this._commentNewComponent !== null) {
+      remove(this._commentNewComponent);
+    }
+
+    this._commentNewComponent = new CommentNewView();
+    this._commentNewComponent.setOnCommentSubmit(this._handleCommentSubmit);
+
+    render(this._commentsWrapComponent, this._commentNewComponent);
+  }
+
+  // _clearFilmDetails() {
+  //   this._commentsPresenter.forEach((element) => element.destroy());
+  //   this._commentsPresenter.clear();
+
+  //   remove(this._commentsListTitleComponent);
+  //   remove(this._commentsListComponent);
   // }
 
   _open() {
     this._filmDetailsComponent = new FilmDetailsView(this._film);
-    this._filmCommentsComponent = new FilmCommentsView(this._getComments());
+    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
 
     site.classList.add('hide-overflow');
     document.addEventListener('keydown', this._onEscKeydown);
 
-    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
-    this._filmCommentsComponent.setOnCommentSubmit(this._handleCommentSubmit);
-    this._filmCommentsComponent.setOnCommentDelete(this._handleCommentDelete);
-
     render(site, this._filmDetailsComponent);
-    render(this._filmDetailsComponent.getBottomContainer(), this._filmCommentsComponent);
+
     this.renderControls(this._film);
+
+    render(this._filmDetailsComponent.getBottomContainer(), this._commentsWrapComponent);
+
+    this._renderComments();
+    this._renderCommentNew();
 
     this._isOpen = true;
   }
