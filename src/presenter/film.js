@@ -45,21 +45,21 @@ class Film {
 
   _handleWatchListClick() {
     this._changeData(
-      UserAction.UPDATE_FILM,
+      UserAction.UPDATE_CONTROLS,
       UpdateType.FAVORITE_WATCHLIST,
       getUpdatedFilm(this._film, Settings.WATCH_LIST));
   }
 
   _handleWatchedClick() {
     this._changeData(
-      UserAction.UPDATE_FILM,
+      UserAction.UPDATE_CONTROLS,
       UpdateType.WATCHED,
       getUpdatedFilm(this._film, Settings.WATCHED));
   }
 
   _handleFavoriteClick() {
     this._changeData(
-      UserAction.UPDATE_FILM,
+      UserAction.UPDATE_CONTROLS,
       UpdateType.FAVORITE_WATCHLIST,
       getUpdatedFilm(this._film, Settings.FAVORITE));
   }
