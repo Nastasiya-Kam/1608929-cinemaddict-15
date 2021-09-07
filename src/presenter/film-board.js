@@ -75,11 +75,11 @@ class FilmsBoard {
   }
 
   _getTopRatedFilms() {
-    return this._getFilms().sort(compareRating).slice(0, EXTRA_FILM_COUNT);
+    return this._getFilms().slice().sort(compareRating).slice(0, EXTRA_FILM_COUNT);
   }
 
   _getMostCommentedFilms() {
-    return this._getFilms().sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
+    return this._getFilms().slice().sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
   }
 
   _handleSortTypeChange(sortType) {
