@@ -1,4 +1,5 @@
-import {getReleaseDate, getDuration} from '../utils/dates.js';
+import {getFormattedReleaseDate} from '../utils/dates.js';
+import {getDuration} from '../utils/films.js';
 import AbstractView from './abstract.js';
 
 const createGenresTemplate = (genres) => genres
@@ -49,7 +50,7 @@ const createFilmDetailsTemplate = (film) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${getReleaseDate(release)}</td>
+                  <td class="film-details__cell">${getFormattedReleaseDate(release)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
@@ -88,6 +89,14 @@ class FilmDetails extends AbstractView {
     return createFilmDetailsTemplate(this._film);
   }
 
+  getTopContainer() {
+    return this.getElement().querySelector('.film-details__top-container');
+  }
+
+  getBottomContainer() {
+    return this.getElement().querySelector('.film-details__bottom-container');
+  }
+
   _onCloseButtonClick() {
     this._callback.closeButtonClick();
   }
@@ -95,14 +104,6 @@ class FilmDetails extends AbstractView {
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
-  }
-
-  getTopContainer() {
-    return this.getElement().querySelector('.film-details__top-container');
-  }
-
-  getBottomContainer() {
-    return this.getElement().querySelector('.film-details__bottom-container');
   }
 }
 

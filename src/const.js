@@ -11,4 +11,21 @@ const SortType = {
   RATING: 'rating',
 };
 
-export {EMOJI, Mode, SortType};
+const UserAction = {
+  UPDATE_CONTROLS: 'UPDATE_CONTROLS',
+  UPDATE_COMMENTS: 'UPDATE_COMMENTS',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+const UpdateType = {
+  FAVORITE_WATCHLIST: 'FAVORITE_WATCHLIST',
+  WATCHED: 'WATCHED',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+  COMMENT_ADDED: 'COMMENT_ADDED',
+  COMMENT_DELETED: 'COMMENT_DELETED',
+  CHANGE_FILTER: 'CHANGE_FILTER',
+};
+
+export {EMOJI, Mode, SortType, UserAction, UpdateType};
