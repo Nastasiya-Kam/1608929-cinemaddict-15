@@ -6,6 +6,7 @@ import ShowMoreView from '../view/show-more.js';
 
 import {render, remove, RenderPosition} from '../utils/dom.js';
 import {ListType} from '../utils/films.js';
+import {FilterType, filter} from '../utils/filter.js';
 
 import FilmPresenter from './film.js';
 import FilmDetailsPresenter from './film-details.js';
@@ -16,12 +17,13 @@ const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
 
 class FilmsBoard {
-  constructor(filmsContainer, headerContainer, filmsModel, commentsModel, comments) {
+  constructor(filmsContainer, headerContainer, filmsModel, commentsModel, comments, filterModel) {
     this._filmsContainer = filmsContainer;
     this._headerContainer = headerContainer;
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
     this._comments = comments;
+    this._filterModel = filterModel;
 
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     this._filmPresenter = new Map();
@@ -49,6 +51,7 @@ class FilmsBoard {
     this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction, this._filmsModel, this._commentsModel, this._comments);
 
     this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._filterModel.addObserver(this._handleFilmModelEvent);
   }
 
   init() {
@@ -58,14 +61,18 @@ class FilmsBoard {
   }
 
   _getFilms() {
+    const filterType = this._filterModel.getFilter();
+    const films = this._filmsModel.films;
+    const filteredFilms = (filterType === FilterType.ALL) ? films : filter[filterType](films);
+
     switch (this._currentSortType) {
       case SortType.DATE:
-        return this._filmsModel.films.slice().sort(sortDate);
+        return filteredFilms.slice().sort(sortDate);
       case SortType.RATING:
-        return this._filmsModel.films.slice().sort(compareRating);
+        return filteredFilms.slice().sort(compareRating);
     }
 
-    return this._filmsModel.films;
+    return filteredFilms;
   }
 
   _getTopRatedFilms() {
@@ -83,8 +90,8 @@ class FilmsBoard {
 
     this._currentSortType = sortType;
 
-    this._clearFilmsBoard();
-    this._renderFilmsBoard();
+    this._clearFilmsBoard({resetRenderedFilmCount: true});
+    this._renderFilmsBoard({renderTopRated: false, renderMostCommented: false});
   }
 
   _renderSort() {
@@ -125,6 +132,11 @@ class FilmsBoard {
             presenter.get(data.id).init(data);
           }
         });
+        // если установлен фильтр, то необходимо перерисовать основной список
+        if (this._filterModel.getFilter() !== FilterType.ALL) {
+          this._clearFilmsBoard({resetRenderedFilmCount: false, resetSortType: true});
+          this._renderFilmsBoard({renderTopRated: false, renderMostCommented: false});
+        }
         break;
       case UpdateType.COMMENT_ADDED:
       case UpdateType.COMMENT_DELETED:
@@ -139,15 +151,12 @@ class FilmsBoard {
         remove(this._mostCommentedComponent);
         this._renderMostCommented();
         break;
-      case UpdateType.MAJOR:
+      case UpdateType.CHANGE_FILTER:
         // - обновить всю страницу фильмов
-        // при смене фильтра (если фильтру соответствует больше 5 фильмов, то первые пять + кнопка)
-        // ?ВОПРОС: в ТЗ не указано какое кол-во фильмов должно оставаться при сортировке
-
+        // при смене фильтра/сортировки (если фильтру соответствует больше 5 фильмов, то первые пять + кнопка)
         // при переключении с экрана с фильмами на экран статистики и  обратно сортировка сбрасывается до default
-        // ?ВОПРОС: а что происходит с кол-вом показанных фильмов, всё схлопывается до 5?
         this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
-        this._renderFilmsBoard();
+        this._renderFilmsBoard({renderTopRated: false, renderMostCommented: false});
         break;
     }
   }
@@ -172,25 +181,28 @@ class FilmsBoard {
     this._filmDetailsPresenter.init(film);
   }
 
+  //!Пока что во всех случаях использования функции сортировка сбрасывается до 5
   _clearFilmsBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {
     const filmCount = this._getFilms().length;
 
-    this._getFilmPresenters()
-      .map((presenter) => {
-        presenter.forEach((element) => element.destroy());
-        presenter.clear();
-      });
+    // this._getFilmPresenters()
+    //   .map((presenter) => {
+    //     presenter.forEach((element) => element.destroy());
+    //     presenter.clear();
+    //   });
+
+    this._filmPresenter.forEach((element) => element.destroy());
+    this._filmPresenter.clear();
 
     remove(this._sortComponent);
     remove(this._noFilmsComponent);
     remove(this._showMoreComponent);
 
     if (resetRenderedFilmCount) {
-      // Фильтрация: сброс до 5
+      // Фильтрация/сортировка: сброс до 5
       this._renderedFilmCount = FILM_COUNT_PER_STEP; //?Нужно ли выбрать через Math.min, если фильмов меньше
     } else {
-      // ?Сортировка: не сбрасываем, сортируем что есть
-      // предусматриваем перерисовку фильма, если находять, например, в фильтре избранного, у фильма снята пометка избранного
+      // предусматриваем перерисовку фильма, если находясь, например, в фильтре избранного, у фильма снята пометка избранного
       this._renderedFilmCount = Math.min(filmCount, this._renderedFilmCount);
     }
 
@@ -284,7 +296,7 @@ class FilmsBoard {
     render(this._filmsComponent, this._mostCommentedComponent);
   }
 
-  _renderFilmsBoard() {
+  _renderFilmsBoard({renderTopRated = true, renderMostCommented = true} = {}) {
     const filmCount = this._getFilms().length;
 
     this._renderSort();
@@ -296,12 +308,16 @@ class FilmsBoard {
 
     this._renderMainFilmsList();
 
-    if (!this._getFilms().every(this._checkZeroRating)) {
-      this._renderTopRated();
+    if (renderTopRated) {
+      if (!this._getFilms().every(this._checkZeroRating)) {
+        this._renderTopRated();
+      }
     }
 
-    if (!this._getFilms().every(this._checkZeroComments)) {
-      this._renderMostCommented();
+    if (renderMostCommented) {
+      if (!this._getFilms().every(this._checkZeroComments)) {
+        this._renderMostCommented();
+      }
     }
   }
 }
