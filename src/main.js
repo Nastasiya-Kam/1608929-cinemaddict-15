@@ -1,6 +1,6 @@
 import SiteMenuView from './view/site-menu.js';
 import StatisticsView from './view/statistics.js';
-import ProfileView from './view/profile.js';
+// import ProfileView from './view/profile.js';
 import {generateFilm} from './mock/film.js';
 import {generateComments} from './mock/comments.js';
 import {getNumberFilms} from './utils/films.js';
@@ -9,7 +9,6 @@ import FilmBoardPresenter from './presenter/film-board.js';
 import FilterModel from './model/filters.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
-import {generateFilter} from './utils/filter.js';
 import {getRandomInteger} from './utils/common.js';
 
 const MIN_COMMENTS_COUNT = 0;
@@ -39,8 +38,17 @@ filmModel.films = films;
 
 const filterModel = new FilterModel(); // eslint-disable-line no-unused-vars
 
-const filter = generateFilter(filmModel.films);
-const rating = filter.watched;
+const filters = [
+  {
+    typeFilter: 'all',
+    href: '#all',
+    title: 'ALL',
+    hasCount: false,
+  },
+];
+
+// !!!Сломан подсчёт количества просмотренных фильмов для звания пользователя
+// const rating = filter.watched;
 
 const commentsModel = new CommentsModel();
 
@@ -49,11 +57,11 @@ const siteHeader = site.querySelector('.header');
 const siteMain = site.querySelector('.main');
 const footerStatistics = site.querySelector('.footer__statistics');
 
-const siteMenuComponent = new SiteMenuView(filter);
+const siteMenuComponent = new SiteMenuView(filters, 'all');
 render(siteMain, siteMenuComponent);
 
-const profileComponent = new ProfileView(rating);
-render(siteHeader, profileComponent);
+// const profileComponent = new ProfileView(rating);
+// render(siteHeader, profileComponent);
 
 const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmModel, commentsModel, comments);
 
