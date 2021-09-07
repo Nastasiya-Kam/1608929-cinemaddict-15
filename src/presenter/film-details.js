@@ -182,7 +182,7 @@ class FilmDetails {
   }
 
   _getUpdatedComment(properties) {
-    return {
+    this._newComment = {
       filmId: this._film.id,
       id: nanoid(),
       author: 'Ilya O\'Reilly',
@@ -195,12 +195,14 @@ class FilmDetails {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT: {
-        this._commentsModel.addComment(updateType, this._getUpdatedComment(update));
+        this._comments.push(this._newComment);
+        this._commentsModel.addComment(updateType, this._newComment);
         const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
         this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
         break;
       }
       case UserAction.DELETE_COMMENT: {
+        this._comments = this._comments.filter((comment) => comment.id !== update.id);
         this._commentsModel.deleteComment(updateType, update);
         const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
         this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
@@ -274,6 +276,8 @@ class FilmDetails {
   }
 
   _handleCommentSubmit(newComment) {
+    this._getUpdatedComment(newComment);
+
     this._handleViewAction(
       UserAction.ADD_COMMENT,
       UpdateType.COMMENT_ADDED,
