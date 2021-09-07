@@ -4,7 +4,7 @@ import FilmsView from '../view/films.js';
 import FilmsListView from '../view/films-list.js';
 import ShowMoreView from '../view/show-more.js';
 
-import {render, remove, RenderPosition} from '../utils/dom.js';
+import {render, remove, RenderPosition, replace} from '../utils/dom.js';
 import {ListType} from '../utils/films.js';
 import {FilterType, filter} from '../utils/filter.js';
 
@@ -56,8 +56,6 @@ class FilmsBoard {
   }
 
   init() {
-    render(this._filmsContainer, this._filmsComponent);
-
     this._renderFilmsBoard();
   }
 
@@ -96,20 +94,21 @@ class FilmsBoard {
   }
 
   _renderSort() {
-    if (this._sortComponent !== null) {
-      this._sortComponent = null;
-    }
+    const prevSortComponent = this._sortComponent;
 
     this._sortComponent = new SortView(this._currentSortType);
     this._sortComponent.setOnSortTypeChange(this._handleSortTypeChange);
 
-    render(this._filmsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    if (prevSortComponent === null) {
+      render(this._filmsContainer, this._sortComponent);
+      return;
+    }
+
+    replace(this._sortComponent, prevSortComponent);
+    remove(prevSortComponent);
   }
 
   _handleViewAction(actionType, updateType, update) {
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_CONTROLS:
         // следим за кликами по контролам
@@ -179,16 +178,9 @@ class FilmsBoard {
   _clearFilmsBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {
     const filmCount = this._getFilms().length;
 
-    // this._getFilmPresenters()
-    //   .map((presenter) => {
-    //     presenter.forEach((element) => element.destroy());
-    //     presenter.clear();
-    //   });
-
     this._filmPresenter.forEach((element) => element.destroy());
     this._filmPresenter.clear();
 
-    remove(this._sortComponent);
     remove(this._showMoreComponent);
 
     if (this._noTaskComponent) {
@@ -196,11 +188,9 @@ class FilmsBoard {
     }
 
     if (resetRenderedFilmCount) {
-      // Фильтрация/сортировка: сброс до 5
-      this._renderedFilmCount = FILM_COUNT_PER_STEP; //?Нужно ли выбрать через Math.min, если фильмов меньше
+      this._renderedFilmCount = FILM_COUNT_PER_STEP;
     } else {
-      // предусматриваем перерисовку фильма, если находясь, например, в фильтре избранного, у фильма снята пометка избранного
-      this._renderedFilmCount = Math.min(filmCount, this._renderedFilmCount);
+      this._renderedFilmCount = (filmCount < FILM_COUNT_PER_STEP) ? FILM_COUNT_PER_STEP : Math.min(filmCount, this._renderedFilmCount);
     }
 
     if (resetSortType) {
@@ -210,7 +200,14 @@ class FilmsBoard {
 
   _renderNoFilms() {
     this._noFilmsComponent = new NoFilmsView(this._filterType);
-    render(this._filmsComponent, this._noFilmsComponent);
+
+    if (this._mainFilmsListComponent === null) {
+      render(this._filmsComponent, this._noFilmsComponent, RenderPosition.AFTERBEGIN);
+      return;
+    }
+
+    replace(this._noFilmsComponent, this._mainFilmsListComponent);
+    this._mainFilmsListComponent = null;
   }
 
   _renderMainFilmsList() {
@@ -219,6 +216,11 @@ class FilmsBoard {
 
     if (this._mainFilmsListComponent === null) {
       this._mainFilmsListComponent = new FilmsListView(ListType.MAIN.title, ListType.MAIN.isExtraList);
+    }
+
+    if (this._noFilmsComponent !== null) {
+      replace(this._mainFilmsListComponent, this._noFilmsComponent);
+      this._noFilmsComponent = null;
     }
 
     this._renderFilms(this._mainFilmsListComponent, films);
@@ -304,9 +306,11 @@ class FilmsBoard {
     this._renderSort();
 
     if (filmCount === 0) {
-      this._renderNoFilms(); // todo Значение отображаемого текста зависит от выбранного фильтра
+      this._renderNoFilms();
       return;
     }
+
+    render(this._filmsContainer, this._filmsComponent);
 
     this._renderMainFilmsList();
 
