@@ -10,6 +10,7 @@ import FilterModel from './model/filters.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
 import {getRandomInteger} from './utils/common.js';
+import ProfilePresenter from './presenter/profile.js';
 
 const MIN_COMMENTS_COUNT = 0;
 const MAX_COMMENTS_COUNT = 7;
@@ -33,13 +34,10 @@ films.forEach((film) => {
 
 const numberFilms = getNumberFilms(films);
 
-const filmModel = new FilmsModel();
-filmModel.films = films;
+const filmsModel = new FilmsModel();
+filmsModel.films = films;
 
 const filterModel = new FilterModel();
-
-// !!!Сломан подсчёт количества просмотренных фильмов для звания пользователя
-// const rating = filter.watched;
 
 const commentsModel = new CommentsModel();
 
@@ -48,12 +46,12 @@ const siteHeader = site.querySelector('.header');
 const siteMain = site.querySelector('.main');
 const footerStatistics = site.querySelector('.footer__statistics');
 
-// const profileComponent = new ProfileView(rating);
-// render(siteHeader, profileComponent);
-const filterPresenter = new FilterPresenter(siteMain, filterModel, filmModel);
-const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmModel, commentsModel, comments, filterModel);
+const profilePresenter = new ProfilePresenter(siteHeader, filmsModel);
+const filterPresenter = new FilterPresenter(siteMain, filterModel, filmsModel);
+const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, comments, filterModel);
 
 render(footerStatistics, new StatisticsView(numberFilms));
 
+profilePresenter.init();
 filterPresenter.init();
 filmBoardPresenter.init();
