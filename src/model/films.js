@@ -38,23 +38,11 @@ class Films extends AbstractObserver {
     }
 
     const currentFilm = this._films[indexFilm];
-
     const currentComments = update.map((comment) => comment.id);
 
     currentFilm.comments = currentComments;
 
-    // const indexComment = currentFilm.comments.findIndex((comment) => comment === update.id);
-
-    // if (indexComment === -1) {
-    //   throw new Error('Can\'t delete unexisting comment');
-    // }
-
-    // currentFilm.comments = [
-    //   ...currentFilm.comments.slice(0, indexComment),
-    //   ...currentFilm.comments.slice(indexComment + 1),
-    // ];
-
-    this._notify(updateType, update);
+    this._notify(updateType, currentFilm);
   }
 }
 

@@ -131,7 +131,8 @@ class FilmsBoard {
           this._filmDetailsPresenter.renderControls(data);
         }
         break;
-      case UpdateType.MINOR:
+      case UpdateType.COMMENT_ADDED:
+      case UpdateType.COMMENT_DELETED:
         // - удалили/добавили комментарий
         // - перерисовать карточку в трёх местах
         this._getFilmPresenters().map((presenter) => {

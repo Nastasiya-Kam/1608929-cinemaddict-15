@@ -183,26 +183,27 @@ class FilmDetails {
 
   _getUpdatedComment(properties) {
     return {
+      filmId: this._film.id,
       id: nanoid(),
       author: 'Ilya O\'Reilly',
-      text: properties.comment,
+      comment: properties.comment,
       date: generateDate(),
-      emoji: properties.emotion,
+      emotion: properties.emotion,
     };
   }
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
-      case UserAction.ADD_COMMENT:
+      case UserAction.ADD_COMMENT: {
         this._commentsModel.addComment(updateType, this._getUpdatedComment(update));
+        const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
+        this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
         break;
+      }
       case UserAction.DELETE_COMMENT: {
         this._commentsModel.deleteComment(updateType, update);
-
         const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
-
         this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
-
         break;
       }
     }
@@ -219,26 +220,13 @@ class FilmDetails {
       case UpdateType.COMMENT_DELETED:
         // - действие при удалении комментария
         this._renderComments();
-        // передаём кол-во комментариев бордеру фильмов
-        // как передать обновление в модель фильма???
-        // this._changeData(
-        //   UserAction.UPDATE_COMMENTS,
-        //   UpdateType.MINOR,
-        //   this._film,
-        // );
         break;
       case UpdateType.COMMENT_ADDED:
         // - действие при добавлении комментария
         this._renderComments();
         this._renderCommentNew();
-
         // передаём кол-во комментариев бордеру фильмов
         this._film.comments = data;
-        // this._changeData(
-        //   UserAction.UPDATE_COMMENTS,
-        //   UpdateType.MINOR,
-        //   this._film,
-        // );
         break;
 
     }
