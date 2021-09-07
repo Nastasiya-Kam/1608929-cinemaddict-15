@@ -25,6 +25,7 @@ const UpdateType = {
   MAJOR: 'MAJOR',
   COMMENT_ADDED: 'COMMENT_ADDED',
   COMMENT_DELETED: 'COMMENT_DELETED',
+  CHANGE_FILTER: 'CHANGE_FILTER',
 };
 
 export {EMOJI, Mode, SortType, UserAction, UpdateType};

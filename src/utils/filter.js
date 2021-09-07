@@ -8,9 +8,9 @@ const FilterType = {
 };
 
 const filter = {
-  [FilterType.WATCH_LIST]: (films) => films.filter((film) => film.isWatchList).length,
-  [FilterType.WATCHED]: (films) => films.filter((film) => film.isWatched).length,
-  [FilterType.FAVORITE]: (films) => films.filter((film) => film.isFavorite).length,
+  [FilterType.WATCH_LIST]: (films) => films.filter((film) => film.isWatchList),
+  [FilterType.WATCHED]: (films) => films.filter((film) => film.isWatched),
+  [FilterType.FAVORITE]: (films) => films.filter((film) => film.isFavorite),
 };
 
 const sortDate = (filmA, filmB) => {
