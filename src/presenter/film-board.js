@@ -26,6 +26,7 @@ class FilmsBoard {
     this._filterModel = filterModel;
 
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
+    this._filterType = FilterType.ALL;
     this._filmPresenter = new Map();
     this._filmTopPresenter = new Map();
     this._filmMostCommentedPresenter = new Map();
@@ -37,9 +38,9 @@ class FilmsBoard {
     this._topRatedComponent = null;
     this._sortComponent = null;
     this._showMoreComponent = null;
+    this._noFilmsComponent = null;
 
     this._filmsComponent = new FilmsView();
-    this._noFilmsComponent = new NoFilmsView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
@@ -61,9 +62,9 @@ class FilmsBoard {
   }
 
   _getFilms() {
-    const filterType = this._filterModel.getFilter();
+    this._filterType = this._filterModel.getFilter();
     const films = this._filmsModel.films;
-    const filteredFilms = (filterType === FilterType.ALL) ? films : filter[filterType](films);
+    const filteredFilms = (this._filterType === FilterType.ALL) ? films : filter[this._filterType](films);
 
     switch (this._currentSortType) {
       case SortType.DATE:
@@ -165,15 +166,9 @@ class FilmsBoard {
     return [this._filmPresenter, this._filmTopPresenter, this._filmMostCommentedPresenter];
   }
 
-  _renderNoFilms() {
-    render(this._filmsComponent, this._noFilmsComponent);
-  }
-
   _renderFilm(container, film, presenter) {
     const filmPresenter = new FilmPresenter(container, this._handleViewAction, this._openDetails);
-
     filmPresenter.init(film);
-
     presenter.set(film.id, filmPresenter);
   }
 
@@ -181,7 +176,6 @@ class FilmsBoard {
     this._filmDetailsPresenter.init(film);
   }
 
-  //!Пока что во всех случаях использования функции сортировка сбрасывается до 5
   _clearFilmsBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {
     const filmCount = this._getFilms().length;
 
@@ -195,8 +189,11 @@ class FilmsBoard {
     this._filmPresenter.clear();
 
     remove(this._sortComponent);
-    remove(this._noFilmsComponent);
     remove(this._showMoreComponent);
+
+    if (this._noTaskComponent) {
+      remove(this._noFilmsComponent);
+    }
 
     if (resetRenderedFilmCount) {
       // Фильтрация/сортировка: сброс до 5
@@ -209,6 +206,11 @@ class FilmsBoard {
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
+  }
+
+  _renderNoFilms() {
+    this._noFilmsComponent = new NoFilmsView(this._filterType);
+    render(this._filmsComponent, this._noFilmsComponent);
   }
 
   _renderMainFilmsList() {
