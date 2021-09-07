@@ -115,25 +115,20 @@ class FilmsBoard {
   }
 
   _handleFilmModelEvent(updateType, data) {
-    // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.FAVORITE_WATCHLIST:
-        // - обновить инфо о фильме
+      case UpdateType.WATCHED:
+        // кликнули по контролам:
+        // - обновить инфо о фильме в списках
         this._getFilmPresenters().map((presenter) => {
           if (presenter.has(data.id)) {
             presenter.get(data.id).init(data);
           }
         });
-
-        // - обновить фильтры
-
-        if (this._filmDetailsPresenter.isOpened() && this._filmDetailsPresenter._film.id === data.id) {
-          this._filmDetailsPresenter.renderControls(data);
-        }
         break;
       case UpdateType.COMMENT_ADDED:
       case UpdateType.COMMENT_DELETED:
-        // - удалили/добавили комментарий
+        // удалили/добавили комментарий:
         // - перерисовать карточку в трёх местах
         this._getFilmPresenters().map((presenter) => {
           if (presenter.has(data.id)) {

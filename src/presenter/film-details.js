@@ -206,13 +206,22 @@ class FilmDetails {
         this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
         break;
       }
+      case UserAction.UPDATE_CONTROLS:
+        this._filmsModel.updateFilm(updateType, update);
+        break;
     }
   }
 
   _handleFilmModelEvent(updateType, data) {
-    // если изменился фильм, для которого открыт попап, то обновляем инфо
-    updateType;
-    data;
+    switch (updateType) {
+      // если изменился фильм, для которого открыт попап, то обновляем инфо
+      case UpdateType.FAVORITE_WATCHLIST:
+      case UpdateType.WATCHED:
+        if (this.isOpened() && this._film.id === data.id) {
+          this.renderControls(data);
+        }
+        break;
+    }
   }
 
   _handleCommentsModelEvent(updateType, data) {
@@ -233,21 +242,21 @@ class FilmDetails {
   }
 
   _handleWatchListClick(film) {
-    this._changeData(
+    this._handleViewAction(
       UserAction.UPDATE_CONTROLS,
       UpdateType.FAVORITE_WATCHLIST,
       getUpdatedFilm(film, Settings.WATCH_LIST));
   }
 
   _handleWatchedClick(film) {
-    this._changeData(
+    this._handleViewAction(
       UserAction.UPDATE_CONTROLS,
       UpdateType.WATCHED,
       getUpdatedFilm(film, Settings.WATCHED));
   }
 
   _handleFavoriteClick(film) {
-    this._changeData(
+    this._handleViewAction(
       UserAction.UPDATE_CONTROLS,
       UpdateType.FAVORITE_WATCHLIST,
       getUpdatedFilm(film, Settings.FAVORITE));
