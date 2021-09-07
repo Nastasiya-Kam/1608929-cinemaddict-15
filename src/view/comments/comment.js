@@ -2,18 +2,18 @@ import {getFormattedCommentDate} from '../../utils/dates.js';
 import {remove} from '../../utils/dom.js';
 import AbstractView from '../abstract.js';
 
-const createComment = (comment) => {
-  const {text, emoji, author, date} = comment;
+const createComment = (element) => {
+  const {comment, emotion, author, date} = element;
 
   return (
     `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
-      ${(emoji !== null)
-      ? `<img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">`
+      ${(emotion !== null)
+      ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`
       : ''}
       </span>
       <div>
-        <p class="film-details__comment-text">${text}</p>
+        <p class="film-details__comment-text">${comment}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${getFormattedCommentDate(date)}</span>

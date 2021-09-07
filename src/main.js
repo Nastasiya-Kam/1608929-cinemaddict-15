@@ -52,7 +52,7 @@ render(siteMain, siteMenuComponent);
 const profileComponent = new ProfileView(rating);
 render(siteHeader, profileComponent);
 
-const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmModel, commentsModel);
+const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmModel, commentsModel, comments);
 
 render(footerStatistics, new StatisticsView(numberFilms));
 

@@ -6,11 +6,11 @@ class Comments extends AbstractObserver {
     this._comments = [];
   }
 
-  setСomments(comments) {
+  setComments(comments) {
     this._comments = comments.slice();
   }
 
-  getСomments() {
+  getComments() {
     return this._comments;
   }
 
@@ -35,8 +35,7 @@ class Comments extends AbstractObserver {
       ...this._comments.slice(index + 1),
     ];
 
-    // ?ВОПРОС: мы же можем на входе принять одно изменение, а вернуть другое?
-    this._notify(updateType, this._comments);
+    this._notify(updateType, update);
   }
 }
 

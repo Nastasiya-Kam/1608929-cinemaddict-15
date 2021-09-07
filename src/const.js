@@ -23,6 +23,8 @@ const UpdateType = {
   WATCHED: 'WATCHED',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  COMMENT_ADDED: 'COMMENT_ADDED',
+  COMMENT_DELETED: 'COMMENT_DELETED',
 };
 
 export {EMOJI, Mode, SortType, UserAction, UpdateType};

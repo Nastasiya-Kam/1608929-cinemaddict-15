@@ -16,10 +16,12 @@ const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
 
 class FilmsBoard {
-  constructor(filmsContainer, headerContainer, filmsModel, commentsModel) {
+  constructor(filmsContainer, headerContainer, filmsModel, commentsModel, comments) {
     this._filmsContainer = filmsContainer;
     this._headerContainer = headerContainer;
     this._filmsModel = filmsModel;
+    this._commentsModel = commentsModel;
+    this._comments = comments;
 
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     this._filmPresenter = new Map();
@@ -44,7 +46,7 @@ class FilmsBoard {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
 
-    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction, commentsModel);
+    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction, this._filmsModel, this._commentsModel, this._comments);
 
     this._filmsModel.addObserver(this._handleFilmModelEvent);
   }
@@ -102,9 +104,11 @@ class FilmsBoard {
     // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_CONTROLS:
+        // следим за кликами по контролам
         this._filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.UPDATE_COMMENTS:
+        // следим за изменением кол-ва комментариев
         this._filmsModel.updateFilm(updateType, update);
         break;
     }
@@ -123,27 +127,9 @@ class FilmsBoard {
 
         // - обновить фильтры
 
-        if (this._filmDetailsPresenter.isOpened()) {
+        if (this._filmDetailsPresenter.isOpened() && this._filmDetailsPresenter._film.id === data.id) {
           this._filmDetailsPresenter.renderControls(data);
         }
-
-        break;
-      case UpdateType.WATCHED:
-        // Если пользователь добавил/удалил из просмотренного, то нужно
-        // - обновить инфо о фильме
-        this._getFilmPresenters().map((presenter) => {
-          if (presenter.has(data.id)) {
-            presenter.get(data.id).init(data);
-          }
-        });
-
-        // - обновить фильтр
-        // - обновить рейтинг пользователя
-
-        if (this._filmDetailsPresenter.isOpened()) {
-          this._filmDetailsPresenter.renderControls(data);
-        }
-
         break;
       case UpdateType.MINOR:
         // - удалили/добавили комментарий
@@ -153,7 +139,6 @@ class FilmsBoard {
             presenter.get(data.id).init(data);
           }
         });
-        // *если попап открыт, то и его перерисовать - перерисовка происходит в film-details
         // - перерисовать список most commented
         remove(this._mostCommentedComponent);
         this._renderMostCommented();

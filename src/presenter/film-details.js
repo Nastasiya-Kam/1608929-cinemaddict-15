@@ -19,9 +19,12 @@ import {UserAction, UpdateType} from '../const.js';
 const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
-  constructor(changeData, commentsModel) {
+  constructor(changeData, filmsModel, commentsModel, comments) {
     this._changeData = changeData;
     this._commentsModel = commentsModel;
+    this._filmsModel = filmsModel;
+    this._comments = comments;
+
     this._isOpen = false;
 
     this._commentsPresenter = new Map();
@@ -43,14 +46,16 @@ class FilmDetails {
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
     this._handleCommentDelete = this._handleCommentDelete.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
-    this._handleModelEvent = this._handleModelEvent.bind(this);
+    this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
+    this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
 
-    this._commentsModel.addObserver(this._handleModelEvent);
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
   }
 
   init(film) {
     this._film = film;
-    this._commentsModel.setСomments(this._film.comments);
+    this._commentsModel.setComments(this._comments);
 
     if (this._isOpen) {
       this._close();
@@ -60,7 +65,7 @@ class FilmDetails {
   }
 
   _getComments() {
-    return this._commentsModel.getСomments();
+    return this._commentsModel.getComments();
   }
 
   isOpened() {
@@ -87,7 +92,7 @@ class FilmDetails {
   }
 
   _renderComments() {
-    const comments = this._getComments();
+    const comments = this._getComments().filter((comment) => comment.filmId === this._film.id);
     const length = comments.length;
 
     this._renderCommentsList(comments);
@@ -171,6 +176,9 @@ class FilmDetails {
     site.classList.remove('hide-overflow');
     remove(this._filmDetailsComponent);
     this._isOpen = false;
+
+    this._commentsModel.removeObserver(this._handleModelEvent);
+    this._filmsModel.removeObserver(this._handleModelEvent);
   }
 
   _getUpdatedComment(properties) {
@@ -188,38 +196,49 @@ class FilmDetails {
       case UserAction.ADD_COMMENT:
         this._commentsModel.addComment(updateType, this._getUpdatedComment(update));
         break;
-      case UserAction.DELETE_COMMENT:
+      case UserAction.DELETE_COMMENT: {
         this._commentsModel.deleteComment(updateType, update);
+
+        const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
+
+        this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
+
         break;
+      }
     }
   }
 
-  _handleModelEvent(updateType, data) {
+  _handleFilmModelEvent(updateType, data) {
+    // если изменился фильм, для которого открыт попап, то обновляем инфо
+    updateType;
+    data;
+  }
+
+  _handleCommentsModelEvent(updateType, data) {
     switch (updateType) {
-      case UpdateType.MINOR:
+      case UpdateType.COMMENT_DELETED:
         // - действие при удалении комментария
         this._renderComments();
-
         // передаём кол-во комментариев бордеру фильмов
-        this._film.comments = data;
-        this._changeData(
-          UserAction.UPDATE_COMMENTS,
-          UpdateType.MINOR,
-          this._film,
-        );
+        // как передать обновление в модель фильма???
+        // this._changeData(
+        //   UserAction.UPDATE_COMMENTS,
+        //   UpdateType.MINOR,
+        //   this._film,
+        // );
         break;
-      case UpdateType.MAJOR:
+      case UpdateType.COMMENT_ADDED:
         // - действие при добавлении комментария
         this._renderComments();
         this._renderCommentNew();
 
         // передаём кол-во комментариев бордеру фильмов
         this._film.comments = data;
-        this._changeData(
-          UserAction.UPDATE_COMMENTS,
-          UpdateType.MINOR,
-          this._film,
-        );
+        // this._changeData(
+        //   UserAction.UPDATE_COMMENTS,
+        //   UpdateType.MINOR,
+        //   this._film,
+        // );
         break;
 
     }
@@ -260,7 +279,7 @@ class FilmDetails {
   _handleCommentSubmit(newComment) {
     this._handleViewAction(
       UserAction.ADD_COMMENT,
-      UpdateType.MAJOR,
+      UpdateType.COMMENT_ADDED,
       newComment,
     );
   }
@@ -268,7 +287,7 @@ class FilmDetails {
   _handleCommentDelete(comment) {
     this._handleViewAction(
       UserAction.DELETE_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.COMMENT_DELETED,
       comment,
     );
   }
