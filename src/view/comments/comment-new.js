@@ -1,6 +1,7 @@
 import {isCtrlEnterEvent} from '../../utils/dom.js';
 import {EMOJI} from '../../const.js';
 import SmartView from '../smart.js';
+import he from 'he';
 
 const createEmojiList = (emoji) => emoji
   .map((element) => (
@@ -11,17 +12,21 @@ const createEmojiList = (emoji) => emoji
   ))
   .join('');
 
-const createCommentNewTemplate = (commentNew) => (
-  `<div class="film-details__new-comment">
-    <div class="film-details__add-emoji-label">${(commentNew.emotion !== null) ? `<img src="./images/emoji/${commentNew.emotion}.png" width="55" height="55" alt="emoji"></img>` : ''}</div>
+const createCommentNewTemplate = (commentNew) => {
+  const {emotion, comment} = commentNew;
 
-    <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentNew.comment}</textarea>
-    </label>
+  return (
+    `<div class="film-details__new-comment">
+      <div class="film-details__add-emoji-label">${(emotion !== null) ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji"></img>` : ''}</div>
 
-    <div class="film-details__emoji-list">${createEmojiList(EMOJI)}</div>
-  </div>`
-);
+      <label class="film-details__comment-label">
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(comment)}</textarea>
+      </label>
+
+      <div class="film-details__emoji-list">${createEmojiList(EMOJI)}</div>
+    </div>`
+  );
+};
 
 class CommentNew extends SmartView {
   constructor() {

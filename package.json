@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "dayjs": "1.10.6",
-    "nanoid": "3.1.22"
+    "nanoid": "3.1.22",
+    "he": "1.2.0"
   }
 }

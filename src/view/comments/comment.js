@@ -1,6 +1,7 @@
 import {getFormattedCommentDate} from '../../utils/dates.js';
 import {remove} from '../../utils/dom.js';
 import AbstractView from '../abstract.js';
+import he from 'he';
 
 const createComment = (element) => {
   const {comment, emotion, author, date} = element;
@@ -13,7 +14,7 @@ const createComment = (element) => {
       : ''}
       </span>
       <div>
-        <p class="film-details__comment-text">${comment}</p>
+        <p class="film-details__comment-text">${he.encode(comment)}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${getFormattedCommentDate(date)}</span>
