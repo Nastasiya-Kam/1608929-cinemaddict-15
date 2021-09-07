@@ -6,6 +6,7 @@ import {generateComments} from './mock/comments.js';
 import {getNumberFilms} from './utils/films.js';
 import {render} from './utils/dom.js';
 import FilmBoardPresenter from './presenter/film-board.js';
+import FilterModel from './model/filters.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
 import {generateFilter} from './utils/filter.js';
@@ -35,6 +36,8 @@ const numberFilms = getNumberFilms(films);
 
 const filmModel = new FilmsModel();
 filmModel.films = films;
+
+const filterModel = new FilterModel(); // eslint-disable-line no-unused-vars
 
 const filter = generateFilter(filmModel.films);
 const rating = filter.watched;

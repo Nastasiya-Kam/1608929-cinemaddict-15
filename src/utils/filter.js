@@ -1,31 +1,31 @@
 import dayjs from 'dayjs';
 
-const Filter = {ALL: 'all', WATCH_LIST: 'watchList', WATCHED: 'watched', FAVORITE: 'favorite'};
+const FilterType = {ALL: 'all', WATCH_LIST: 'watchList', WATCHED: 'watched', FAVORITE: 'favorite'};
 
 const Filters = [
   {
-    typeFilter: Filter.ALL,
+    typeFilter: FilterType.ALL,
     href: '#all',
     isActive: true,
     title: 'All movies',
     hasCount: false,
   },
   {
-    typeFilter: Filter.WATCH_LIST,
+    typeFilter: FilterType.WATCH_LIST,
     href: '#watchlist',
     isActive: false,
     title: 'Watchlist',
     hasCount: true,
   },
   {
-    typeFilter: Filter.WATCHED,
+    typeFilter: FilterType.WATCHED,
     href: '#history',
     isActive: false,
     title: 'History',
     hasCount: true,
   },
   {
-    typeFilter: Filter.FAVORITE,
+    typeFilter: FilterType.FAVORITE,
     href: '#favorites',
     isActive: false,
     title: 'Favorites',
@@ -34,9 +34,9 @@ const Filters = [
 ];
 
 const filmToFilterMap = {
-  [Filter.WATCH_LIST]: (films) => films.filter((film) => film.isWatchList).length,
-  [Filter.WATCHED]: (films) => films.filter((film) => film.isWatched).length,
-  [Filter.FAVORITE]: (films) => films.filter((film) => film.isFavorite).length,
+  [FilterType.WATCH_LIST]: (films) => films.filter((film) => film.isWatchList).length,
+  [FilterType.WATCHED]: (films) => films.filter((film) => film.isWatched).length,
+  [FilterType.FAVORITE]: (films) => films.filter((film) => film.isFavorite).length,
 };
 
 const generateFilter = (films) => {
@@ -67,4 +67,4 @@ const compareCommentsAmount = (filmA, filmB) => {
   return commentsAmountB - commentsAmountA;
 };
 
-export {generateFilter, Filters, sortDate, compareRating, compareCommentsAmount};
+export {generateFilter, FilterType, Filters, sortDate, compareRating, compareCommentsAmount};
