@@ -1,6 +1,8 @@
 import SmartView from './smart.js';
 import {getRating} from '../utils/users.js';
 import {Statistics} from '../utils/statistics.js';
+import Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const sortGenre = (genreA, genreB) => {
   const genreCountA = genreA[1];
@@ -107,6 +109,71 @@ class Statistic extends SmartView {
   _setOnStatisticTypeChange(callback) {
     this._callback.filterTypeChange = callback;
     this.getElement().querySelector('.statistic__filters').addEventListener('change', this._onStatisticTypeChange);
+  }
+
+  _render() {
+    const BAR_HEIGHT = 50;
+    const statisticCtx = document.querySelector('.statistic__chart');
+
+    // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
+    statisticCtx.height = BAR_HEIGHT * 5;
+
+    return new Chart(statisticCtx, {
+      plugins: [ChartDataLabels],
+      type: 'horizontalBar',
+      data: {
+        labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'], //Сюда нужно передать имеющиеся жанры
+        datasets: [{
+          data: [11, 8, 7, 4, 3], // Сюда нужно передать имеющиеся данные по кол-ву жанров, в соответствии с жанрами
+          backgroundColor: '#ffe800',
+          hoverBackgroundColor: '#ffe800',
+          anchor: 'start',
+        }],
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            font: {
+              size: 20,
+            },
+            color: '#ffffff',
+            anchor: 'start',
+            align: 'start',
+            offset: 40,
+          },
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              fontColor: '#ffffff',
+              padding: 100,
+              fontSize: 20,
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+            barThickness: 24,
+          }],
+          xAxes: [{
+            ticks: {
+              display: false,
+              beginAtZero: true,
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+          }],
+        },
+        legend: {
+          display: false,
+        },
+        tooltips: {
+          enabled: false,
+        },
+      },
+    });
   }
 }
 
