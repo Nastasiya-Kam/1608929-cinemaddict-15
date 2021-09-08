@@ -50,19 +50,35 @@ class FilmsBoard {
     this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
 
     this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction, this._filmsModel, this._commentsModel, this._comments);
-
-    this._filmsModel.addObserver(this._handleFilmModelEvent);
-    this._filterModel.addObserver(this._handleFilmModelEvent);
   }
 
   init() {
-    this._renderFilmsBoard();
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._filterModel.addObserver(this._handleFilmModelEvent);
+
+    this._renderFilmsBoard({renderTopRated: true, renderMostCommented: true});
+  }
+
+  destroy() {
+    this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
+
+    this._filmTopPresenter.forEach((element) => element.destroy());
+    this._filmTopPresenter.clear();
+    this._filmMostCommentedPresenter.forEach((element) => element.destroy());
+    this._filmMostCommentedPresenter.clear();
+
+    remove(this._sortComponent);
+    this._sortComponent = null;
+    remove(this._filmsComponent);
+
+    this._filmsModel.removeObserver(this._handleFilmModelEvent);
+    this._filterModel.removeObserver(this._handleFilmModelEvent);
   }
 
   _getFilms() {
     this._filterType = this._filterModel.getFilter();
     const films = this._filmsModel.films;
-    const filteredFilms = (this._filterType === FilterType.ALL) ? films : filter[this._filterType](films);
+    const filteredFilms = filter[this._filterType](films);
 
     switch (this._currentSortType) {
       case SortType.DATE:
@@ -151,7 +167,7 @@ class FilmsBoard {
         remove(this._mostCommentedComponent);
         this._renderMostCommented();
         break;
-      case UpdateType.CHANGE_FILTER:
+      case UpdateType.FILTER_CHANGED:
         // - обновить всю страницу фильмов
         // при смене фильтра/сортировки (если фильтру соответствует больше 5 фильмов, то первые пять + кнопка)
         // при переключении с экрана с фильмами на экран статистики и  обратно сортировка сбрасывается до default
