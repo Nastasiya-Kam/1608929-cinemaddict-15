@@ -7,7 +7,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
     `<a
       href="${href}"
       class="main-navigation__item
-      ${(typeFilter === currentFilterType)
+      ${(typeFilter === currentFilterType && currentFilterType !== null)
       ? 'main-navigation__item--active'
       : ''}"
       data-filter-type="${typeFilter}"
@@ -27,7 +27,7 @@ const createSiteMenuTemplate = (filterItems, currentFilterType) => {
   return (
     `<nav class="main-navigation">
       <div class="main-navigation__items">${filterItemsTemplate}</div>
-      <a href="#stats" class="main-navigation__additional">Stats</a>
+      <a href="#stats" class="main-navigation__additional${(currentFilterType === null) ? ' main-navigation__additional--active' : ''}">Stats</a>
     </nav>`
   );
 };
@@ -40,6 +40,7 @@ class SiteMenu extends AbstractView {
     this._currentFilterType = currentFilterType;
 
     this._onFilterTypeClick = this._onFilterTypeClick.bind(this);
+    this._onStatsClick = this._onStatsClick.bind(this);
   }
 
   getTemplate() {
@@ -56,6 +57,16 @@ class SiteMenu extends AbstractView {
   setOnFilterTypeClick(callback) {
     this._callback.filterTypeChange = callback;
     this.getElement().querySelector('.main-navigation__items').addEventListener('click', this._onFilterTypeClick);
+  }
+
+  _onStatsClick(evt) {
+    evt.preventDefault();
+    this._callback.statsClick();
+  }
+
+  setOnStatsClick(callback) {
+    this._callback.statsClick = callback;
+    this.getElement().querySelector('.main-navigation__additional').addEventListener('click', this._onStatsClick);
   }
 }
 

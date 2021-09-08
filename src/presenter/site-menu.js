@@ -4,14 +4,16 @@ import {UpdateType} from '../const.js';
 import {FilterType, filter} from '../utils/filter.js';
 
 class SiteMenu {
-  constructor(filterContainer, filterModel, filmsModel) {
+  constructor(changeMenu, filterContainer, filterModel, filmsModel) {
+    this._changeMenu = changeMenu;
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
 
-    this._filterComponent = null;
+    this._siteMenuComponent = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
+    this._handleStatisticsClick = this._handleStatisticsClick.bind(this);
     this._handleFilterTypeClick = this._handleFilterTypeClick.bind(this);
 
     this._filterModel.addObserver(this._handleModelEvent);
@@ -20,22 +22,38 @@ class SiteMenu {
 
   init() {
     const filters = this._getFilters();
-    const prevFilterComponent = this._filterComponent;
+    const prevSiteMenuComponent = this._siteMenuComponent;
 
-    this._filterComponent = new SiteMenuView(filters, this._filterModel.getFilter());
-    this._filterComponent.setOnFilterTypeClick(this._handleFilterTypeClick);
+    this._siteMenuComponent = new SiteMenuView(filters, this._filterModel.getFilter());
+    this._siteMenuComponent.setOnFilterTypeClick(this._handleFilterTypeClick);
+    this._siteMenuComponent.setOnStatsClick(this._handleStatisticsClick);
 
-    if (prevFilterComponent === null) {
-      render(this._filterContainer, this._filterComponent);
+    if (prevSiteMenuComponent === null) {
+      render(this._filterContainer, this._siteMenuComponent);
       return;
     }
 
-    replace(this._filterComponent, prevFilterComponent);
-    remove(prevFilterComponent);
+    replace(this._siteMenuComponent, prevSiteMenuComponent);
+    remove(prevSiteMenuComponent);
   }
 
   _handleModelEvent() {
     this.init();
+    // //открыли статистику
+    // this._changeMenu(UpdateType);
+    // //изменили фильтр и/или закрыли статистику
+    // this._changeMenu(UpdateType);
+  }
+
+  _handleStatisticsClick() {
+    if (this._filterModel.getFilter() === null) {
+      return;
+    }
+    // открываем статистику
+    this._changeMenu(UpdateType.STATISTICS_OPENED);
+    // обновляем модель фильтров - никакой фильтр не выбран
+    this._filterModel.setFilter(UpdateType.FILTER_CHANGED, null);
+    // выделяем пункт статистики
   }
 
   _handleFilterTypeClick(filterType) {
@@ -43,7 +61,13 @@ class SiteMenu {
       return;
     }
 
-    this._filterModel.setFilter(UpdateType.CHANGE_FILTER, filterType);
+    const prevFilterType = this._filterModel.getFilter();
+
+    this._filterModel.setFilter(UpdateType.FILTER_CHANGED, filterType);
+
+    if (prevFilterType === null) {
+      this._changeMenu(UpdateType.FILTER_CHANGED);
+    }
   }
 
   _getFilters() {
