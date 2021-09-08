@@ -183,7 +183,7 @@ class FilmsBoard {
 
     remove(this._showMoreComponent);
 
-    if (this._noTaskComponent) {
+    if (this._noFilmsComponent) {
       remove(this._noFilmsComponent);
     }
 
@@ -212,6 +212,11 @@ class FilmsBoard {
 
   _renderMainFilmsList() {
     const filmCount = this._getFilms().length;
+
+    if (this._renderedFilmCount % 5 !== 0) {
+      this._renderedFilmCount = this._renderedFilmCount + (this._renderedFilmCount % 5);
+    }
+
     const films = this._getFilms().slice(0, Math.min(filmCount, this._renderedFilmCount));
 
     if (this._mainFilmsListComponent === null) {
