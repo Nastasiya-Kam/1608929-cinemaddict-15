@@ -1,5 +1,6 @@
 import SmartView from './smart.js';
 import {getRating} from '../utils/users.js';
+import {Statistics} from '../utils/statistics.js';
 
 const sortGenre = (genreA, genreB) => {
   const genreCountA = genreA[1];
@@ -7,29 +8,6 @@ const sortGenre = (genreA, genreB) => {
 
   return genreCountB - genreCountA;
 };
-
-const StatisticTypes = [
-  {
-    type: 'all-time',
-    text: 'All time',
-  },
-  {
-    type: 'today',
-    text: 'Today',
-  },
-  {
-    type: 'week',
-    text: 'Week',
-  },
-  {
-    type: 'month',
-    text: 'Month',
-  },
-  {
-    type: 'year',
-    text: 'Year',
-  },
-];
 
 const createStatisticFilters = (typeStatistic, currentRange) => {
   const {type, text} = typeStatistic;
@@ -49,7 +27,7 @@ const createStatisticFilters = (typeStatistic, currentRange) => {
 };
 
 const createStatisticTemplate = (statistics, currentRange) => {
-  const statisticFiltersTemplate = StatisticTypes
+  const statisticFiltersTemplate = Statistics
     .map((type) => createStatisticFilters(type, currentRange))
     .join('');
 

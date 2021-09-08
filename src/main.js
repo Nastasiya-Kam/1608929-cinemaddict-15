@@ -3,14 +3,15 @@ import MoviesInside from './view/movies-inside.js';
 import {generateFilm} from './mock/film.js';
 import {generateComments} from './mock/comments.js';
 import {getNumberFilms} from './utils/films.js';
-import {render} from './utils/dom.js';
-import FilmBoardPresenter from './presenter/film-board.js';
+import {render, remove} from './utils/dom.js';
+import {StatisticType} from './utils/statistics.js';
+import {getRandomInteger} from './utils/common.js';
+import ProfilePresenter from './presenter/profile.js';
 import SiteMenuPresenter from './presenter/site-menu.js';
+import FilmBoardPresenter from './presenter/film-board.js';
 import FilterModel from './model/filters.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
-import {getRandomInteger} from './utils/common.js';
-import ProfilePresenter from './presenter/profile.js';
 import {UpdateType} from './const.js';
 
 const MIN_COMMENTS_COUNT = 0;
@@ -50,20 +51,18 @@ const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsMod
 
 render(footerStatistics, new MoviesInside(numberFilms));
 
+let statisticComponent = null;
+
 const onSiteMenuClick = (updateType) => {
   switch (updateType) {
     case UpdateType.FILTER_CHANGED:
-      //удаляем статистику
-      // remove(statistic);
-      // рисуем фильмы FilmsBoardPresenter
+      remove(statisticComponent);
       filmBoardPresenter.init();
-      // siteMenuPresenter.init();
       break;
     case UpdateType.STATISTICS_OPENED:
-      // удаляем фильмы FilmsBoardPresenter.clear()...
       filmBoardPresenter.destroy();
-      // отрисовываем статистику
-      // активный пункт меню
+      statisticComponent = new StatisticView(filmsModel.films, StatisticType.ALL);
+      render(siteMain, statisticComponent);
       break;
   }
 };
@@ -72,5 +71,4 @@ const siteMenuPresenter = new SiteMenuPresenter(onSiteMenuClick, siteMain, filte
 
 profilePresenter.init();
 siteMenuPresenter.init();
-// filmBoardPresenter.init();
-render(siteMain, new StatisticView(filmsModel.films, 'all-time'));
+filmBoardPresenter.init();
