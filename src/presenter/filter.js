@@ -12,7 +12,7 @@ class Filter {
     this._filterComponent = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
+    this._handleFilterTypeClick = this._handleFilterTypeClick.bind(this);
 
     this._filterModel.addObserver(this._handleModelEvent);
     this._filmsModel.addObserver(this._handleModelEvent);
@@ -23,7 +23,7 @@ class Filter {
     const prevFilterComponent = this._filterComponent;
 
     this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
-    this._filterComponent.setOnFilterTypeChange(this._handleFilterTypeChange);
+    this._filterComponent.setOnFilterTypeClick(this._handleFilterTypeClick);
 
     if (prevFilterComponent === null) {
       render(this._filterContainer, this._filterComponent);
@@ -38,7 +38,7 @@ class Filter {
     this.init();
   }
 
-  _handleFilterTypeChange(filterType) {
+  _handleFilterTypeClick(filterType) {
     if (this._filterModel.getFilter() === filterType) {
       return;
     }

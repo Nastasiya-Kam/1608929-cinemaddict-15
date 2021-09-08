@@ -35,7 +35,7 @@ class Comments extends AbstractObserver {
       ...this._comments.slice(index + 1),
     ];
 
-    this._notify(updateType, update);
+    this._notify(updateType);
   }
 }
 

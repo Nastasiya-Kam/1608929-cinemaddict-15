@@ -39,21 +39,21 @@ class SiteMenu extends AbstractView {
     this._filter = filter;
     this._currentFilterType = currentFilterType;
 
-    this._onFilterTypeChange = this._onFilterTypeChange.bind(this);
+    this._onFilterTypeClick = this._onFilterTypeClick.bind(this);
   }
 
   getTemplate() {
     return createSiteMenuTemplate(this._filter, this._currentFilterType);
   }
 
-  _onFilterTypeChange(evt) {
+  _onFilterTypeClick(evt) {
     if (evt.target.tagName === 'A') {
       evt.preventDefault();
       this._callback.filterTypeChange(evt.target.dataset.filterType);
     }
   }
 
-  setOnFilterTypeChange(callback) {
+  setOnFilterTypeClick(callback) {
     this._callback.filterTypeChange = callback;
     this.getElement().querySelector('.main-navigation__items').addEventListener('click', this._onFilterTypeChange);
   }

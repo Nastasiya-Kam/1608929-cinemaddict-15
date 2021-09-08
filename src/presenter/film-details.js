@@ -215,18 +215,19 @@ class FilmDetails {
   }
 
   _handleFilmModelEvent(updateType, data) {
+    if (this._film.id !== data.id) {
+      return;
+    }
     switch (updateType) {
       // если изменился фильм, для которого открыт попап, то обновляем инфо
       case UpdateType.FAVORITE_WATCHLIST:
       case UpdateType.WATCHED:
-        if (this.isOpened() && this._film.id === data.id) {
-          this.renderControls(data);
-        }
+        this.renderControls(data);
         break;
     }
   }
 
-  _handleCommentsModelEvent(updateType, data) {
+  _handleCommentsModelEvent(updateType) {
     switch (updateType) {
       case UpdateType.COMMENT_DELETED:
         // - действие при удалении комментария
@@ -236,8 +237,6 @@ class FilmDetails {
         // - действие при добавлении комментария
         this._renderComments();
         this._renderCommentNew();
-        // передаём кол-во комментариев бордеру фильмов
-        this._film.comments = data;
         break;
 
     }
