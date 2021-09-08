@@ -1,14 +1,81 @@
-import SmartView from './smart.js';
+import AbstractView from './abstract.js';
 import {getRating} from '../utils/users.js';
-import {Statistics} from '../utils/statistics.js';
+import {Statistics, makeItemsUniq, countFilmsByGenre} from '../utils/statistics.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+const BAR_HEIGHT = 50;
 
 const sortGenre = (genreA, genreB) => {
   const genreCountA = genreA[1];
   const genreCountB = genreB[1];
 
   return genreCountB - genreCountA;
+};
+
+const renderGenresChart = (statisticCtx, films) => {
+  const filmGenres = films.reduce((accumulator, film) => accumulator.concat(film.genres), []);
+  const uniqGenres = makeItemsUniq(filmGenres);
+  const filmsByGenresCounts = uniqGenres.map((genre) => countFilmsByGenre(filmGenres, genre));
+
+  statisticCtx.height = BAR_HEIGHT * uniqGenres.length;
+
+  return new Chart(statisticCtx, {
+    plugins: [ChartDataLabels],
+    type: 'horizontalBar',
+    data: {
+      labels: uniqGenres,
+      datasets: [{
+        data: filmsByGenresCounts,
+        backgroundColor: '#ffe800',
+        hoverBackgroundColor: '#ffe800',
+        anchor: 'start',
+      }],
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 20,
+          },
+          color: '#ffffff',
+          anchor: 'start',
+          align: 'start',
+          offset: 40,
+        },
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: '#ffffff',
+            padding: 100,
+            fontSize: 20,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          barThickness: 24,
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+      },
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        enabled: false,
+      },
+    },
+  });
 };
 
 const createStatisticFilters = (typeStatistic, currentRange) => {
@@ -34,17 +101,25 @@ const createStatisticTemplate = (statistics, currentRange) => {
     .join('');
 
   const watchedFilms = statistics.filter((stat) => stat.isWatched);
-  const rating = watchedFilms.length;
-  const filmsCount = watchedFilms.length;
-  const duration = watchedFilms.reduce((accumulator, stat) => accumulator + stat.duration, 0);
-  const genres = watchedFilms.reduce((accumulator, stat) => accumulator.concat(stat.genres), []);
 
-  const genreType = genres.reduce((accumulator, genre) => {
-    accumulator[genre] = (accumulator[genre] || 0) + 1;
-    return accumulator;
-  }, {});
+  let rating = 0;
+  let filmsCount = 0;
+  let duration = 0;
+  let topGenre = '';
 
-  const topGenre = Object.entries(genreType).sort(sortGenre)[0];
+  if (watchedFilms.length !== 0) {
+    rating = watchedFilms.length;
+    filmsCount = watchedFilms.length;
+    duration = watchedFilms.reduce((accumulator, stat) => accumulator + stat.duration, 0);
+    const genres = watchedFilms.reduce((accumulator, stat) => accumulator.concat(stat.genres), []);
+
+    const genreType = genres.reduce((accumulator, genre) => {
+      accumulator[genre] = (accumulator[genre] || 0) + 1;
+      return accumulator;
+    }, {});
+
+    topGenre = Object.entries(genreType).sort(sortGenre)[0];
+  }
 
   return (
     `<section class="statistic">
@@ -70,7 +145,7 @@ const createStatisticTemplate = (statistics, currentRange) => {
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Top genre</h4>
-          ${(topGenre === null)? '' : `<p class="statistic__item-text">${topGenre[0]}</p>`}
+          ${(topGenre === '')? '' : `<p class="statistic__item-text">${topGenre[0]}</p>`}
         </li>
       </ul>
 
@@ -82,7 +157,7 @@ const createStatisticTemplate = (statistics, currentRange) => {
   );
 };
 
-class Statistic extends SmartView {
+class Statistic extends AbstractView {
   constructor(films, currentRange) {
     super();
 
@@ -91,6 +166,7 @@ class Statistic extends SmartView {
     this._onStatisticTypeChange = this._onStatisticTypeChange.bind(this);
 
     this._setOnStatisticTypeChange();
+    this._setChart();
   }
 
   getTemplate() {
@@ -99,6 +175,7 @@ class Statistic extends SmartView {
 
   restoreHandlers() {
     this._setOnStatisticTypeChange(this._callback.filterTypeChange);
+    this._setChart();
   }
 
   _onStatisticTypeChange(evt) {
@@ -111,69 +188,19 @@ class Statistic extends SmartView {
     this.getElement().querySelector('.statistic__filters').addEventListener('change', this._onStatisticTypeChange);
   }
 
-  _render() {
-    const BAR_HEIGHT = 50;
-    const statisticCtx = document.querySelector('.statistic__chart');
+  _setChart() {
+    if (this._genresChart !== null) {
+      this._genresChart = null;
+    }
 
-    // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
-    statisticCtx.height = BAR_HEIGHT * 5;
+    const watchedFilms = this._films.filter((film) => film.isWatched);
+    const statisticCtx = this.getElement().querySelector('.statistic__chart');
 
-    return new Chart(statisticCtx, {
-      plugins: [ChartDataLabels],
-      type: 'horizontalBar',
-      data: {
-        labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'], //Сюда нужно передать имеющиеся жанры
-        datasets: [{
-          data: [11, 8, 7, 4, 3], // Сюда нужно передать имеющиеся данные по кол-ву жанров, в соответствии с жанрами
-          backgroundColor: '#ffe800',
-          hoverBackgroundColor: '#ffe800',
-          anchor: 'start',
-        }],
-      },
-      options: {
-        plugins: {
-          datalabels: {
-            font: {
-              size: 20,
-            },
-            color: '#ffffff',
-            anchor: 'start',
-            align: 'start',
-            offset: 40,
-          },
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              fontColor: '#ffffff',
-              padding: 100,
-              fontSize: 20,
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            barThickness: 24,
-          }],
-          xAxes: [{
-            ticks: {
-              display: false,
-              beginAtZero: true,
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-          }],
-        },
-        legend: {
-          display: false,
-        },
-        tooltips: {
-          enabled: false,
-        },
-      },
-    });
+    if (watchedFilms.length === 0) {
+      return;
+    }
+
+    this._genresChart = renderGenresChart(statisticCtx, watchedFilms);
   }
 }
 
