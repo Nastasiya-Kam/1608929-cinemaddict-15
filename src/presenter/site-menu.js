@@ -1,9 +1,9 @@
-import FilterView from '../view/site-menu';
+import SiteMenuView from '../view/site-menu';
 import {render, replace, remove} from '../utils/dom.js';
 import {UpdateType} from '../const.js';
 import {FilterType, filter} from '../utils/filter.js';
 
-class Filter {
+class SiteMenu {
   constructor(filterContainer, filterModel, filmsModel) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
@@ -22,7 +22,7 @@ class Filter {
     const filters = this._getFilters();
     const prevFilterComponent = this._filterComponent;
 
-    this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
+    this._filterComponent = new SiteMenuView(filters, this._filterModel.getFilter());
     this._filterComponent.setOnFilterTypeClick(this._handleFilterTypeClick);
 
     if (prevFilterComponent === null) {
@@ -82,4 +82,4 @@ class Filter {
   }
 }
 
-export default Filter;
+export default SiteMenu;

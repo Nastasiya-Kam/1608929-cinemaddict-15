@@ -5,7 +5,7 @@ import {generateComments} from './mock/comments.js';
 import {getNumberFilms} from './utils/films.js';
 import {render} from './utils/dom.js';
 import FilmBoardPresenter from './presenter/film-board.js';
-import FilterPresenter from './presenter/filter.js';
+import SiteMenuPresenter from './presenter/site-menu.js';
 import FilterModel from './model/filters.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
@@ -47,11 +47,11 @@ const siteMain = site.querySelector('.main');
 const footerStatistics = site.querySelector('.footer__statistics');
 
 const profilePresenter = new ProfilePresenter(siteHeader, filmsModel);
-const filterPresenter = new FilterPresenter(siteMain, filterModel, filmsModel);
+const siteMenuPresenter = new SiteMenuPresenter(siteMain, filterModel, filmsModel);
 const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, comments, filterModel);
 
 render(footerStatistics, new StatisticsView(numberFilms));
 
 profilePresenter.init();
-filterPresenter.init();
+siteMenuPresenter.init();
 filmBoardPresenter.init();
