@@ -48,14 +48,14 @@ class FilmDetails {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
-
-    this._filmsModel.addObserver(this._handleFilmModelEvent);
-    this._commentsModel.addObserver(this._handleCommentsModelEvent);
   }
 
   init(film) {
     this._film = film;
     this._commentsModel.setComments(this._comments);
+
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
 
     if (this._isOpen) {
       this._close();
@@ -177,8 +177,8 @@ class FilmDetails {
     remove(this._filmDetailsComponent);
     this._isOpen = false;
 
-    this._commentsModel.removeObserver(this._handleModelEvent);
-    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filmsModel.removeObserver(this._handleFilmModelEvent);
+    this._commentsModel.removeObserver(this._handleCommentsModelEvent);
   }
 
   _getUpdatedComment(properties) {
