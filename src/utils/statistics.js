@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const StatisticType = {
   ALL: 'all-time',
   TODAY: 'today',
@@ -34,4 +36,30 @@ const Statistics = [
 const makeItemsUniq = (items) => [...new Set(items)];
 const countFilmsByGenre = (genresTypes, genre) => genresTypes.filter((type) => type === genre).length;
 
-export {StatisticType, Statistics, makeItemsUniq, countFilmsByGenre};
+const sortGenre = (genreA, genreB) => {
+  const genreCountA = genreA[1];
+  const genreCountB = genreB[1];
+
+  return genreCountB - genreCountA;
+};
+
+const getCountWatchedFilms = (films, period) => {
+  const watchedFilms = films.filter((film) => film.isWatched);
+
+  switch (period) {
+    case StatisticType.ALL:
+      return watchedFilms;
+    case StatisticType.TODAY:
+      return watchedFilms.filter((film) => dayjs(film.watchingDate) === dayjs());
+    case StatisticType.WEEK:
+      return watchedFilms.filter((film) => dayjs(film.watchingDate) >= dayjs().subtract(1, 'week'));
+    case StatisticType.MONTH:
+      return watchedFilms.filter((film) => dayjs(film.watchingDate) > dayjs().subtract(1, 'month'));
+    case StatisticType.YEAR:
+      return watchedFilms.filter((film) => dayjs(film.watchingDate) >= dayjs().subtract(1, 'year'));
+  }
+};
+
+const getFilmGenres = (films) => films.reduce((accumulator, film) => accumulator.concat(film.genres), []);
+
+export {StatisticType, Statistics, makeItemsUniq, countFilmsByGenre, sortGenre, getCountWatchedFilms, getFilmGenres};

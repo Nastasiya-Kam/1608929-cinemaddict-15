@@ -1,20 +1,13 @@
 import AbstractView from './abstract.js';
 import {getRating} from '../utils/users.js';
-import {Statistics, makeItemsUniq, countFilmsByGenre} from '../utils/statistics.js';
+import {Statistics, makeItemsUniq, countFilmsByGenre, StatisticType, sortGenre, getCountWatchedFilms, getFilmGenres} from '../utils/statistics.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const BAR_HEIGHT = 50;
 
-const sortGenre = (genreA, genreB) => {
-  const genreCountA = genreA[1];
-  const genreCountB = genreB[1];
-
-  return genreCountB - genreCountA;
-};
-
 const renderGenresChart = (statisticCtx, films) => {
-  const filmGenres = films.reduce((accumulator, film) => accumulator.concat(film.genres), []);
+  const filmGenres = getFilmGenres(films);
   const uniqGenres = makeItemsUniq(filmGenres);
   const filmsByGenresCounts = uniqGenres.map((genre) => countFilmsByGenre(filmGenres, genre));
 
@@ -165,40 +158,53 @@ class Statistic extends AbstractView {
     this._currentRange = currentRange;
     this._onStatisticTypeChange = this._onStatisticTypeChange.bind(this);
 
+    this._genresChart = null;
+    this._activePeriod = StatisticType.ALL;
+
     this._setOnStatisticTypeChange();
-    this._setChart();
+    this._setChart(this._activePeriod);
   }
 
   getTemplate() {
     return createStatisticTemplate(this._films, this._currentRange);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._genresChart !== null) {
+      this._genresChart = null;
+    }
+  }
+
   restoreHandlers() {
     this._setOnStatisticTypeChange(this._callback.filterTypeChange);
-    this._setChart();
+    this._setChart(this._activePeriod);
   }
 
   _onStatisticTypeChange(evt) {
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.value);
+    const period = evt.target.value;
+    // перерисовываем статистику, учитывая выбранный период
+    this._setChart(period);
   }
 
-  _setOnStatisticTypeChange(callback) {
-    this._callback.filterTypeChange = callback;
+  _setOnStatisticTypeChange() {
     this.getElement().querySelector('.statistic__filters').addEventListener('change', this._onStatisticTypeChange);
   }
 
-  _setChart() {
+  _setChart(period) {
     if (this._genresChart !== null) {
       this._genresChart = null;
     }
 
-    const watchedFilms = this._films.filter((film) => film.isWatched);
     const statisticCtx = this.getElement().querySelector('.statistic__chart');
+    const watchedFilms = getCountWatchedFilms(this._films, period);
 
-    if (watchedFilms.length === 0) {
-      return;
-    }
+    // if (watchedFilms.length === 0) {
+    //   this._genresChart = null;
+    //   return;
+    // }
 
     this._genresChart = renderGenresChart(statisticCtx, watchedFilms);
   }

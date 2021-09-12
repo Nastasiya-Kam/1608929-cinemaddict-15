@@ -39,21 +39,15 @@ class SiteMenu {
 
   _handleModelEvent() {
     this.init();
-    // //открыли статистику
-    // this._changeMenu(UpdateType);
-    // //изменили фильтр и/или закрыли статистику
-    // this._changeMenu(UpdateType);
   }
 
   _handleStatisticsClick() {
     if (this._filterModel.getFilter() === null) {
       return;
     }
-    // открываем статистику
+
     this._changeMenu(UpdateType.STATISTICS_OPENED);
-    // обновляем модель фильтров - никакой фильтр не выбран
     this._filterModel.setFilter(UpdateType.FILTER_CHANGED, null);
-    // выделяем пункт статистики
   }
 
   _handleFilterTypeClick(filterType) {
@@ -67,6 +61,20 @@ class SiteMenu {
 
     if (prevFilterType === null) {
       this._changeMenu(UpdateType.FILTER_CHANGED);
+    }
+  }
+
+  _handleFilterStatisticChange(filterStatisticType) {
+    if (this._filterStatisticModel.getFilter() === filterStatisticType) {
+      return;
+    }
+
+    const prevFilterStatisticType = this._filterStatisticModel.getFilter();
+
+    this._filterStatisticModel.setFilter(UpdateType.FILTER_STATISTIC_CHANGED, filterStatisticType);
+
+    if (prevFilterStatisticType === null) {
+      this._changeMenu(UpdateType.FILTER_STATISTIC_CHANGED);
     }
   }
 
