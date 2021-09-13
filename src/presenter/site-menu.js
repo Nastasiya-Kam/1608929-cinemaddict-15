@@ -64,20 +64,6 @@ class SiteMenu {
     }
   }
 
-  _handleFilterStatisticChange(filterStatisticType) {
-    if (this._filterStatisticModel.getFilter() === filterStatisticType) {
-      return;
-    }
-
-    const prevFilterStatisticType = this._filterStatisticModel.getFilter();
-
-    this._filterStatisticModel.setFilter(UpdateType.FILTER_STATISTIC_CHANGED, filterStatisticType);
-
-    if (prevFilterStatisticType === null) {
-      this._changeMenu(UpdateType.FILTER_STATISTIC_CHANGED);
-    }
-  }
-
   _getFilters() {
     const films = this._filmsModel.films;
 
