@@ -1,6 +1,6 @@
 import CardFilmView from '../view/card-film.js';
 import {render, remove, replace} from '../utils/dom.js';
-import {Settings, getUpdatedFilm} from '../utils/films.js';
+import {Settings, getUpdatedFilm, getUpdatedWatchedFilm} from '../utils/films.js';
 import {UserAction, UpdateType} from '../const.js';
 
 class Film {
@@ -54,7 +54,7 @@ class Film {
     this._changeData(
       UserAction.UPDATE_CONTROLS,
       UpdateType.WATCHED,
-      getUpdatedFilm(this._film, Settings.WATCHED));
+      getUpdatedWatchedFilm(this._film));
   }
 
   _handleFavoriteClick() {

@@ -13,7 +13,7 @@ import CommentNewView from '../view/comments/comment-new.js';
 
 import ControlsView from '../view/controls.js';
 import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
-import {Settings, getUpdatedFilm} from '../utils/films.js';
+import {Settings, getUpdatedFilm, getUpdatedWatchedFilm} from '../utils/films.js';
 import {UserAction, UpdateType} from '../const.js';
 
 const site = document.body; // todo добавить в конструктор
@@ -253,7 +253,7 @@ class FilmDetails {
     this._handleViewAction(
       UserAction.UPDATE_CONTROLS,
       UpdateType.WATCHED,
-      getUpdatedFilm(film, Settings.WATCHED));
+      getUpdatedWatchedFilm(film));
   }
 
   _handleFavoriteClick(film) {
