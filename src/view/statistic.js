@@ -1,6 +1,6 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import {getRating} from '../utils/users.js';
-import {Statistics, makeItemsUniq, countFilmsByGenre, StatisticType, sortGenre, getCountWatchedFilms, getFilmGenres} from '../utils/statistics.js';
+import {Statistics, makeItemsUnique, countFilmsByGenre, StatisticType, sortGenre, getCountWatchedFilms, getFilmGenres} from '../utils/statistics.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -8,7 +8,7 @@ const BAR_HEIGHT = 50;
 
 const renderGenresChart = (statisticCtx, films) => {
   const filmGenres = getFilmGenres(films);
-  const uniqGenres = makeItemsUniq(filmGenres);
+  const uniqGenres = makeItemsUnique(filmGenres);
   const filmsByGenresCounts = uniqGenres.map((genre) => countFilmsByGenre(filmGenres, genre));
 
   statisticCtx.height = BAR_HEIGHT * uniqGenres.length;
@@ -88,12 +88,14 @@ const createStatisticFilters = (typeStatistic, currentRange) => {
   );
 };
 
-const createStatisticTemplate = (statistics, currentRange) => {
+const createStatisticTemplate = (statistics) => {
+  const {films, period} = statistics;
+
   const statisticFiltersTemplate = Statistics
-    .map((type) => createStatisticFilters(type, currentRange))
+    .map((type) => createStatisticFilters(type, period))
     .join('');
 
-  const watchedFilms = statistics.filter((stat) => stat.isWatched);
+  const watchedFilms = getCountWatchedFilms(films, period);
 
   let rating = 0;
   let filmsCount = 0;
@@ -101,7 +103,7 @@ const createStatisticTemplate = (statistics, currentRange) => {
   let topGenre = '';
 
   if (watchedFilms.length !== 0) {
-    rating = watchedFilms.length;
+    rating = films.filter((film) => film.isWatched).length;
     filmsCount = watchedFilms.length;
     duration = watchedFilms.reduce((accumulator, stat) => accumulator + stat.duration, 0);
     const genres = watchedFilms.reduce((accumulator, stat) => accumulator.concat(stat.genres), []);
@@ -150,23 +152,26 @@ const createStatisticTemplate = (statistics, currentRange) => {
   );
 };
 
-class Statistic extends AbstractView {
-  constructor(films, currentRange) {
+class Statistic extends SmartView {
+  constructor(films) {
     super();
 
-    this._films = films;
-    this._currentRange = currentRange;
+    this._data = {
+      films,
+      period: StatisticType.ALL,
+    };
+
     this._onStatisticTypeChange = this._onStatisticTypeChange.bind(this);
 
     this._genresChart = null;
     this._activePeriod = StatisticType.ALL;
 
     this._setOnStatisticTypeChange();
-    this._setChart(this._activePeriod);
+    this._setChart();
   }
 
   getTemplate() {
-    return createStatisticTemplate(this._films, this._currentRange);
+    return createStatisticTemplate(this._data);
   }
 
   removeElement() {
@@ -179,32 +184,31 @@ class Statistic extends AbstractView {
 
   restoreHandlers() {
     this._setOnStatisticTypeChange(this._callback.filterTypeChange);
-    this._setChart(this._activePeriod);
+    this._setChart();
   }
 
   _onStatisticTypeChange(evt) {
     evt.preventDefault();
-    const period = evt.target.value;
-    // перерисовываем статистику, учитывая выбранный период
-    this._setChart(period);
+    const currentPeriod = evt.target.value;
+
+    this.updateData({
+      period: currentPeriod,
+    });
+    this._setChart();
   }
 
   _setOnStatisticTypeChange() {
     this.getElement().querySelector('.statistic__filters').addEventListener('change', this._onStatisticTypeChange);
   }
 
-  _setChart(period) {
+  _setChart() {
     if (this._genresChart !== null) {
       this._genresChart = null;
     }
 
+    const {films, period} = this._data;
     const statisticCtx = this.getElement().querySelector('.statistic__chart');
-    const watchedFilms = getCountWatchedFilms(this._films, period);
-
-    // if (watchedFilms.length === 0) {
-    //   this._genresChart = null;
-    //   return;
-    // }
+    const watchedFilms = getCountWatchedFilms(films, period);
 
     this._genresChart = renderGenresChart(statisticCtx, watchedFilms);
   }
