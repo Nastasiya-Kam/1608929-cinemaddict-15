@@ -37,8 +37,8 @@ const makeItemsUnique = (items) => [...new Set(items)];
 const countFilmsByGenre = (genresTypes, genre) => genresTypes.filter((type) => type === genre).length;
 
 const sortGenre = (genreA, genreB) => {
-  const genreCountA = genreA[1];
-  const genreCountB = genreB[1];
+  const genreCountA = genreA.count;
+  const genreCountB = genreB.count;
 
   return genreCountB - genreCountA;
 };

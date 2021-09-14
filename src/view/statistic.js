@@ -1,6 +1,6 @@
 import SmartView from './smart.js';
 import {getRating} from '../utils/users.js';
-import {Statistics, makeItemsUnique, countFilmsByGenre, StatisticType, sortGenre, getCountWatchedFilms, getFilmGenres} from '../utils/statistics.js';
+import {Statistics, makeItemsUnique, StatisticType, sortGenre, getCountWatchedFilms, getFilmGenres} from '../utils/statistics.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -8,18 +8,43 @@ const BAR_HEIGHT = 50;
 
 const renderGenresChart = (statisticCtx, films) => {
   const filmGenres = getFilmGenres(films);
-  const uniqGenres = makeItemsUnique(filmGenres);
-  const filmsByGenresCounts = uniqGenres.map((genre) => countFilmsByGenre(filmGenres, genre));
+  const uniqueGenres = makeItemsUnique(filmGenres);
 
-  statisticCtx.height = BAR_HEIGHT * uniqGenres.length;
+  // todo<< Вынести функцией в utils/statistic.js
+  // const genresData = getGenresData(uniqueGenres, filmGenres);
+  // >> Возвращаемый объект? genresData = {labels: [], data: []};
+  const genresData = [];
+
+  for (let i = 0; i < uniqueGenres.length; i++) {
+    const genreObject = {
+      genre: uniqueGenres[i],
+      count: 0,
+    };
+
+    for (let j = 0; j < filmGenres.length; j++) {
+      if (filmGenres[j] === genreObject.genre) {
+        genreObject.count += 1;
+      }
+    }
+
+    genresData.push(genreObject);
+  }
+
+  genresData.sort(sortGenre);
+
+  const labels = genresData.map((element) => element.genre);
+  const data = genresData.map((element) => element.count);
+  // todo>> Вынести функцией в utils/statistic.js
+
+  statisticCtx.height = BAR_HEIGHT * uniqueGenres.length;
 
   return new Chart(statisticCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: uniqGenres,
+      labels: labels, //genresData.labels
       datasets: [{
-        data: filmsByGenresCounts,
+        data: data, //genresData.data
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
@@ -100,20 +125,38 @@ const createStatisticTemplate = (statistics) => {
   let rating = 0;
   let filmsCount = 0;
   let duration = 0;
-  let topGenre = '';
+  let labels = '';
 
   if (watchedFilms.length !== 0) {
     rating = films.filter((film) => film.isWatched).length;
     filmsCount = watchedFilms.length;
     duration = watchedFilms.reduce((accumulator, stat) => accumulator + stat.duration, 0);
-    const genres = watchedFilms.reduce((accumulator, stat) => accumulator.concat(stat.genres), []);
+    const genres = getFilmGenres(watchedFilms);
+    const uniqueGenres = makeItemsUnique(genres);
 
-    const genreType = genres.reduce((accumulator, genre) => {
-      accumulator[genre] = (accumulator[genre] || 0) + 1;
-      return accumulator;
-    }, {});
+    // todo<< Вынести функцией в utils/statistic.js
+    const genresData = [];
 
-    topGenre = Object.entries(genreType).sort(sortGenre)[0];
+    for (let i = 0; i < uniqueGenres.length; i++) {
+      const genreObject = {
+        genre: uniqueGenres[i],
+        count: 0,
+      };
+
+      for (let j = 0; j < genres.length; j++) {
+        if (genres[j] === genreObject.genre) {
+          genreObject.count += 1;
+        }
+      }
+
+      genresData.push(genreObject);
+    }
+
+    genresData.sort(sortGenre);
+
+    labels = genresData.map((element) => element.genre);
+    // todo>> Вынести функцией в utils/statistic.js
+    // В строку отразить: genresData.labels[0]
   }
 
   return (
@@ -140,7 +183,7 @@ const createStatisticTemplate = (statistics) => {
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Top genre</h4>
-          ${(topGenre === '')? '' : `<p class="statistic__item-text">${topGenre[0]}</p>`}
+          ${(labels === '')? '' : `<p class="statistic__item-text">${labels[0]}</p>`}
         </li>
       </ul>
 
