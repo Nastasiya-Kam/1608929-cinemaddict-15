@@ -11,5 +11,6 @@ const getFormattedCardDate = (date) => dayjs(date).format('YYYY');
 
 const isInDateRange = (date, range) => dayjs(date) >= dayjs().subtract(1, range);
 const isDateToday = (date) => dayjs(date).isToday();
+const getToday = () => dayjs();
 
-export {getFormattedReleaseDate, getFormattedCommentDate, getFormattedCardDate, isInDateRange, isDateToday};
+export {getFormattedReleaseDate, getFormattedCommentDate, getFormattedCardDate, isInDateRange, isDateToday, getToday};

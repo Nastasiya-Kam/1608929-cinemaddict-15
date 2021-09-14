@@ -1,3 +1,5 @@
+import {getToday} from './dates.js';
+
 const MAX_LENGTH_DESCRIPTION = 140;
 
 const getNumberFilms = (films) => films.length;
@@ -23,7 +25,7 @@ const getUpdatedFilm = (film, setting) => (Object.assign(
 ));
 
 const getUpdatedWatchedFilm = (film) => {
-  const watchingDate = (!film.isWatched) ? '2021-9-13' : null;
+  const watchingDate = (!film.isWatched) ? getToday() : null;
 
   return (Object.assign(
     {},
