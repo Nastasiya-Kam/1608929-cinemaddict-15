@@ -237,7 +237,6 @@ class Statistic extends SmartView {
     this.updateData({
       period: currentPeriod,
     });
-    this._setChart();
   }
 
   _setOnStatisticTypeChange() {
