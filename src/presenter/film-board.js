@@ -210,7 +210,7 @@ class FilmsBoard {
         this._commentsModel.setComments(UpdateType.INIT, []);
       });
 
-    this._filmDetailsPresenter.init(film);
+    this._filmDetailsPresenter.open(film);
   }
 
   _clearFilmsBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {

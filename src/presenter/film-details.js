@@ -33,7 +33,7 @@ class FilmDetails {
     this._commentsListComponent = null;
     this._commentNewComponent = null;
 
-    this._open = this._open.bind(this);
+    // this._open = this._open.bind(this);
     this._close = this._close.bind(this);
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
@@ -47,18 +47,18 @@ class FilmDetails {
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
   }
 
-  init(film) {
-    this._film = film;
+  // init(film) {
+  //   this._film = film;
 
-    this._filmsModel.addObserver(this._handleFilmModelEvent);
-    this._commentsModel.addObserver(this._handleCommentsModelEvent);
+  //   this._filmsModel.addObserver(this._handleFilmModelEvent);
+  //   this._commentsModel.addObserver(this._handleCommentsModelEvent);
 
-    if (this._isOpen) {
-      this._close();
-    }
+  //   if (this._isOpen) {
+  //     this._close();
+  //   }
 
-    this._open();
-  }
+  //   this._open();
+  // }
 
   _getComments() {
     return this._commentsModel.getComments();
@@ -144,15 +144,24 @@ class FilmDetails {
     render(this._commentsWrapComponent, this._commentNewComponent);
   }
 
-  // _clearFilmDetails() {
-  //   this._commentsPresenter.forEach((element) => element.destroy());
-  //   this._commentsPresenter.clear();
+  _clearFilmDetails() {
+    this._commentsPresenter.forEach((element) => element.destroy());
+    this._commentsPresenter.clear();
 
-  //   remove(this._commentsListTitleComponent);
-  //   remove(this._commentsListComponent);
-  // }
+    remove(this._commentsListTitleComponent);
+    remove(this._commentsListComponent);
+  }
 
-  _open() {
+  open(film) {
+    this._film = film;
+
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
+
+    if (this._isOpen) {
+      this._close();
+    }
+
     this._filmDetailsComponent = new FilmDetailsView(this._film);
     this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
 
@@ -175,7 +184,7 @@ class FilmDetails {
     document.removeEventListener('keydown', this._onEscKeydown);
     site.classList.remove('hide-overflow');
     remove(this._filmDetailsComponent);
-    // this._clearFilmDetails();
+    this._clearFilmDetails();
 
     this._isOpen = false;
 
