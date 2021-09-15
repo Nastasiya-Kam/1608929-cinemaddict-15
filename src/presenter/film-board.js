@@ -22,7 +22,7 @@ class FilmsBoard {
     this._filmsContainer = filmsContainer;
     this._headerContainer = headerContainer;
     this._filmsModel = filmsModel;
-    this._commentsModel = commentsModel;
+    this._commentsModel = commentsModel; //нужна модель комментов тут?
     this._filterModel = filterModel;
 
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
@@ -53,7 +53,7 @@ class FilmsBoard {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
 
-    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction, this._filmsModel, this._commentsModel);
+    this._filmDetailsPresenter = new FilmDetailsPresenter(this._handleViewAction, this._filmsModel, this._commentsModel, this._api);
   }
 
   init() {
@@ -201,6 +201,15 @@ class FilmsBoard {
   }
 
   _openDetails(film) {
+
+    this._api.getComments(film)
+      .then((comments) => {
+        this._commentsModel.setComments(UpdateType.INIT, comments);
+      })
+      .catch(() => {
+        this._commentsModel.setComments(UpdateType.INIT, []);
+      });
+
     this._filmDetailsPresenter.init(film);
   }
 

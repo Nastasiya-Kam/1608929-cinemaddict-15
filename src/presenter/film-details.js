@@ -1,8 +1,3 @@
-// Временная замена сервера по генерации случайной даты и случайного id
-import {nanoid} from 'nanoid';
-import {getRandomInteger} from '../utils/common.js';
-const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)}`;
-
 import FilmDetailsView from '../view/film-details.js';
 
 import CommentsWrapView from '../view/comments/comments-wrap.js';
@@ -19,10 +14,13 @@ import {UserAction, UpdateType} from '../const.js';
 const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
-  constructor(changeData, filmsModel, commentsModel) {
+  constructor(changeData, filmsModel, commentsModel, api) {
     this._changeData = changeData;
     this._commentsModel = commentsModel;
     this._filmsModel = filmsModel;
+    this._api = api;
+
+    this._isLoading = true;
 
     this._isOpen = false;
 
@@ -51,7 +49,6 @@ class FilmDetails {
 
   init(film) {
     this._film = film;
-    this._commentsModel.setComments(this._comments);
 
     this._filmsModel.addObserver(this._handleFilmModelEvent);
     this._commentsModel.addObserver(this._handleCommentsModelEvent);
@@ -91,8 +88,12 @@ class FilmDetails {
   }
 
   _renderComments() {
-    const comments = this._getComments().filter((comment) => comment.filmId === this._film.id);
-    const length = comments.length;
+    if (this._isLoading) {
+      return;
+    }
+
+    const comments = this._getComments();
+    const length = this._getComments().length;
 
     this._renderCommentsList(comments);
     this._renderCommentsTitle(length);
@@ -174,34 +175,26 @@ class FilmDetails {
     document.removeEventListener('keydown', this._onEscKeydown);
     site.classList.remove('hide-overflow');
     remove(this._filmDetailsComponent);
+    // this._clearFilmDetails();
+
     this._isOpen = false;
 
     this._filmsModel.removeObserver(this._handleFilmModelEvent);
     this._commentsModel.removeObserver(this._handleCommentsModelEvent);
   }
 
-  _getUpdatedComment(properties) {
-    this._newComment = {
-      filmId: this._film.id,
-      id: nanoid(),
-      author: 'Ilya O\'Reilly',
-      comment: properties.comment,
-      date: generateDate(),
-      emotion: properties.emotion,
-    };
-  }
-
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT: {
-        this._comments.push(this._newComment);
+        // todo Обёртка для обновления списка комментария на сервере (updateComment, не реализовано) и потом в модели?
         this._commentsModel.addComment(updateType, this._newComment);
         const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
+        // todo Обёртка для обновления фильма на сервере (updateFilm) и потом в модели?
         this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
         break;
       }
       case UserAction.DELETE_COMMENT: {
-        this._comments = this._comments.filter((comment) => comment.id !== update.id);
+        // todo Обёртка для обновления списка комментария на сервере (updateComment, не реализовано) и потом в модели?
         this._commentsModel.deleteComment(updateType, update);
         const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
         this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
@@ -239,7 +232,11 @@ class FilmDetails {
         this._renderComments();
         this._renderCommentNew();
         break;
-
+      case UpdateType.INIT:
+        // - действие при открытии попапа
+        this._isLoading = false;
+        this._renderComments();
+        break;
     }
   }
 
@@ -276,7 +273,7 @@ class FilmDetails {
   }
 
   _handleCommentSubmit(newComment) {
-    this._getUpdatedComment(newComment);
+    // this._getUpdatedComment(newComment);
 
     this._handleViewAction(
       UserAction.ADD_COMMENT,

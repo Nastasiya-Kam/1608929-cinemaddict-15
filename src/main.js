@@ -25,7 +25,6 @@ const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
 const commentsModel = new CommentsModel();
 
-
 const profilePresenter = new ProfilePresenter(siteHeader, filmsModel);
 const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, filterModel, api);
 

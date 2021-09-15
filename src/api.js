@@ -28,6 +28,11 @@ class Api {
       .then(FilmsModel.adaptToClient);
   }
 
+  getComments(film) {
+    return this._load({url: `comments/${film.id}`})
+      .then(Api.toJSON);
+  }
+
   _load({
     url,
     method = Method.GET,
