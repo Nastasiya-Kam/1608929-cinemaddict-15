@@ -59,6 +59,7 @@ const footerStatistics = site.querySelector('.footer__statistics');
 const profilePresenter = new ProfilePresenter(siteHeader, filmsModel);
 const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, comments, filterModel);
 
+const numberFilms = filmsModel.getFilms().length;
 render(footerStatistics, new MoviesInside(numberFilms));
 
 let statisticComponent = null;

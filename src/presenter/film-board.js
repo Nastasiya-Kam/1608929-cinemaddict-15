@@ -77,7 +77,7 @@ class FilmsBoard {
 
   _getFilms() {
     this._filterType = this._filterModel.getFilter();
-    const films = this._filmsModel.films;
+    const films = this._filmsModel.getFilms();
     const filteredFilms = filter[this._filterType](films);
 
     switch (this._currentSortType) {

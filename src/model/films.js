@@ -6,11 +6,11 @@ class Films extends AbstractObserver {
     this._films = [];
   }
 
-  set films(films) {
+  setFilms(films) {
     this._films = films.slice();
   }
 
-  get films() {
+  getFilms() {
     return this._films;
   }
 

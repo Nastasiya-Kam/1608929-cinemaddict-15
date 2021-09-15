@@ -65,7 +65,7 @@ class SiteMenu {
   }
 
   _getFilters() {
-    const films = this._filmsModel.films;
+    const films = this._filmsModel.getFilms();
 
     return [
       {
