@@ -18,7 +18,7 @@ const FILM_COUNT_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
 
 class FilmsBoard {
-  constructor(filmsContainer, headerContainer, filmsModel, commentsModel, filterModel) {
+  constructor(filmsContainer, headerContainer, filmsModel, commentsModel, filterModel, api) {
     this._filmsContainer = filmsContainer;
     this._headerContainer = headerContainer;
     this._filmsModel = filmsModel;
@@ -32,6 +32,7 @@ class FilmsBoard {
     this._filmMostCommentedPresenter = new Map();
 
     this._isLoading = true;
+    this._api = api;
 
     this._currentSortType = SortType.DEFAULT;
 
@@ -131,11 +132,15 @@ class FilmsBoard {
     switch (actionType) {
       case UserAction.UPDATE_CONTROLS:
         // следим за кликами по контролам
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
         break;
       case UserAction.UPDATE_COMMENTS:
         // следим за изменением кол-ва комментариев
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
         break;
     }
   }

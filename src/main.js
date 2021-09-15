@@ -27,7 +27,7 @@ const commentsModel = new CommentsModel();
 
 
 const profilePresenter = new ProfilePresenter(siteHeader, filmsModel);
-const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, filterModel);
+const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, filterModel, api);
 
 const numberFilms = filmsModel.getFilms().length;
 render(footerStatistics, new MoviesInside(numberFilms));

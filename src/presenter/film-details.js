@@ -208,7 +208,9 @@ class FilmDetails {
         break;
       }
       case UserAction.UPDATE_CONTROLS:
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
         break;
     }
   }
