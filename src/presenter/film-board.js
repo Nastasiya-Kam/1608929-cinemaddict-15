@@ -3,6 +3,7 @@ import NoFilmsView from '../view/no-films.js';
 import FilmsView from '../view/films.js';
 import FilmsListView from '../view/films-list.js';
 import ShowMoreView from '../view/show-more.js';
+import LoadingView from '../view/loading.js';
 
 import {render, remove, RenderPosition, replace} from '../utils/dom.js';
 import {ListType} from '../utils/films.js';
@@ -30,6 +31,8 @@ class FilmsBoard {
     this._filmTopPresenter = new Map();
     this._filmMostCommentedPresenter = new Map();
 
+    this._isLoading = true;
+
     this._currentSortType = SortType.DEFAULT;
 
     this._mainFilmsListComponent = null;
@@ -40,6 +43,7 @@ class FilmsBoard {
     this._noFilmsComponent = null;
 
     this._filmsComponent = new FilmsView();
+    this._loadingComponent = new LoadingView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
@@ -173,6 +177,11 @@ class FilmsBoard {
         this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilmsBoard({renderTopRated: false, renderMostCommented: false});
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderFilmsBoard();
+        break;
     }
   }
 
@@ -196,6 +205,7 @@ class FilmsBoard {
     this._filmPresenter.forEach((element) => element.destroy());
     this._filmPresenter.clear();
 
+    remove(this._loadingComponent);
     remove(this._showMoreComponent);
 
     if (this._noFilmsComponent) {
@@ -223,6 +233,10 @@ class FilmsBoard {
 
     replace(this._noFilmsComponent, this._mainFilmsListComponent);
     this._mainFilmsListComponent = null;
+  }
+
+  _renderLoading() {
+    render(this._filmsContainer, this._loadingComponent);
   }
 
   _renderMainFilmsList() {
@@ -321,6 +335,11 @@ class FilmsBoard {
   }
 
   _renderFilmsBoard({renderTopRated = true, renderMostCommented = true} = {}) {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const filmCount = this._getFilms().length;
 
     this._renderSort();
