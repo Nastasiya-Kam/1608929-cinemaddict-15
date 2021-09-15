@@ -56,4 +56,30 @@ const getCountWatchedFilms = (films, period) => {
 
 const getFilmGenres = (films) => films.reduce((accumulator, film) => accumulator.concat(film.genres), []);
 
-export {StatisticType, Statistics, makeItemsUnique, countFilmsByGenre, sortGenre, getCountWatchedFilms, getFilmGenres};
+const getGenresData = (uniqueGenres, allGenres) => {
+  const data = [];
+
+  for (let i = 0; i < uniqueGenres.length; i++) {
+    const genreObject = {
+      genre: uniqueGenres[i],
+      count: 0,
+    };
+
+    for (let j = 0; j < allGenres.length; j++) {
+      if (allGenres[j] === genreObject.genre) {
+        genreObject.count += 1;
+      }
+    }
+
+    data.push(genreObject);
+  }
+
+  data.sort(sortGenre);
+
+  return {
+    labels: data.map((element) => element.genre),
+    data: data.map((element) => element.count),
+  };
+};
+
+export {StatisticType, Statistics, makeItemsUnique, countFilmsByGenre, sortGenre, getCountWatchedFilms, getFilmGenres, getGenresData};

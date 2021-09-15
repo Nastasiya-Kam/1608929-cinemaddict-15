@@ -1,6 +1,6 @@
 import SmartView from './smart.js';
 import {getRating} from '../utils/users.js';
-import {Statistics, makeItemsUnique, StatisticType, sortGenre, getCountWatchedFilms, getFilmGenres} from '../utils/statistics.js';
+import {Statistics, makeItemsUnique, StatisticType, getCountWatchedFilms, getFilmGenres, getGenresData} from '../utils/statistics.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -10,31 +10,7 @@ const renderGenresChart = (statisticCtx, films) => {
   const filmGenres = getFilmGenres(films);
   const uniqueGenres = makeItemsUnique(filmGenres);
 
-  // todo<< Вынести функцией в utils/statistic.js
-  // const genresData = getGenresData(uniqueGenres, filmGenres);
-  // >> Возвращаемый объект? genresData = {labels: [], data: []};
-  const genresData = [];
-
-  for (let i = 0; i < uniqueGenres.length; i++) {
-    const genreObject = {
-      genre: uniqueGenres[i],
-      count: 0,
-    };
-
-    for (let j = 0; j < filmGenres.length; j++) {
-      if (filmGenres[j] === genreObject.genre) {
-        genreObject.count += 1;
-      }
-    }
-
-    genresData.push(genreObject);
-  }
-
-  genresData.sort(sortGenre);
-
-  const labels = genresData.map((element) => element.genre);
-  const data = genresData.map((element) => element.count);
-  // todo>> Вынести функцией в utils/statistic.js
+  const genresData = getGenresData(uniqueGenres, filmGenres);
 
   statisticCtx.height = BAR_HEIGHT * uniqueGenres.length;
 
@@ -42,9 +18,9 @@ const renderGenresChart = (statisticCtx, films) => {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: labels, //genresData.labels
+      labels: genresData.labels,
       datasets: [{
-        data: data, //genresData.data
+        data: genresData.data,
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
@@ -125,7 +101,8 @@ const createStatisticTemplate = (statistics) => {
   let rating = 0;
   let filmsCount = 0;
   let duration = 0;
-  let labels = '';
+  let genresData = null;
+  let isEmptyLabels = true;
 
   if (watchedFilms.length !== 0) {
     rating = films.filter((film) => film.isWatched).length;
@@ -134,29 +111,8 @@ const createStatisticTemplate = (statistics) => {
     const genres = getFilmGenres(watchedFilms);
     const uniqueGenres = makeItemsUnique(genres);
 
-    // todo<< Вынести функцией в utils/statistic.js
-    const genresData = [];
-
-    for (let i = 0; i < uniqueGenres.length; i++) {
-      const genreObject = {
-        genre: uniqueGenres[i],
-        count: 0,
-      };
-
-      for (let j = 0; j < genres.length; j++) {
-        if (genres[j] === genreObject.genre) {
-          genreObject.count += 1;
-        }
-      }
-
-      genresData.push(genreObject);
-    }
-
-    genresData.sort(sortGenre);
-
-    labels = genresData.map((element) => element.genre);
-    // todo>> Вынести функцией в utils/statistic.js
-    // В строку отразить: genresData.labels[0]
+    genresData = getGenresData(uniqueGenres, genres);
+    isEmptyLabels = false;
   }
 
   return (
@@ -183,7 +139,7 @@ const createStatisticTemplate = (statistics) => {
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Top genre</h4>
-          ${(labels === '')? '' : `<p class="statistic__item-text">${labels[0]}</p>`}
+          ${(isEmptyLabels)? '' : `<p class="statistic__item-text">${genresData.labels[0]}</p>`}
         </li>
       </ul>
 
@@ -227,7 +183,6 @@ class Statistic extends SmartView {
 
   restoreHandlers() {
     this._setOnStatisticTypeChange(this._callback.filterTypeChange);
-    this._setChart();
   }
 
   _onStatisticTypeChange(evt) {
@@ -237,6 +192,8 @@ class Statistic extends SmartView {
     this.updateData({
       period: currentPeriod,
     });
+
+    this._setChart();
   }
 
   _setOnStatisticTypeChange() {
