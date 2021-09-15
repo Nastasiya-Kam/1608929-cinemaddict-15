@@ -19,11 +19,10 @@ import {UserAction, UpdateType} from '../const.js';
 const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
-  constructor(changeData, filmsModel, commentsModel, comments) {
+  constructor(changeData, filmsModel, commentsModel) {
     this._changeData = changeData;
     this._commentsModel = commentsModel;
     this._filmsModel = filmsModel;
-    this._comments = comments;
 
     this._isOpen = false;
 
