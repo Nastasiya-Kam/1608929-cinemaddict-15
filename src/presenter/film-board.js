@@ -229,8 +229,8 @@ class FilmsBoard {
   _renderMainFilmsList() {
     const filmCount = this._getFilms().length;
 
-    if (this._renderedFilmCount % 5 !== 0) {
-      this._renderedFilmCount = this._renderedFilmCount + (this._renderedFilmCount % 5);
+    if (this._renderedFilmCount % FILM_COUNT_PER_STEP !== 0) {
+      this._renderedFilmCount = this._renderedFilmCount + (this._renderedFilmCount % FILM_COUNT_PER_STEP);
     }
 
     const films = this._getFilms().slice(0, Math.min(filmCount, this._renderedFilmCount));
