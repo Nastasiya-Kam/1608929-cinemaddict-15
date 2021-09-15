@@ -13,6 +13,10 @@ import FilterModel from './model/filters.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
 import {UpdateType} from './const.js';
+import Api from './api.js';
+
+const AUTHORIZATION = 'Basic dfaksdjlkjd4309SLDKflk';
+const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
 const MIN_COMMENTS_COUNT = 0;
 const MAX_COMMENTS_COUNT = 7;
@@ -20,6 +24,12 @@ const MAX_COMMENTS_COUNT = 7;
 const FILM_DEVELOPER_COUNT = 22;
 
 const films = new Array(FILM_DEVELOPER_COUNT).fill().map(() => generateFilm());
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getFilms().then((elements) => {
+  console.log(elements);
+});
+
 let comments = [];
 
 films.forEach((film) => {
