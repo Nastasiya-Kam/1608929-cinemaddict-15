@@ -6,9 +6,9 @@ const Grade = {
 
 const getRating = (rating) => {
   if (rating <= Grade.MIDDLE && rating >= Grade.LOW) {
-    return 'novice';
+    return 'Novice';
   } else if (rating <= Grade.HIGH) {
-    return 'fan';
+    return 'Fan';
   } else if (rating > Grade.HIGH) {
     return 'Movie Buff';
   }

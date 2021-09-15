@@ -67,26 +67,33 @@ const generateGenres = (count) => {
 };
 
 const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)}`;
+const generateWatchingDate = () => `2021-${getRandomInteger(7, 9)}-${getRandomInteger(1, 20)}`;
 
-const generateFilm = () => ({
-  id: nanoid(),
-  name: generateFilmName(),
-  original: generateFilmName(),
-  img: generateFilmImage(),
-  description: generateDescription(getRandomInteger(MIN_DESCRIPTION_COUNT, MAX_DESCRIPTION_COUNT)),
-  comments: [],
-  rating: getRandomFloat(0, 10, 1),
-  release: generateDate(),
-  duration: getRandomInteger(0, 220),
-  genres: generateGenres(getRandomInteger(1, 3)),
-  director:	'Anthony Mann', //?массив
-  writers:	'Anne Wigton, Heinz Herald, Richard Weil', //?массив
-  actors:	'Erich von Stroheim, Mary Beth Hughes, Dan Duryea', //?массив
-  country:	'USA',
-  age: '18+',
-  isWatchList: getRandomBoolean(),
-  isWatched: getRandomBoolean(),
-  isFavorite: getRandomBoolean(),
-});
+const generateFilm = () => {
+  const alreadyWatched = getRandomBoolean();
+  const watchingDate = (alreadyWatched) ? generateWatchingDate() : null;
+
+  return {
+    id: nanoid(),
+    name: generateFilmName(),
+    original: generateFilmName(),
+    img: generateFilmImage(),
+    description: generateDescription(getRandomInteger(MIN_DESCRIPTION_COUNT, MAX_DESCRIPTION_COUNT)),
+    comments: [],
+    rating: getRandomFloat(0, 10, 1),
+    release: generateDate(),
+    duration: getRandomInteger(0, 220),
+    genres: generateGenres(getRandomInteger(1, 3)),
+    director:	'Anthony Mann',
+    writers:	'Anne Wigton, Heinz Herald, Richard Weil',
+    actors:	'Erich von Stroheim, Mary Beth Hughes, Dan Duryea',
+    country:	'USA',
+    age: '18+',
+    isWatchList: getRandomBoolean(),
+    watchingDate: watchingDate,
+    isWatched: alreadyWatched,
+    isFavorite: getRandomBoolean(),
+  };
+};
 
 export {generateFilm};

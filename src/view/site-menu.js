@@ -7,7 +7,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
     `<a
       href="${href}"
       class="main-navigation__item
-      ${(typeFilter === currentFilterType)
+      ${(typeFilter === currentFilterType && currentFilterType !== null)
       ? 'main-navigation__item--active'
       : ''}"
       data-filter-type="${typeFilter}"
@@ -27,7 +27,7 @@ const createSiteMenuTemplate = (filterItems, currentFilterType) => {
   return (
     `<nav class="main-navigation">
       <div class="main-navigation__items">${filterItemsTemplate}</div>
-      <a href="#stats" class="main-navigation__additional">Stats</a>
+      <a href="#stats" class="main-navigation__additional${(currentFilterType === null) ? ' main-navigation__additional--active' : ''}">Stats</a>
     </nav>`
   );
 };
@@ -39,23 +39,34 @@ class SiteMenu extends AbstractView {
     this._filter = filter;
     this._currentFilterType = currentFilterType;
 
-    this._onFilterTypeChange = this._onFilterTypeChange.bind(this);
+    this._onFilterTypeClick = this._onFilterTypeClick.bind(this);
+    this._onStatsClick = this._onStatsClick.bind(this);
   }
 
   getTemplate() {
     return createSiteMenuTemplate(this._filter, this._currentFilterType);
   }
 
-  _onFilterTypeChange(evt) {
+  _onFilterTypeClick(evt) {
     if (evt.target.tagName === 'A') {
       evt.preventDefault();
       this._callback.filterTypeChange(evt.target.dataset.filterType);
     }
   }
 
-  setOnFilterTypeChange(callback) {
+  setOnFilterTypeClick(callback) {
     this._callback.filterTypeChange = callback;
-    this.getElement().querySelector('.main-navigation__items').addEventListener('click', this._onFilterTypeChange);
+    this.getElement().querySelector('.main-navigation__items').addEventListener('click', this._onFilterTypeClick);
+  }
+
+  _onStatsClick(evt) {
+    evt.preventDefault();
+    this._callback.statsClick();
+  }
+
+  setOnStatsClick(callback) {
+    this._callback.statsClick = callback;
+    this.getElement().querySelector('.main-navigation__additional').addEventListener('click', this._onStatsClick);
   }
 }
 

@@ -8,6 +8,7 @@ const FilterType = {
 };
 
 const filter = {
+  [FilterType.ALL]: (films) => films.slice(),
   [FilterType.WATCH_LIST]: (films) => films.filter((film) => film.isWatchList),
   [FilterType.WATCHED]: (films) => films.filter((film) => film.isWatched),
   [FilterType.FAVORITE]: (films) => films.filter((film) => film.isFavorite),

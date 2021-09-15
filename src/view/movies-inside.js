@@ -2,7 +2,7 @@ import AbstractView from './abstract.js';
 
 const createStatisticsTemplate = (number) => `<p>${number} movies inside</p>`;
 
-class Statistics extends AbstractView {
+class MoviesInside extends AbstractView {
   constructor(number) {
     super();
 
@@ -14,4 +14,4 @@ class Statistics extends AbstractView {
   }
 }
 
-export default Statistics;
+export default MoviesInside;

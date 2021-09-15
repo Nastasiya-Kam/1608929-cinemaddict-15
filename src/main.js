@@ -1,16 +1,18 @@
-import StatisticsView from './view/statistics.js';
-// import ProfileView from './view/profile.js';
+import StatisticView from './view/statistic.js';
+import MoviesInside from './view/movies-inside.js';
 import {generateFilm} from './mock/film.js';
 import {generateComments} from './mock/comments.js';
 import {getNumberFilms} from './utils/films.js';
-import {render} from './utils/dom.js';
+import {render, remove} from './utils/dom.js';
+import {StatisticType} from './utils/statistics.js';
+import {getRandomInteger} from './utils/common.js';
+import ProfilePresenter from './presenter/profile.js';
+import SiteMenuPresenter from './presenter/site-menu.js';
 import FilmBoardPresenter from './presenter/film-board.js';
-import FilterPresenter from './presenter/filter.js';
 import FilterModel from './model/filters.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
-import {getRandomInteger} from './utils/common.js';
-import ProfilePresenter from './presenter/profile.js';
+import {UpdateType} from './const.js';
 
 const MIN_COMMENTS_COUNT = 0;
 const MAX_COMMENTS_COUNT = 7;
@@ -36,9 +38,7 @@ const numberFilms = getNumberFilms(films);
 
 const filmsModel = new FilmsModel();
 filmsModel.films = films;
-
 const filterModel = new FilterModel();
-
 const commentsModel = new CommentsModel();
 
 const site = document.body;
@@ -47,11 +47,28 @@ const siteMain = site.querySelector('.main');
 const footerStatistics = site.querySelector('.footer__statistics');
 
 const profilePresenter = new ProfilePresenter(siteHeader, filmsModel);
-const filterPresenter = new FilterPresenter(siteMain, filterModel, filmsModel);
 const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, comments, filterModel);
 
-render(footerStatistics, new StatisticsView(numberFilms));
+render(footerStatistics, new MoviesInside(numberFilms));
+
+let statisticComponent = null;
+
+const onSiteMenuClick = (updateType) => {
+  switch (updateType) {
+    case UpdateType.FILTER_CHANGED:
+      remove(statisticComponent);
+      filmBoardPresenter.init();
+      break;
+    case UpdateType.STATISTICS_OPENED:
+      filmBoardPresenter.destroy();
+      statisticComponent = new StatisticView(filmsModel.films, StatisticType.ALL);
+      render(siteMain, statisticComponent);
+      break;
+  }
+};
+
+const siteMenuPresenter = new SiteMenuPresenter(onSiteMenuClick, siteMain, filterModel, filmsModel);
 
 profilePresenter.init();
-filterPresenter.init();
+siteMenuPresenter.init();
 filmBoardPresenter.init();

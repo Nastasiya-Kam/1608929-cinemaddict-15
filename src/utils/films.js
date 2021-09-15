@@ -1,3 +1,5 @@
+import {getToday} from './dates.js';
+
 const MAX_LENGTH_DESCRIPTION = 140;
 
 const getNumberFilms = (films) => films.length;
@@ -22,10 +24,23 @@ const getUpdatedFilm = (film, setting) => (Object.assign(
   },
 ));
 
+const getUpdatedWatchedFilm = (film) => {
+  const watchingDate = (!film.isWatched) ? getToday() : null;
+
+  return (Object.assign(
+    {},
+    film,
+    {
+      isWatched: !film.isWatched,
+      watchingDate: watchingDate,
+    },
+  ));
+};
+
 const getShortDescription = (text) => (text.length > MAX_LENGTH_DESCRIPTION)
   ? `${text.slice(0, MAX_LENGTH_DESCRIPTION - 1).trim()}...`
   : text;
 
 const getDuration = (minutes) => `${Math.trunc(minutes/60)}h ${minutes - Math.trunc(minutes/60)*60}m`;
 
-export {getNumberFilms, ListType, Settings, getUpdatedFilm, getShortDescription, getDuration};
+export {getNumberFilms, ListType, Settings, getUpdatedFilm, getUpdatedWatchedFilm, getShortDescription, getDuration};

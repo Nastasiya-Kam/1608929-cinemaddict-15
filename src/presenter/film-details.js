@@ -13,7 +13,7 @@ import CommentNewView from '../view/comments/comment-new.js';
 
 import ControlsView from '../view/controls.js';
 import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
-import {Settings, getUpdatedFilm} from '../utils/films.js';
+import {Settings, getUpdatedFilm, getUpdatedWatchedFilm} from '../utils/films.js';
 import {UserAction, UpdateType} from '../const.js';
 
 const site = document.body; // todo добавить в конструктор
@@ -48,14 +48,14 @@ class FilmDetails {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
-
-    this._filmsModel.addObserver(this._handleFilmModelEvent);
-    this._commentsModel.addObserver(this._handleCommentsModelEvent);
   }
 
   init(film) {
     this._film = film;
     this._commentsModel.setComments(this._comments);
+
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
 
     if (this._isOpen) {
       this._close();
@@ -177,8 +177,8 @@ class FilmDetails {
     remove(this._filmDetailsComponent);
     this._isOpen = false;
 
-    this._commentsModel.removeObserver(this._handleModelEvent);
-    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filmsModel.removeObserver(this._handleFilmModelEvent);
+    this._commentsModel.removeObserver(this._handleCommentsModelEvent);
   }
 
   _getUpdatedComment(properties) {
@@ -215,18 +215,19 @@ class FilmDetails {
   }
 
   _handleFilmModelEvent(updateType, data) {
+    if (this._film.id !== data.id) {
+      return;
+    }
     switch (updateType) {
       // если изменился фильм, для которого открыт попап, то обновляем инфо
       case UpdateType.FAVORITE_WATCHLIST:
       case UpdateType.WATCHED:
-        if (this.isOpened() && this._film.id === data.id) {
-          this.renderControls(data);
-        }
+        this.renderControls(data);
         break;
     }
   }
 
-  _handleCommentsModelEvent(updateType, data) {
+  _handleCommentsModelEvent(updateType) {
     switch (updateType) {
       case UpdateType.COMMENT_DELETED:
         // - действие при удалении комментария
@@ -236,8 +237,6 @@ class FilmDetails {
         // - действие при добавлении комментария
         this._renderComments();
         this._renderCommentNew();
-        // передаём кол-во комментариев бордеру фильмов
-        this._film.comments = data;
         break;
 
     }
@@ -254,7 +253,7 @@ class FilmDetails {
     this._handleViewAction(
       UserAction.UPDATE_CONTROLS,
       UpdateType.WATCHED,
-      getUpdatedFilm(film, Settings.WATCHED));
+      getUpdatedWatchedFilm(film));
   }
 
   _handleFavoriteClick(film) {
