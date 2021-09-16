@@ -38,7 +38,7 @@ const onSiteMenuClick = (updateType) => {
       break;
     case UpdateType.STATISTICS_OPENED:
       filmBoardPresenter.destroy();
-      statisticComponent = new StatisticView(filmsModel.films, StatisticType.ALL);
+      statisticComponent = new StatisticView(filmsModel.getFilms(), StatisticType.ALL);
       render(siteMain, statisticComponent);
       break;
   }
