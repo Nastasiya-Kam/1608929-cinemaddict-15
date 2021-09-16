@@ -5,6 +5,7 @@ import CommentsListTitleView from '../view/comments/comments-list-title.js';
 import CommentsListView from '../view/comments/comments-list.js';
 import CommentView from '../view/comments/comment.js';
 import CommentNewView from '../view/comments/comment-new.js';
+import CommentsLoadingView from '../view/comments/comments-loading.js';
 
 import ControlsView from '../view/controls.js';
 import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
@@ -32,8 +33,8 @@ class FilmDetails {
     this._commentsListTitleComponent = null;
     this._commentsListComponent = null;
     this._commentNewComponent = null;
+    this._commentsLoadingComponent = new CommentsLoadingView();
 
-    // this._open = this._open.bind(this);
     this._close = this._close.bind(this);
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
@@ -46,19 +47,6 @@ class FilmDetails {
     this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
   }
-
-  // init(film) {
-  //   this._film = film;
-
-  //   this._filmsModel.addObserver(this._handleFilmModelEvent);
-  //   this._commentsModel.addObserver(this._handleCommentsModelEvent);
-
-  //   if (this._isOpen) {
-  //     this._close();
-  //   }
-
-  //   this._open();
-  // }
 
   _getComments() {
     return this._commentsModel.getComments();
@@ -89,6 +77,7 @@ class FilmDetails {
 
   _renderComments() {
     if (this._isLoading) {
+      this._renderCommentsLoading();
       return;
     }
 
@@ -144,12 +133,17 @@ class FilmDetails {
     render(this._commentsWrapComponent, this._commentNewComponent);
   }
 
+  _renderCommentsLoading() {
+    render(this._commentsWrapComponent, this._commentsLoadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
   _clearFilmDetails() {
     this._commentsPresenter.forEach((element) => element.destroy());
     this._commentsPresenter.clear();
 
     remove(this._commentsListTitleComponent);
     remove(this._commentsListComponent);
+    remove(this._commentsLoadingComponent);
   }
 
   open(film) {
@@ -187,6 +181,7 @@ class FilmDetails {
     this._clearFilmDetails();
 
     this._isOpen = false;
+    this._isLoading = true;
 
     this._filmsModel.removeObserver(this._handleFilmModelEvent);
     this._commentsModel.removeObserver(this._handleCommentsModelEvent);
@@ -244,6 +239,7 @@ class FilmDetails {
       case UpdateType.INIT:
         // - действие при открытии попапа
         this._isLoading = false;
+        remove(this._commentsLoadingComponent);
         this._renderComments();
         break;
     }
@@ -282,8 +278,6 @@ class FilmDetails {
   }
 
   _handleCommentSubmit(newComment) {
-    // this._getUpdatedComment(newComment);
-
     this._handleViewAction(
       UserAction.ADD_COMMENT,
       UpdateType.COMMENT_ADDED,
