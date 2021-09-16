@@ -198,18 +198,20 @@ class FilmDetails {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT: {
-        // todo Обёртка для обновления списка комментария на сервере (updateComment, не реализовано) и потом в модели?
-        this._commentsModel.addComment(updateType, this._newComment);
-        const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
-        // todo Обёртка для обновления фильма на сервере (updateFilm) и потом в модели?
-        this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
+        this._api.addComment(this._film, update).then((film) => {
+          this._filmsModel.updateFilm(updateType, film);
+          this._api.getComments(film)
+            .then((comments) => {
+              this._commentsModel.setComments(updateType, comments);
+            });
+        });
         break;
       }
       case UserAction.DELETE_COMMENT: {
-        // todo Обёртка для обновления списка комментария на сервере (updateComment, не реализовано) и потом в модели?
-        this._commentsModel.deleteComment(updateType, update);
-        const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
-        this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
+        this._api.deleteComment(update).then(() => {
+          this._filmsModel.deleteComment(updateType, this._film.id, update);
+          this._commentsModel.deleteComment(updateType, update);
+        });
         break;
       }
       case UserAction.UPDATE_CONTROLS:

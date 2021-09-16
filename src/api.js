@@ -3,6 +3,13 @@ import FilmsModel from './model/films.js';
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+const Url = {
+  COMMENTS: 'comments',
+  MOVIES: 'movies',
 };
 
 class Api {
@@ -12,14 +19,14 @@ class Api {
   }
 
   getFilms() {
-    return this._load({url: 'movies'})
+    return this._load({url: Url.MOVIES})
       .then(Api.toJSON)
       .then((films) => films.map(FilmsModel.adaptToClient));
   }
 
   updateFilm(film) {
     return this._load({
-      url: `movies/${film.id}`,
+      url: `${Url.MOVIES}/${film.id}`,
       method: Method.PUT,
       body: JSON.stringify(FilmsModel.adaptToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -29,8 +36,26 @@ class Api {
   }
 
   getComments(film) {
-    return this._load({url: `comments/${film.id}`})
+    return this._load({url: `${Url.COMMENTS}/${film.id}`})
       .then(Api.toJSON);
+  }
+
+  addComment(film, comment) {
+    return this._load({
+      url: `${Url.COMMENTS}/${film.id}`,
+      method: Method.POST,
+      body: JSON.stringify(comment),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    })
+      .then(Api.toJSON)
+      .then((element) => FilmsModel.adaptToClient(element.movie));
+  }
+
+  deleteComment(comment) {
+    return this._load({
+      url: `${Url.COMMENTS}/${comment.id}`,
+      method: Method.DELETE,
+    });
   }
 
   _load({
