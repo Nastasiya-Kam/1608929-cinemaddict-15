@@ -27,6 +27,7 @@ const UpdateType = {
   COMMENT_DELETED: 'COMMENT_DELETED',
   FILTER_CHANGED: 'FILTER_CHANGED',
   STATISTICS_OPENED: 'STATISTICS_OPENED',
+  INIT: 'INIT',
 };
 
 export {EMOJI, Mode, SortType, UserAction, UpdateType};

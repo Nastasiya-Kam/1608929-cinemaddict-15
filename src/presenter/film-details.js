@@ -1,8 +1,3 @@
-// Временная замена сервера по генерации случайной даты и случайного id
-import {nanoid} from 'nanoid';
-import {getRandomInteger} from '../utils/common.js';
-const generateDate = () => `${getRandomInteger(1950, 2021)}-${getRandomInteger(1, 12)}-${getRandomInteger(1, 28)}`;
-
 import FilmDetailsView from '../view/film-details.js';
 
 import CommentsWrapView from '../view/comments/comments-wrap.js';
@@ -10,6 +5,7 @@ import CommentsListTitleView from '../view/comments/comments-list-title.js';
 import CommentsListView from '../view/comments/comments-list.js';
 import CommentView from '../view/comments/comment.js';
 import CommentNewView from '../view/comments/comment-new.js';
+import CommentsLoadingView from '../view/comments/comments-loading.js';
 
 import ControlsView from '../view/controls.js';
 import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
@@ -19,11 +15,13 @@ import {UserAction, UpdateType} from '../const.js';
 const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
-  constructor(changeData, filmsModel, commentsModel, comments) {
+  constructor(changeData, filmsModel, commentsModel, api) {
     this._changeData = changeData;
     this._commentsModel = commentsModel;
     this._filmsModel = filmsModel;
-    this._comments = comments;
+    this._api = api;
+
+    this._isLoading = true;
 
     this._isOpen = false;
 
@@ -35,8 +33,8 @@ class FilmDetails {
     this._commentsListTitleComponent = null;
     this._commentsListComponent = null;
     this._commentNewComponent = null;
+    this._commentsLoadingComponent = new CommentsLoadingView();
 
-    this._open = this._open.bind(this);
     this._close = this._close.bind(this);
     this._handleWatchListClick = this._handleWatchListClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
@@ -48,20 +46,6 @@ class FilmDetails {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
-  }
-
-  init(film) {
-    this._film = film;
-    this._commentsModel.setComments(this._comments);
-
-    this._filmsModel.addObserver(this._handleFilmModelEvent);
-    this._commentsModel.addObserver(this._handleCommentsModelEvent);
-
-    if (this._isOpen) {
-      this._close();
-    }
-
-    this._open();
   }
 
   _getComments() {
@@ -92,8 +76,13 @@ class FilmDetails {
   }
 
   _renderComments() {
-    const comments = this._getComments().filter((comment) => comment.filmId === this._film.id);
-    const length = comments.length;
+    if (this._isLoading) {
+      this._renderCommentsLoading();
+      return;
+    }
+
+    const comments = this._getComments();
+    const length = this._getComments().length;
 
     this._renderCommentsList(comments);
     this._renderCommentsTitle(length);
@@ -144,15 +133,29 @@ class FilmDetails {
     render(this._commentsWrapComponent, this._commentNewComponent);
   }
 
-  // _clearFilmDetails() {
-  //   this._commentsPresenter.forEach((element) => element.destroy());
-  //   this._commentsPresenter.clear();
+  _renderCommentsLoading() {
+    render(this._commentsWrapComponent, this._commentsLoadingComponent, RenderPosition.AFTERBEGIN);
+  }
 
-  //   remove(this._commentsListTitleComponent);
-  //   remove(this._commentsListComponent);
-  // }
+  _clearFilmDetails() {
+    this._commentsPresenter.forEach((element) => element.destroy());
+    this._commentsPresenter.clear();
 
-  _open() {
+    remove(this._commentsListTitleComponent);
+    remove(this._commentsListComponent);
+    remove(this._commentsLoadingComponent);
+  }
+
+  open(film) {
+    this._film = film;
+
+    if (this._isOpen) {
+      this._close();
+    }
+
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
+
     this._filmDetailsComponent = new FilmDetailsView(this._film);
     this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
 
@@ -175,41 +178,36 @@ class FilmDetails {
     document.removeEventListener('keydown', this._onEscKeydown);
     site.classList.remove('hide-overflow');
     remove(this._filmDetailsComponent);
+    this._clearFilmDetails();
+
     this._isOpen = false;
+    this._isLoading = true;
 
     this._filmsModel.removeObserver(this._handleFilmModelEvent);
     this._commentsModel.removeObserver(this._handleCommentsModelEvent);
   }
 
-  _getUpdatedComment(properties) {
-    this._newComment = {
-      filmId: this._film.id,
-      id: nanoid(),
-      author: 'Ilya O\'Reilly',
-      comment: properties.comment,
-      date: generateDate(),
-      emotion: properties.emotion,
-    };
-  }
-
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT: {
-        this._comments.push(this._newComment);
+        // todo Обёртка для обновления списка комментария на сервере (updateComment, не реализовано) и потом в модели?
         this._commentsModel.addComment(updateType, this._newComment);
         const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
+        // todo Обёртка для обновления фильма на сервере (updateFilm) и потом в модели?
         this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
         break;
       }
       case UserAction.DELETE_COMMENT: {
-        this._comments = this._comments.filter((comment) => comment.id !== update.id);
+        // todo Обёртка для обновления списка комментария на сервере (updateComment, не реализовано) и потом в модели?
         this._commentsModel.deleteComment(updateType, update);
         const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
         this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
         break;
       }
       case UserAction.UPDATE_CONTROLS:
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
         break;
     }
   }
@@ -238,7 +236,12 @@ class FilmDetails {
         this._renderComments();
         this._renderCommentNew();
         break;
-
+      case UpdateType.INIT:
+        // - действие при открытии попапа
+        this._isLoading = false;
+        remove(this._commentsLoadingComponent);
+        this._renderComments();
+        break;
     }
   }
 
@@ -275,8 +278,6 @@ class FilmDetails {
   }
 
   _handleCommentSubmit(newComment) {
-    this._getUpdatedComment(newComment);
-
     this._handleViewAction(
       UserAction.ADD_COMMENT,
       UpdateType.COMMENT_ADDED,

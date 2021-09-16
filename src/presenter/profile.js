@@ -15,7 +15,7 @@ class Profile {
   }
 
   init() {
-    const films = this._filmsModel.films;
+    const films = this._filmsModel.getFilms();
     const rating = filter[FilterType.WATCHED](films).length;
 
     const prevProfileComponent = this._profileComponent;

@@ -15,7 +15,7 @@ const createCardFilmTemplate = (film) => {
         <span class="film-card__duration">${getDuration(duration)}</span>
         <span class="film-card__genre">${genres[0]}</span>
       </p>
-      <img src="./images/posters/${img}" alt="" class="film-card__poster">
+      <img src="${img}" alt="" class="film-card__poster">
       <p class="film-card__description">${getShortDescription(description)}</p>
       <a class="film-card__comments">${comments.length} comments</a>
       <div class="film-card__controls">
