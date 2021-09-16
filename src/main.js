@@ -28,9 +28,6 @@ const commentsModel = new CommentsModel();
 const profilePresenter = new ProfilePresenter(siteHeader, filmsModel);
 const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, filterModel, api);
 
-const numberFilms = filmsModel.getFilms().length;
-render(footerStatistics, new MoviesInside(numberFilms));
-
 let statisticComponent = null;
 
 const onSiteMenuClick = (updateType) => {
@@ -56,7 +53,11 @@ filmBoardPresenter.init();
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
+    const numberFilms = filmsModel.getFilms().length;
+    render(footerStatistics, new MoviesInside(numberFilms));
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
+    const numberFilms = filmsModel.getFilms().length;
+    render(footerStatistics, new MoviesInside(numberFilms));
   });
