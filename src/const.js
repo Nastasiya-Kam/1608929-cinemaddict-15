@@ -1,4 +1,6 @@
 const EMOJI = ['smile', 'sleeping', 'puke', 'angry'];
+const AUTHORIZATION = 'Basic dfaksdjlkjd4309SLDKflk';
+const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -30,4 +32,4 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
-export {EMOJI, Mode, SortType, UserAction, UpdateType};
+export {EMOJI, Mode, SortType, UserAction, UpdateType, AUTHORIZATION, END_POINT};

@@ -8,11 +8,8 @@ import FilmBoardPresenter from './presenter/film-board.js';
 import FilterModel from './model/filters.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
-import {UpdateType} from './const.js';
+import {UpdateType, AUTHORIZATION, END_POINT} from './const.js';
 import Api from './api.js';
-
-const AUTHORIZATION = 'Basic dfaksdjlkjd4309SLDKflk';
-const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
 const site = document.body;
 const siteHeader = site.querySelector('.header');
