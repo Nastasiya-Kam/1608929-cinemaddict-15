@@ -172,6 +172,14 @@ class FilmDetails {
     this._renderCommentNew();
 
     this._isOpen = true;
+
+    this._api.getComments(film)
+      .then((comments) => {
+        this._commentsModel.setComments(UpdateType.INIT, comments);
+      })
+      .catch(() => {
+        this._commentsModel.setComments(UpdateType.INIT, []);
+      });
   }
 
   _close() {

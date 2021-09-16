@@ -22,7 +22,7 @@ class FilmsBoard {
     this._filmsContainer = filmsContainer;
     this._headerContainer = headerContainer;
     this._filmsModel = filmsModel;
-    this._commentsModel = commentsModel; //нужна модель комментов тут?
+    this._commentsModel = commentsModel;
     this._filterModel = filterModel;
 
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
@@ -202,14 +202,6 @@ class FilmsBoard {
 
   _openDetails(film) {
     this._filmDetailsPresenter.open(film);
-
-    this._api.getComments(film)
-      .then((comments) => {
-        this._commentsModel.setComments(UpdateType.INIT, comments);
-      })
-      .catch(() => {
-        this._commentsModel.setComments(UpdateType.INIT, []);
-      });
   }
 
   _clearFilmsBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {
