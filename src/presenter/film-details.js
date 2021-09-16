@@ -155,12 +155,12 @@ class FilmDetails {
   open(film) {
     this._film = film;
 
-    this._filmsModel.addObserver(this._handleFilmModelEvent);
-    this._commentsModel.addObserver(this._handleCommentsModelEvent);
-
     if (this._isOpen) {
       this._close();
     }
+
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
 
     this._filmDetailsComponent = new FilmDetailsView(this._film);
     this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);

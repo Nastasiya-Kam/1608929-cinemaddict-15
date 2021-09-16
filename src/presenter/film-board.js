@@ -201,6 +201,7 @@ class FilmsBoard {
   }
 
   _openDetails(film) {
+    this._filmDetailsPresenter.open(film);
 
     this._api.getComments(film)
       .then((comments) => {
@@ -209,8 +210,6 @@ class FilmsBoard {
       .catch(() => {
         this._commentsModel.setComments(UpdateType.INIT, []);
       });
-
-    this._filmDetailsPresenter.open(film);
   }
 
   _clearFilmsBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {
