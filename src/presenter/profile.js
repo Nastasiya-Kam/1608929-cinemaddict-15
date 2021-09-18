@@ -18,17 +18,24 @@ class Profile {
     const films = this._filmsModel.getFilms();
     const rating = filter[FilterType.WATCHED](films).length;
 
-    const prevProfileComponent = this._profileComponent;
+    if (rating === 0) {
+      if (this._profileComponent !== null) {
+        remove(this._profileComponent);
+        this._profileComponent = null;
+      }
+    } else {
+      const prevProfileComponent = this._profileComponent;
 
-    this._profileComponent = new ProfileView(getRating(rating));
+      this._profileComponent = new ProfileView(getRating(rating));
 
-    if (prevProfileComponent === null) {
-      render(this._profileContainer, this._profileComponent);
-      return;
+      if (prevProfileComponent === null) {
+        render(this._profileContainer, this._profileComponent);
+        return;
+      }
+
+      replace(this._profileComponent, prevProfileComponent);
+      remove(prevProfileComponent);
     }
-
-    replace(this._profileComponent, prevProfileComponent);
-    remove(prevProfileComponent);
   }
 
   _handleModelEvent() {

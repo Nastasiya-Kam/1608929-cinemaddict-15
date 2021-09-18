@@ -117,10 +117,12 @@ const createStatisticTemplate = (statistics) => {
 
   return (
     `<section class="statistic">
-      <p class="statistic__rank">
+      ${(rating === 0)
+      ? ''
+      : `<p class="statistic__rank">
         Your rank
         <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-        <span class="statistic__rank-label">${getRating(rating)}</span>
+        <span class="statistic__rank-label">${getRating(rating)}</span>`}
       </p>
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -137,9 +139,9 @@ const createStatisticTemplate = (statistics) => {
           <h4 class="statistic__item-title">Total duration</h4>
           <p class="statistic__item-text">${Math.trunc(duration/60)} <span class="statistic__item-description">h</span> ${duration - Math.trunc(duration/60)*60} <span class="statistic__item-description">m</span></p>
         </li>
-        <li class="statistic__text-item">
+        ${(isEmptyLabels) ? '' : `<li class="statistic__text-item">
           <h4 class="statistic__item-title">Top genre</h4>
-          ${(isEmptyLabels)? '' : `<p class="statistic__item-text">${genresData.labels[0]}</p>`}
+          <p class="statistic__item-text">${genresData.labels[0]}</p>`}
         </li>
       </ul>
 

@@ -158,8 +158,7 @@ class FilmsBoard {
         });
         // если установлен фильтр, то необходимо перерисовать основной список
         if (this._filterModel.getFilter() !== FilterType.ALL) {
-          this._clearFilmsBoard({resetRenderedFilmCount: false, resetSortType: true});
-          this._renderFilmsBoard({renderTopRated: false, renderMostCommented: false});
+          this._clearFilmsBoard({resetRenderedFilmCount: false, resetSortType: false});
         }
         break;
       case UpdateType.COMMENT_ADDED:
