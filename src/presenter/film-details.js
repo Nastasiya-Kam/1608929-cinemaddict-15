@@ -14,7 +14,7 @@ import {UserAction, UpdateType} from '../const.js';
 
 const State = {
   DELETING: 'DELETING',
-  CREATING: 'CREATING',
+  NOT_DELETING: 'NOT_DELETING',
 };
 
 const site = document.body; // todo добавить в конструктор
@@ -64,6 +64,13 @@ class FilmDetails {
           .get(data.id)
           .updateData({
             isDeleting: true,
+          });
+        break;
+      case State.NOT_DELETING:
+        this._commentsPresenter
+          .get(data.id)
+          .updateData({
+            isDeleting: false,
           });
         break;
     }
@@ -230,10 +237,14 @@ class FilmDetails {
       }
       case UserAction.DELETE_COMMENT: {
         this.setViewState(State.DELETING, update);
-        this._api.deleteComment(update).then(() => {
-          this._filmsModel.deleteComment(updateType, this._film.id, update);
-          this._commentsModel.deleteComment(updateType, update);
-        });
+        this._api.deleteComment(update)
+          .then(() => {
+            this._filmsModel.deleteComment(updateType, this._film.id, update);
+            this._commentsModel.deleteComment(updateType, update);
+          })
+          .catch(() => {
+            this.setViewState(State.NOT_DELETING, update);
+          });
         break;
       }
       case UserAction.UPDATE_CONTROLS:
