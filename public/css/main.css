@@ -82,7 +82,7 @@ a:hover {
   opacity: 0.7;
 }
 
-button {
+button:not(:disabled) {
   cursor: pointer;
 }
 
@@ -881,7 +881,7 @@ button {
   text-decoration: underline;
   border: none;
 }
-.film-details__comment-delete:hover {
+.film-details__comment-delete:hover:not(:disabled) {
   opacity: 0.7;
 }
 .film-details__comment-input {

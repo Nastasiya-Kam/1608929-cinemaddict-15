@@ -12,6 +12,11 @@ import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
 import {Settings, getUpdatedFilm, getUpdatedWatchedFilm} from '../utils/films.js';
 import {UserAction, UpdateType} from '../const.js';
 
+const State = {
+  DELETING: 'DELETING',
+  CREATING: 'CREATING',
+};
+
 const site = document.body; // todo добавить в конструктор
 
 class FilmDetails {
@@ -46,6 +51,22 @@ class FilmDetails {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleFilmModelEvent = this._handleFilmModelEvent.bind(this);
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
+  }
+
+  setViewState(state, data) {
+    if (!this.isOpened()) {
+      return;
+    }
+
+    switch (state) {
+      case State.DELETING:
+        this._commentsPresenter
+          .get(data.id)
+          .updateData({
+            isDeleting: true,
+          });
+        break;
+    }
   }
 
   _getComments() {
@@ -208,6 +229,7 @@ class FilmDetails {
         break;
       }
       case UserAction.DELETE_COMMENT: {
+        this.setViewState(State.DELETING, update);
         this._api.deleteComment(update).then(() => {
           this._filmsModel.deleteComment(updateType, this._film.id, update);
           this._commentsModel.deleteComment(updateType, update);
