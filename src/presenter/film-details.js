@@ -64,7 +64,9 @@ class FilmDetails {
           isAdding: false,
         });
 
-        this._filmDetailsComponent.shake();
+        if (data.emotion !== null && data.comment !== '') {
+          this._filmDetailsComponent.shake();
+        }
         break;
       case State.DELETING:
         this._commentsPresenter
@@ -262,8 +264,8 @@ class FilmDetails {
         break;
       }
       case UserAction.UPDATE_CONTROLS:
-        this._api.updateFilm(update).then((response) => {
-          this._filmsModel.updateFilm(updateType, response);
+        this._api.updateFilm(update).then((film) => {
+          this._filmsModel.updateFilm(updateType, film);
         });
         break;
     }

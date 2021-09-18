@@ -107,11 +107,10 @@ class FilmDetails extends AbstractView {
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
   }
 
-  shake(callback) {
+  shake() {
     this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
     setTimeout(() => {
       this.getElement().style.animation = '';
-      callback();
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

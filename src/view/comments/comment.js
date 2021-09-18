@@ -1,8 +1,8 @@
 import {getFormattedCommentDate} from '../../utils/dates.js';
 import {remove} from '../../utils/dom.js';
+import {SHAKE_ANIMATION_TIMEOUT} from '../../const.js';
 import SmartView from '../smart.js';
 import he from 'he';
-import {SHAKE_ANIMATION_TIMEOUT} from '../../const.js';
 
 const createComment = (element) => {
   const {comment, emotion, author, date, isDeleting} = element;
@@ -61,11 +61,10 @@ class Comment extends SmartView {
     this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._onCommentDelete);
   }
 
-  shake(callback) {
+  shake() {
     this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
     setTimeout(() => {
       this.getElement().style.animation = '';
-      callback();
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 
