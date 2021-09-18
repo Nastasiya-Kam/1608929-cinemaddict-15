@@ -52,6 +52,55 @@ class FilmDetails {
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
   }
 
+  open(film) {
+    this._film = film;
+
+    if (this._isOpen) {
+      this._close();
+    }
+
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
+
+    this._filmDetailsComponent = new FilmDetailsView(this._film);
+    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
+
+    site.classList.add('hide-overflow');
+    document.addEventListener('keydown', this._onEscKeydown);
+
+    render(site, this._filmDetailsComponent);
+
+    this._renderControls(this._film);
+
+    render(this._filmDetailsComponent.getBottomContainer(), this._commentsWrapComponent);
+
+    this._renderComments();
+    this._renderCommentNew();
+
+    this._isOpen = true;
+
+    this._api.getComments(film)
+      .then((comments) => {
+        this._commentsModel.setComments(UpdateType.INIT, comments);
+      })
+      .catch(() => {
+        this._commentsModel.setComments(UpdateType.INIT, []);
+      });
+  }
+
+  _close() {
+    document.removeEventListener('keydown', this._onEscKeydown);
+    site.classList.remove('hide-overflow');
+    remove(this._filmDetailsComponent);
+    this._clearFilmDetails();
+
+    this._isOpen = false;
+    this._isLoading = true;
+
+    this._filmsModel.removeObserver(this._handleFilmModelEvent);
+    this._commentsModel.removeObserver(this._handleCommentsModelEvent);
+  }
+
   _setViewState(state, data) {
     switch (state) {
       case State.ADDING:
@@ -175,55 +224,6 @@ class FilmDetails {
     remove(this._commentsListTitleComponent);
     remove(this._commentsListComponent);
     remove(this._commentsLoadingComponent);
-  }
-
-  open(film) {
-    this._film = film;
-
-    if (this._isOpen) {
-      this._close();
-    }
-
-    this._filmsModel.addObserver(this._handleFilmModelEvent);
-    this._commentsModel.addObserver(this._handleCommentsModelEvent);
-
-    this._filmDetailsComponent = new FilmDetailsView(this._film);
-    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
-
-    site.classList.add('hide-overflow');
-    document.addEventListener('keydown', this._onEscKeydown);
-
-    render(site, this._filmDetailsComponent);
-
-    this._renderControls(this._film);
-
-    render(this._filmDetailsComponent.getBottomContainer(), this._commentsWrapComponent);
-
-    this._renderComments();
-    this._renderCommentNew();
-
-    this._isOpen = true;
-
-    this._api.getComments(film)
-      .then((comments) => {
-        this._commentsModel.setComments(UpdateType.INIT, comments);
-      })
-      .catch(() => {
-        this._commentsModel.setComments(UpdateType.INIT, []);
-      });
-  }
-
-  _close() {
-    document.removeEventListener('keydown', this._onEscKeydown);
-    site.classList.remove('hide-overflow');
-    remove(this._filmDetailsComponent);
-    this._clearFilmDetails();
-
-    this._isOpen = false;
-    this._isLoading = true;
-
-    this._filmsModel.removeObserver(this._handleFilmModelEvent);
-    this._commentsModel.removeObserver(this._handleCommentsModelEvent);
   }
 
   _handleViewAction(actionType, updateType, update) {

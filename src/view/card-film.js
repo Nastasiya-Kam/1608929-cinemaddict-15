@@ -45,6 +45,15 @@ class CardFilm extends AbstractView {
     return createCardFilmTemplate(this._film);
   }
 
+  _onTitleClick() {
+    this._callback.titleClick();
+  }
+
+  _onCommentsClick(evt) {
+    evt.preventDefault();
+    this._callback.commentsClick();
+  }
+
   _onPosterClick() {
     this._callback.posterClick();
   }
@@ -54,18 +63,9 @@ class CardFilm extends AbstractView {
     this.getElement().querySelector('.film-card__poster').addEventListener('click', this._onPosterClick);
   }
 
-  _onTitleClick() {
-    this._callback.titleClick();
-  }
-
   setOnTitleClick(callback) {
     this._callback.titleClick = callback;
     this.getElement().querySelector('.film-card__title').addEventListener('click', this._onTitleClick);
-  }
-
-  _onCommentsClick(evt) {
-    evt.preventDefault();
-    this._callback.commentsClick();
   }
 
   setOnCommentsClick(callback) {

@@ -186,6 +186,18 @@ class Statistic extends SmartView {
     this._setOnStatisticTypeChange(this._callback.filterTypeChange);
   }
 
+  _setChart() {
+    if (this._genresChart !== null) {
+      this._genresChart = null;
+    }
+
+    const {films, period} = this._data;
+    const statisticCtx = this.getElement().querySelector('.statistic__chart');
+    const watchedFilms = getCountWatchedFilms(films, period);
+
+    this._genresChart = renderGenresChart(statisticCtx, watchedFilms);
+  }
+
   _onStatisticTypeChange(evt) {
     evt.preventDefault();
     const currentPeriod = evt.target.value;
@@ -199,18 +211,6 @@ class Statistic extends SmartView {
 
   _setOnStatisticTypeChange() {
     this.getElement().querySelector('.statistic__filters').addEventListener('change', this._onStatisticTypeChange);
-  }
-
-  _setChart() {
-    if (this._genresChart !== null) {
-      this._genresChart = null;
-    }
-
-    const {films, period} = this._data;
-    const statisticCtx = this.getElement().querySelector('.statistic__chart');
-    const watchedFilms = getCountWatchedFilms(films, period);
-
-    this._genresChart = renderGenresChart(statisticCtx, watchedFilms);
   }
 }
 

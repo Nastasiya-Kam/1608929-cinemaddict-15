@@ -64,6 +64,13 @@ class CommentNew extends SmartView {
     this.setOnCommentSubmit(this._callback.commentSubmit);
   }
 
+  _shake() {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector('.film-details__emoji-list').addEventListener('change', this._onEmojiClick);
     this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._onDescriptionTextareaChange);
@@ -101,13 +108,6 @@ class CommentNew extends SmartView {
   setOnCommentSubmit(callback) {
     this._callback.commentSubmit = callback;
     this.getElement().querySelector('textarea').addEventListener('keydown', this._onCommentSubmit);
-  }
-
-  _shake() {
-    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    setTimeout(() => {
-      this.getElement().style.animation = '';
-    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   static parseDataToComment(data) {

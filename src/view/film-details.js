@@ -98,6 +98,13 @@ class FilmDetails extends AbstractView {
     return this.getElement().querySelector('.film-details__bottom-container');
   }
 
+  shake() {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   _onCloseButtonClick() {
     this._callback.closeButtonClick();
   }
@@ -105,13 +112,6 @@ class FilmDetails extends AbstractView {
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
-  }
-
-  shake() {
-    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    setTimeout(() => {
-      this.getElement().style.animation = '';
-    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
 

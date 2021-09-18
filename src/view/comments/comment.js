@@ -43,12 +43,19 @@ class Comment extends SmartView {
     return createComment(this._data);
   }
 
-  restoreHandlers() {
-    this.setOnCommentDelete(this._callback.commentDelete);
-  }
-
   destroy() {
     remove(this);
+  }
+
+  shake() {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  restoreHandlers() {
+    this.setOnCommentDelete(this._callback.commentDelete);
   }
 
   _onCommentDelete(evt) {
@@ -59,13 +66,6 @@ class Comment extends SmartView {
   setOnCommentDelete(callback) {
     this._callback.commentDelete = callback;
     this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._onCommentDelete);
-  }
-
-  shake() {
-    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    setTimeout(() => {
-      this.getElement().style.animation = '';
-    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   static parseCommentToData(comment) {
