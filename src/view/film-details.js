@@ -1,6 +1,7 @@
 import {getFormattedReleaseDate} from '../utils/dates.js';
 import {getDuration} from '../utils/films.js';
 import AbstractView from './abstract.js';
+import {SHAKE_ANIMATION_TIMEOUT} from '../const.js';
 
 const createGenresTemplate = (genres) => genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -104,6 +105,14 @@ class FilmDetails extends AbstractView {
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
+  }
+
+  shake(callback) {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+      callback();
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
 

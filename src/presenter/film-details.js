@@ -63,6 +63,8 @@ class FilmDetails {
         this._commentNewComponent.updateData({
           isAdding: false,
         });
+
+        this._filmDetailsComponent.shake();
         break;
       case State.DELETING:
         this._commentsPresenter
@@ -77,6 +79,8 @@ class FilmDetails {
           .updateData({
             isDeleting: false,
           });
+
+        this._commentsPresenter.get(data.id).shake();
         break;
     }
   }

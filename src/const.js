@@ -1,6 +1,7 @@
 const EMOJI = ['smile', 'sleeping', 'puke', 'angry'];
 const AUTHORIZATION = 'Basic dfaksdjlkjd4309SLDKflk';
 const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -32,4 +33,4 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
-export {EMOJI, Mode, SortType, UserAction, UpdateType, AUTHORIZATION, END_POINT};
+export {EMOJI, AUTHORIZATION, END_POINT, SHAKE_ANIMATION_TIMEOUT, Mode, SortType, UserAction, UpdateType};
