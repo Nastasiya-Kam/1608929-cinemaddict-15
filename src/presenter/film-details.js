@@ -15,6 +15,8 @@ import {UserAction, UpdateType} from '../const.js';
 const State = {
   DELETING: 'DELETING',
   NOT_DELETING: 'NOT_DELETING',
+  ADDING: 'ADDING',
+  NOT_ADDING: 'NOT_ADDING',
 };
 
 const site = document.body; // todo добавить в конструктор
@@ -27,14 +29,11 @@ class FilmDetails {
     this._api = api;
 
     this._isLoading = true;
-
     this._isOpen = false;
-
     this._commentsPresenter = new Map();
 
     this._controlsComponent = null;
-
-    this._commentsWrapComponent = new CommentsWrapView(); //не будем удалять и переопределять. Обёртка для списка, загаловка и нового комментария
+    this._commentsWrapComponent = new CommentsWrapView();
     this._commentsListTitleComponent = null;
     this._commentsListComponent = null;
     this._commentNewComponent = null;
@@ -59,6 +58,16 @@ class FilmDetails {
     }
 
     switch (state) {
+      case State.ADDING:
+        this._commentNewComponent.updateData({
+          isAdding: true,
+        });
+        break;
+      case State.NOT_ADDING:
+        this._commentNewComponent.updateData({
+          isAdding: false,
+        });
+        break;
       case State.DELETING:
         this._commentsPresenter
           .get(data.id)
@@ -226,13 +235,18 @@ class FilmDetails {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT: {
-        this._api.addComment(this._film, update).then((film) => {
-          this._filmsModel.updateFilm(updateType, film);
-          this._api.getComments(film)
-            .then((comments) => {
-              this._commentsModel.setComments(updateType, comments);
-            });
-        });
+        this.setViewState(State.ADDING, update);
+        this._api.addComment(this._film, update)
+          .then((film) => {
+            this._filmsModel.updateFilm(updateType, film);
+            this._api.getComments(film)
+              .then((comments) => {
+                this._commentsModel.setComments(updateType, comments);
+              });
+          })
+          .catch(() => {
+            this.setViewState(State.NOT_ADDING, update);
+          });
         break;
       }
       case UserAction.DELETE_COMMENT: {

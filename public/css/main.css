@@ -808,12 +808,14 @@ button:not(:disabled) {
   align-items: center;
   font-size: 55px;
   margin-right: 15px;
-  cursor: pointer;
   border-radius: 50%;
   opacity: 0.5;
   transition: all 0.4s;
 }
-.film-details__emoji-label:hover {
+.film-details__emoji-item:not(:disabled) + .film-details__emoji-label {
+  cursor: pointer;
+}
+.film-details__emoji-item:not(:disabled) + .film-details__emoji-label:hover {
   opacity: 1;
 }
 .film-details__emoji-item:checked + .film-details__emoji-label {
