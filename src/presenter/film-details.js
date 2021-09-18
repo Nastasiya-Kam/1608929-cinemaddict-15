@@ -52,11 +52,7 @@ class FilmDetails {
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
   }
 
-  setViewState(state, data) {
-    if (!this.isOpened()) {
-      return;
-    }
-
+  _setViewState(state, data) {
     switch (state) {
       case State.ADDING:
         this._commentNewComponent.updateData({
@@ -97,7 +93,7 @@ class FilmDetails {
     return this._film.id === id;
   }
 
-  renderControls(film) {
+  _renderControls(film) {
     if (this._controlsComponent !== null) {
       remove(this._controlsComponent);
     }
@@ -201,7 +197,7 @@ class FilmDetails {
 
     render(site, this._filmDetailsComponent);
 
-    this.renderControls(this._film);
+    this._renderControls(this._film);
 
     render(this._filmDetailsComponent.getBottomContainer(), this._commentsWrapComponent);
 
@@ -235,7 +231,7 @@ class FilmDetails {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT: {
-        this.setViewState(State.ADDING, update);
+        this._setViewState(State.ADDING, update);
         this._api.addComment(this._film, update)
           .then((film) => {
             this._filmsModel.updateFilm(updateType, film);
@@ -245,19 +241,19 @@ class FilmDetails {
               });
           })
           .catch(() => {
-            this.setViewState(State.NOT_ADDING, update);
+            this._setViewState(State.NOT_ADDING, update);
           });
         break;
       }
       case UserAction.DELETE_COMMENT: {
-        this.setViewState(State.DELETING, update);
+        this._setViewState(State.DELETING, update);
         this._api.deleteComment(update)
           .then(() => {
             this._filmsModel.deleteComment(updateType, this._film.id, update);
             this._commentsModel.deleteComment(updateType, update);
           })
           .catch(() => {
-            this.setViewState(State.NOT_DELETING, update);
+            this._setViewState(State.NOT_DELETING, update);
           });
         break;
       }
@@ -277,7 +273,7 @@ class FilmDetails {
       // если изменился фильм, для которого открыт попап, то обновляем инфо
       case UpdateType.FAVORITE_WATCHLIST:
       case UpdateType.WATCHED:
-        this.renderControls(data);
+        this._renderControls(data);
         break;
     }
   }
