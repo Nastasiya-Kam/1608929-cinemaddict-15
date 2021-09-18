@@ -9,7 +9,6 @@ const BAR_HEIGHT = 50;
 const renderGenresChart = (statisticCtx, films) => {
   const filmGenres = getFilmGenres(films);
   const uniqueGenres = makeItemsUnique(filmGenres);
-
   const genresData = getGenresData(uniqueGenres, filmGenres);
 
   statisticCtx.height = BAR_HEIGHT * uniqueGenres.length;

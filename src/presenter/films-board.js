@@ -98,7 +98,7 @@ class FilmsBoard {
     }
 
     return {
-      currentFilterfilms: filteredFilms,
+      currentFilteredfilms: filteredFilms,
       topRatedFilms: topRatedFilms,
       mostCommentedFilms: mostCommentedFilms,
     };
@@ -202,7 +202,7 @@ class FilmsBoard {
   }
 
   _clearFilmsBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {
-    const filmCount = this._getFilms().currentFilterfilms.length;
+    const filmCount = this._getFilms().currentFilteredfilms.length;
 
     this._getFilmPresenters((presenter) => {
       presenter.forEach((element) => element.destroy());
@@ -246,13 +246,13 @@ class FilmsBoard {
   _renderMainFilmsList() {
     const prevMainFilmsListComponent = this._mainFilmsListComponent;
 
-    const filmCount = this._getFilms().currentFilterfilms.length;
+    const filmCount = this._getFilms().currentFilteredfilms.length;
 
     if (this._renderedFilmCount % FILM_COUNT_PER_STEP !== 0) {
       this._renderedFilmCount = this._renderedFilmCount + (this._renderedFilmCount % FILM_COUNT_PER_STEP);
     }
 
-    const films = this._getFilms().currentFilterfilms.slice(0, Math.min(filmCount, this._renderedFilmCount));
+    const films = this._getFilms().currentFilteredfilms.slice(0, Math.min(filmCount, this._renderedFilmCount));
 
     this._mainFilmsListComponent = new FilmsListView(ListType.MAIN.title, ListType.MAIN.isExtraList);
 
@@ -280,9 +280,9 @@ class FilmsBoard {
   }
 
   _handleShowMoreClick() {
-    const filmCount = this._getFilms().currentFilterfilms.length;
+    const filmCount = this._getFilms().currentFilteredfilms.length;
     const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmCount + FILM_COUNT_PER_STEP);
-    const films = this._getFilms().currentFilterfilms.slice(this._renderedFilmCount, newRenderedFilmCount);
+    const films = this._getFilms().currentFilteredfilms.slice(this._renderedFilmCount, newRenderedFilmCount);
 
     this._renderFilms(this._mainFilmsListComponent, films);
     this._renderedFilmCount = newRenderedFilmCount;
@@ -351,7 +351,7 @@ class FilmsBoard {
     }
 
     const films = this._getFilms();
-    const filmCount = films.currentFilterfilms.length;
+    const filmCount = films.currentFilteredfilms.length;
 
     this._renderSort();
 

@@ -1,11 +1,11 @@
 import StatisticView from './view/statistic.js';
-import MoviesInside from './view/movies-inside.js';
+import MoviesInsideView from './view/movies-inside.js';
 import {render, remove} from './utils/dom.js';
 import {StatisticType} from './utils/statistics.js';
 import ProfilePresenter from './presenter/profile.js';
 import SiteMenuPresenter from './presenter/site-menu.js';
-import FilmBoardPresenter from './presenter/film-board.js';
-import FilterModel from './model/filters.js';
+import FilmsBoardPresenter from './presenter/films-board.js';
+import FilterModel from './model/filter.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
 import {UpdateType, AUTHORIZATION, END_POINT} from './const.js';
@@ -23,7 +23,7 @@ const filterModel = new FilterModel();
 const commentsModel = new CommentsModel();
 
 const profilePresenter = new ProfilePresenter(siteHeader, filmsModel);
-const filmBoardPresenter = new FilmBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, filterModel, api);
+const filmBoardPresenter = new FilmsBoardPresenter(siteMain, siteHeader, filmsModel, commentsModel, filterModel, api);
 
 let statisticComponent = null;
 
@@ -51,10 +51,10 @@ api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
     const numberFilms = filmsModel.getFilms().length;
-    render(footerStatistics, new MoviesInside(numberFilms));
+    render(footerStatistics, new MoviesInsideView(numberFilms));
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
     const numberFilms = filmsModel.getFilms().length;
-    render(footerStatistics, new MoviesInside(numberFilms));
+    render(footerStatistics, new MoviesInsideView(numberFilms));
   });

@@ -1,4 +1,4 @@
-import SiteMenuView from '../view/site-menu';
+import SiteMenuView from '../view/site-menu.js';
 import {render, replace, remove} from '../utils/dom.js';
 import {UpdateType} from '../const.js';
 import {FilterType, filter} from '../utils/filter.js';

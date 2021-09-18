@@ -19,7 +19,7 @@ const State = {
   NOT_ADDING: 'NOT_ADDING',
 };
 
-const site = document.body; // todo добавить в конструктор
+const site = document.body;
 
 class FilmDetails {
   constructor(changeData, filmsModel, commentsModel, api) {
@@ -89,14 +89,6 @@ class FilmDetails {
 
   _getComments() {
     return this._commentsModel.getComments();
-  }
-
-  isOpened() {
-    return this._isOpen;
-  }
-
-  isIdEqual(id) {
-    return this._film.id === id;
   }
 
   _renderControls(film) {
@@ -276,7 +268,6 @@ class FilmDetails {
       return;
     }
     switch (updateType) {
-      // если изменился фильм, для которого открыт попап, то обновляем инфо
       case UpdateType.FAVORITE_WATCHLIST:
       case UpdateType.WATCHED:
         this._renderControls(data);
@@ -287,16 +278,13 @@ class FilmDetails {
   _handleCommentsModelEvent(updateType) {
     switch (updateType) {
       case UpdateType.COMMENT_DELETED:
-        // - действие при удалении комментария
         this._renderComments();
         break;
       case UpdateType.COMMENT_ADDED:
-        // - действие при добавлении комментария
         this._renderComments();
         this._renderCommentNew();
         break;
       case UpdateType.INIT:
-        // - действие при открытии попапа
         this._isLoading = false;
         remove(this._commentsLoadingComponent);
         this._renderComments();
