@@ -1,5 +1,5 @@
 import {isCtrlEnterEvent} from '../../utils/dom.js';
-import {EMOJI, SHAKE_ANIMATION_TIMEOUT} from '../../const.js';
+import {EMOJI} from '../../const.js';
 import SmartView from '../smart.js';
 import he from 'he';
 
@@ -64,13 +64,6 @@ class CommentNew extends SmartView {
     this.setOnCommentSubmit(this._callback.commentSubmit);
   }
 
-  _shake() {
-    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    setTimeout(() => {
-      this.getElement().style.animation = '';
-    }, SHAKE_ANIMATION_TIMEOUT);
-  }
-
   _setInnerHandlers() {
     this.getElement().querySelector('.film-details__emoji-list').addEventListener('change', this._onEmojiClick);
     this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._onDescriptionTextareaChange);
@@ -96,7 +89,7 @@ class CommentNew extends SmartView {
   _onCommentSubmit(evt) {
     if(isCtrlEnterEvent(evt)){
       if (this._data.emotion === null || this._data.comment === '') {
-        this._shake();
+        this.shake();
         return;
       }
 

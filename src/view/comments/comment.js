@@ -1,6 +1,5 @@
 import {getFormattedCommentDate} from '../../utils/dates.js';
 import {remove} from '../../utils/dom.js';
-import {SHAKE_ANIMATION_TIMEOUT} from '../../const.js';
 import SmartView from '../smart.js';
 import he from 'he';
 
@@ -45,13 +44,6 @@ class Comment extends SmartView {
 
   destroy() {
     remove(this);
-  }
-
-  shake() {
-    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    setTimeout(() => {
-      this.getElement().style.animation = '';
-    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   restoreHandlers() {
