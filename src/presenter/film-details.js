@@ -12,13 +12,6 @@ import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
 import {Settings, getUpdatedFilm, getUpdatedWatchedFilm} from '../utils/films.js';
 import {UserAction, UpdateType} from '../const.js';
 
-const State = {
-  DELETING: 'DELETING',
-  NOT_DELETING: 'NOT_DELETING',
-  ADDING: 'ADDING',
-  NOT_ADDING: 'NOT_ADDING',
-};
-
 const site = document.body;
 
 class FilmDetails {
@@ -99,41 +92,6 @@ class FilmDetails {
 
     this._filmsModel.removeObserver(this._handleFilmModelEvent);
     this._commentsModel.removeObserver(this._handleCommentsModelEvent);
-  }
-
-  _setViewState(state, data) {
-    switch (state) {
-      case State.ADDING:
-        this._commentNewComponent.updateData({
-          isAdding: true,
-        });
-        break;
-      case State.NOT_ADDING:
-        this._commentNewComponent.updateData({
-          isAdding: false,
-        });
-
-        if (data.emotion !== null && data.comment !== '') {
-          this._filmDetailsComponent.shake();
-        }
-        break;
-      case State.DELETING:
-        this._commentsPresenter
-          .get(data.id)
-          .updateData({
-            isDeleting: true,
-          });
-        break;
-      case State.NOT_DELETING:
-        this._commentsPresenter
-          .get(data.id)
-          .updateData({
-            isDeleting: false,
-          });
-
-        this._commentsPresenter.get(data.id).shake();
-        break;
-    }
   }
 
   _getComments() {
@@ -229,26 +187,31 @@ class FilmDetails {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT: {
-        this._setViewState(State.ADDING, update);
+        this._commentNewComponent.setIsAdding(true);
         this._api.addComment(this._film, update)
           .then((data) => {
             this._filmsModel.updateFilm(updateType, data.movie);
             this._commentsModel.setComments(updateType, data.comments);
           })
           .catch(() => {
-            this._setViewState(State.NOT_ADDING, update);
+            this._commentNewComponent.setIsAdding(false);
+
+            if (update.emotion !== null && update.comment !== '') {
+              this._filmDetailsComponent.shake();
+            }
           });
         break;
       }
       case UserAction.DELETE_COMMENT: {
-        this._setViewState(State.DELETING, update);
+        this._commentsPresenter.get(update.id).setIsDeleting(true);
         this._api.deleteComment(update)
           .then(() => {
             this._filmsModel.deleteComment(updateType, this._film.id, update);
             this._commentsModel.deleteComment(updateType, update);
           })
           .catch(() => {
-            this._setViewState(State.NOT_DELETING, update);
+            this._commentsPresenter.get(update.id).setIsDeleting(false);
+            this._commentsPresenter.get(update.id).shake();
           });
         break;
       }

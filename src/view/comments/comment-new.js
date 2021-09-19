@@ -64,6 +64,12 @@ class CommentNew extends SmartView {
     this.setOnCommentSubmit(this._callback.commentSubmit);
   }
 
+  setIsAdding(flag) {
+    this.updateData({
+      isAdding: flag,
+    });
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector('.film-details__emoji-list').addEventListener('change', this._onEmojiClick);
     this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._onDescriptionTextareaChange);

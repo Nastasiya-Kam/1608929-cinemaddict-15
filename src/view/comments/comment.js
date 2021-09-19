@@ -50,6 +50,12 @@ class Comment extends SmartView {
     this.setOnCommentDelete(this._callback.commentDelete);
   }
 
+  setIsDeleting(flag) {
+    this.updateData({
+      isDeleting: flag,
+    });
+  }
+
   _onCommentDelete(evt) {
     evt.preventDefault();
     this._callback.commentDelete(Comment.parseDataToComment(this._data));
