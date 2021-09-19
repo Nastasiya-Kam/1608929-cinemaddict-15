@@ -48,7 +48,10 @@ class Api {
       headers: new Headers({'Content-Type': 'application/json'}),
     })
       .then(Api.toJSON)
-      .then((element) => FilmsModel.adaptToClient(element.movie));
+      .then((data) => {
+        data.movie = FilmsModel.adaptToClient(data.movie);
+        return data;
+      });
   }
 
   deleteComment(comment) {

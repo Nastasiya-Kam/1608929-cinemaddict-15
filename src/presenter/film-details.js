@@ -231,12 +231,9 @@ class FilmDetails {
       case UserAction.ADD_COMMENT: {
         this._setViewState(State.ADDING, update);
         this._api.addComment(this._film, update)
-          .then((film) => {
-            this._filmsModel.updateFilm(updateType, film);
-            this._api.getComments(film)
-              .then((comments) => {
-                this._commentsModel.setComments(updateType, comments);
-              });
+          .then((data) => {
+            this._filmsModel.updateFilm(updateType, data.movie);
+            this._commentsModel.setComments(updateType, data.comments);
           })
           .catch(() => {
             this._setViewState(State.NOT_ADDING, update);
