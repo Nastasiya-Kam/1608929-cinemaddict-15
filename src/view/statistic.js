@@ -9,7 +9,6 @@ const BAR_HEIGHT = 50;
 const renderGenresChart = (statisticCtx, films) => {
   const filmGenres = getFilmGenres(films);
   const uniqueGenres = makeItemsUnique(filmGenres);
-
   const genresData = getGenresData(uniqueGenres, filmGenres);
 
   statisticCtx.height = BAR_HEIGHT * uniqueGenres.length;
@@ -72,6 +71,16 @@ const renderGenresChart = (statisticCtx, films) => {
   });
 };
 
+const createRatingTemplate = (rating) => (
+  `${(rating === 0)
+    ? ''
+    : `<p class="statistic__rank">
+      Your rank
+      <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
+      <span class="statistic__rank-label">${getRating(rating)}</span>`}
+    </p>`
+);
+
 const createStatisticFilters = (typeStatistic, currentRange) => {
   const {type, text} = typeStatistic;
 
@@ -117,11 +126,7 @@ const createStatisticTemplate = (statistics) => {
 
   return (
     `<section class="statistic">
-      <p class="statistic__rank">
-        Your rank
-        <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-        <span class="statistic__rank-label">${getRating(rating)}</span>
-      </p>
+      ${createRatingTemplate(rating)}
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
         <p class="statistic__filters-description">Show stats:</p>
@@ -137,9 +142,9 @@ const createStatisticTemplate = (statistics) => {
           <h4 class="statistic__item-title">Total duration</h4>
           <p class="statistic__item-text">${Math.trunc(duration/60)} <span class="statistic__item-description">h</span> ${duration - Math.trunc(duration/60)*60} <span class="statistic__item-description">m</span></p>
         </li>
-        <li class="statistic__text-item">
+        ${(isEmptyLabels) ? '' : `<li class="statistic__text-item">
           <h4 class="statistic__item-title">Top genre</h4>
-          ${(isEmptyLabels)? '' : `<p class="statistic__item-text">${genresData.labels[0]}</p>`}
+          <p class="statistic__item-text">${genresData.labels[0]}</p>`}
         </li>
       </ul>
 
@@ -185,6 +190,18 @@ class Statistic extends SmartView {
     this._setOnStatisticTypeChange(this._callback.filterTypeChange);
   }
 
+  _setChart() {
+    if (this._genresChart !== null) {
+      this._genresChart = null;
+    }
+
+    const {films, period} = this._data;
+    const statisticCtx = this.getElement().querySelector('.statistic__chart');
+    const watchedFilms = getCountWatchedFilms(films, period);
+
+    this._genresChart = renderGenresChart(statisticCtx, watchedFilms);
+  }
+
   _onStatisticTypeChange(evt) {
     evt.preventDefault();
     const currentPeriod = evt.target.value;
@@ -198,18 +215,6 @@ class Statistic extends SmartView {
 
   _setOnStatisticTypeChange() {
     this.getElement().querySelector('.statistic__filters').addEventListener('change', this._onStatisticTypeChange);
-  }
-
-  _setChart() {
-    if (this._genresChart !== null) {
-      this._genresChart = null;
-    }
-
-    const {films, period} = this._data;
-    const statisticCtx = this.getElement().querySelector('.statistic__chart');
-    const watchedFilms = getCountWatchedFilms(films, period);
-
-    this._genresChart = renderGenresChart(statisticCtx, watchedFilms);
   }
 }
 

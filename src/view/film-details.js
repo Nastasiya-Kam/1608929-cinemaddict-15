@@ -20,7 +20,7 @@ const createFilmDetailsTemplate = (film) => {
             <div class="film-details__poster">
               <img class="film-details__poster-img" src="${img}" alt="">
 
-              <p class="film-details__age">${age}</p>
+              <p class="film-details__age">${age}+</p>
             </div>
 
             <div class="film-details__info">
@@ -42,11 +42,11 @@ const createFilmDetailsTemplate = (film) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${writers}</td>
+                  <td class="film-details__cell">${writers.map((writer) => writer).join(', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${actors}</td>
+                  <td class="film-details__cell">${actors.map((actor) => actor).join(', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>

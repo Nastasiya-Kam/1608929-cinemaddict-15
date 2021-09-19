@@ -12,7 +12,7 @@ import {render, isEscEvent, remove, RenderPosition} from '../utils/dom.js';
 import {Settings, getUpdatedFilm, getUpdatedWatchedFilm} from '../utils/films.js';
 import {UserAction, UpdateType} from '../const.js';
 
-const site = document.body; // todo добавить в конструктор
+const site = document.body;
 
 class FilmDetails {
   constructor(changeData, filmsModel, commentsModel, api) {
@@ -22,14 +22,11 @@ class FilmDetails {
     this._api = api;
 
     this._isLoading = true;
-
     this._isOpen = false;
-
     this._commentsPresenter = new Map();
 
     this._controlsComponent = null;
-
-    this._commentsWrapComponent = new CommentsWrapView(); //не будем удалять и переопределять. Обёртка для списка, загаловка и нового комментария
+    this._commentsWrapComponent = new CommentsWrapView();
     this._commentsListTitleComponent = null;
     this._commentsListComponent = null;
     this._commentNewComponent = null;
@@ -48,19 +45,60 @@ class FilmDetails {
     this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
   }
 
+  open(film) {
+    this._film = film;
+
+    if (this._isOpen) {
+      this._close();
+    }
+
+    this._filmsModel.addObserver(this._handleFilmModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
+
+    this._filmDetailsComponent = new FilmDetailsView(this._film);
+    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
+
+    site.classList.add('hide-overflow');
+    document.addEventListener('keydown', this._onEscKeydown);
+
+    render(site, this._filmDetailsComponent);
+
+    this._renderControls(this._film);
+
+    render(this._filmDetailsComponent.getBottomContainer(), this._commentsWrapComponent);
+
+    this._renderComments();
+    this._renderCommentNew();
+
+    this._isOpen = true;
+
+    this._api.getComments(film)
+      .then((comments) => {
+        this._commentsModel.setComments(UpdateType.INIT, comments);
+      })
+      .catch(() => {
+        this._commentsModel.setComments(UpdateType.INIT, []);
+      });
+  }
+
+  _close() {
+    document.removeEventListener('keydown', this._onEscKeydown);
+    site.classList.remove('hide-overflow');
+    remove(this._filmDetailsComponent);
+    this._clearFilmDetails();
+
+    this._isOpen = false;
+    this._isLoading = true;
+
+    this._filmsModel.removeObserver(this._handleFilmModelEvent);
+    this._commentsModel.removeObserver(this._handleCommentsModelEvent);
+  }
+
   _getComments() {
     return this._commentsModel.getComments();
   }
 
-  isOpened() {
-    return this._isOpen;
-  }
-
-  isIdEqual(id) {
-    return this._film.id === id;
-  }
-
-  renderControls(film) {
+  _renderControls(film) {
     if (this._controlsComponent !== null) {
       remove(this._controlsComponent);
     }
@@ -146,67 +184,40 @@ class FilmDetails {
     remove(this._commentsLoadingComponent);
   }
 
-  open(film) {
-    this._film = film;
-
-    if (this._isOpen) {
-      this._close();
-    }
-
-    this._filmsModel.addObserver(this._handleFilmModelEvent);
-    this._commentsModel.addObserver(this._handleCommentsModelEvent);
-
-    this._filmDetailsComponent = new FilmDetailsView(this._film);
-    this._filmDetailsComponent.setOnCloseButtonClick(this._handleCloseButtonClick);
-
-    site.classList.add('hide-overflow');
-    document.addEventListener('keydown', this._onEscKeydown);
-
-    render(site, this._filmDetailsComponent);
-
-    this.renderControls(this._film);
-
-    render(this._filmDetailsComponent.getBottomContainer(), this._commentsWrapComponent);
-
-    this._renderComments();
-    this._renderCommentNew();
-
-    this._isOpen = true;
-  }
-
-  _close() {
-    document.removeEventListener('keydown', this._onEscKeydown);
-    site.classList.remove('hide-overflow');
-    remove(this._filmDetailsComponent);
-    this._clearFilmDetails();
-
-    this._isOpen = false;
-    this._isLoading = true;
-
-    this._filmsModel.removeObserver(this._handleFilmModelEvent);
-    this._commentsModel.removeObserver(this._handleCommentsModelEvent);
-  }
-
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_COMMENT: {
-        // todo Обёртка для обновления списка комментария на сервере (updateComment, не реализовано) и потом в модели?
-        this._commentsModel.addComment(updateType, this._newComment);
-        const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
-        // todo Обёртка для обновления фильма на сервере (updateFilm) и потом в модели?
-        this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
+        this._commentNewComponent.setIsAdding(true);
+        this._api.addComment(this._film, update)
+          .then((data) => {
+            this._filmsModel.updateFilm(updateType, data.movie);
+            this._commentsModel.setComments(updateType, data.comments);
+          })
+          .catch(() => {
+            this._commentNewComponent.setIsAdding(false);
+
+            if (update.emotion !== null && update.comment !== '') {
+              this._filmDetailsComponent.shake();
+            }
+          });
         break;
       }
       case UserAction.DELETE_COMMENT: {
-        // todo Обёртка для обновления списка комментария на сервере (updateComment, не реализовано) и потом в модели?
-        this._commentsModel.deleteComment(updateType, update);
-        const updatedComments = this._commentsModel.getComments().filter((comment) => comment.filmId === this._film.id);
-        this._filmsModel.updateFilmComments(updateType, this._film.id, updatedComments);
+        this._commentsPresenter.get(update.id).setIsDeleting(true);
+        this._api.deleteComment(update)
+          .then(() => {
+            this._filmsModel.deleteComment(updateType, this._film.id, update);
+            this._commentsModel.deleteComment(updateType, update);
+          })
+          .catch(() => {
+            this._commentsPresenter.get(update.id).setIsDeleting(false);
+            this._commentsPresenter.get(update.id).shake();
+          });
         break;
       }
       case UserAction.UPDATE_CONTROLS:
-        this._api.updateFilm(update).then((response) => {
-          this._filmsModel.updateFilm(updateType, response);
+        this._api.updateFilm(update).then((film) => {
+          this._filmsModel.updateFilm(updateType, film);
         });
         break;
     }
@@ -217,10 +228,9 @@ class FilmDetails {
       return;
     }
     switch (updateType) {
-      // если изменился фильм, для которого открыт попап, то обновляем инфо
       case UpdateType.FAVORITE_WATCHLIST:
       case UpdateType.WATCHED:
-        this.renderControls(data);
+        this._renderControls(data);
         break;
     }
   }
@@ -228,16 +238,13 @@ class FilmDetails {
   _handleCommentsModelEvent(updateType) {
     switch (updateType) {
       case UpdateType.COMMENT_DELETED:
-        // - действие при удалении комментария
         this._renderComments();
         break;
       case UpdateType.COMMENT_ADDED:
-        // - действие при добавлении комментария
         this._renderComments();
         this._renderCommentNew();
         break;
       case UpdateType.INIT:
-        // - действие при открытии попапа
         this._isLoading = false;
         remove(this._commentsLoadingComponent);
         this._renderComments();

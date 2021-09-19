@@ -1,4 +1,4 @@
-import SiteMenuView from '../view/site-menu';
+import SiteMenuView from '../view/site-menu.js';
 import {render, replace, remove} from '../utils/dom.js';
 import {UpdateType} from '../const.js';
 import {FilterType, filter} from '../utils/filter.js';
@@ -73,28 +73,32 @@ class SiteMenu {
         href: '#all',
         isActive: true,
         title: 'All movies',
-        hasCount: -1,
+        hasCount: false,
+        count: 0,
       },
       {
         typeFilter: FilterType.WATCH_LIST,
         href: '#watchlist',
         isActive: false,
         title: 'Watchlist',
-        hasCount: filter[FilterType.WATCH_LIST](films).length,
+        hasCount: true,
+        count: filter[FilterType.WATCH_LIST](films).length,
       },
       {
         typeFilter: FilterType.WATCHED,
         href: '#history',
         isActive: false,
         title: 'History',
-        hasCount: filter[FilterType.WATCHED](films).length,
+        hasCount: true,
+        count:filter[FilterType.WATCHED](films).length,
       },
       {
         typeFilter: FilterType.FAVORITE,
         href: '#favorites',
         isActive: false,
         title: 'Favorites',
-        hasCount: filter[FilterType.FAVORITE](films).length,
+        hasCount: true,
+        count: filter[FilterType.FAVORITE](films).length,
       },
     ];
   }

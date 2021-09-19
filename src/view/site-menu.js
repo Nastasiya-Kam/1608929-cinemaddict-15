@@ -1,7 +1,7 @@
 import AbstractView from './abstract.js';
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
-  const {typeFilter, href, title, hasCount} = filter;
+  const {typeFilter, href, title, hasCount, count} = filter;
 
   return (
     `<a
@@ -13,8 +13,8 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
       data-filter-type="${typeFilter}"
     >
       ${title}
-      ${(hasCount !== -1)
-      ? `<span class="main-navigation__item-count">${hasCount}</span>`
+      ${(hasCount)
+      ? `<span class="main-navigation__item-count">${count}</span>`
       : ''}
     </a>`);
 };

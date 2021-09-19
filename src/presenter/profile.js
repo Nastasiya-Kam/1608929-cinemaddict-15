@@ -18,6 +18,14 @@ class Profile {
     const films = this._filmsModel.getFilms();
     const rating = filter[FilterType.WATCHED](films).length;
 
+    if (rating === 0) {
+      if (this._profileComponent !== null) {
+        remove(this._profileComponent);
+        this._profileComponent = null;
+      }
+      return;
+    }
+
     const prevProfileComponent = this._profileComponent;
 
     this._profileComponent = new ProfileView(getRating(rating));

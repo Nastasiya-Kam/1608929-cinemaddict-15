@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "dayjs": "1.10.6",
-    "nanoid": "3.1.22",
     "he": "1.2.0",
     "chart.js": "2.9.4",
     "chartjs-plugin-datalabels": "0.7.0"
