@@ -23,19 +23,20 @@ class Profile {
         remove(this._profileComponent);
         this._profileComponent = null;
       }
-    } else {
-      const prevProfileComponent = this._profileComponent;
-
-      this._profileComponent = new ProfileView(getRating(rating));
-
-      if (prevProfileComponent === null) {
-        render(this._profileContainer, this._profileComponent);
-        return;
-      }
-
-      replace(this._profileComponent, prevProfileComponent);
-      remove(prevProfileComponent);
+      return;
     }
+
+    const prevProfileComponent = this._profileComponent;
+
+    this._profileComponent = new ProfileView(getRating(rating));
+
+    if (prevProfileComponent === null) {
+      render(this._profileContainer, this._profileComponent);
+      return;
+    }
+
+    replace(this._profileComponent, prevProfileComponent);
+    remove(prevProfileComponent);
   }
 
   _handleModelEvent() {
