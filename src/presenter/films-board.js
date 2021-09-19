@@ -230,11 +230,13 @@ class FilmsBoard {
 
     if (prevComponent === null) {
       render(this._filmsComponent, component);
-      return;
+      return component;
     }
 
     replace(component, prevComponent);
     remove(prevComponent);
+
+    return component;
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -279,7 +281,7 @@ class FilmsBoard {
         this._mostCommentedComponent = null;
 
         if (this._getFilms().mostCommentedFilms.length !== 0) {
-          this._renderExtraFilmsList(this._mostCommentedComponent, ListType.MOST_COMMENTED, this._getFilms().mostCommentedFilms, this._filmMostCommentedPresenter);
+          this._mostCommentedComponent = this._renderExtraFilmsList(this._mostCommentedComponent, ListType.MOST_COMMENTED, this._getFilms().mostCommentedFilms, this._filmMostCommentedPresenter);
         }
         break;
       case UpdateType.FILTER_CHANGED:
@@ -342,13 +344,13 @@ class FilmsBoard {
 
     if (renderTopRated) {
       if (films.topRatedFilms.length !== 0) {
-        this._renderExtraFilmsList(this._topRatedComponent, ListType.TOP, films.topRatedFilms, this._filmTopPresenter);
+        this._topRatedComponent = this._renderExtraFilmsList(this._topRatedComponent, ListType.TOP, films.topRatedFilms, this._filmTopPresenter);
       }
     }
 
     if (renderMostCommented) {
       if (films.mostCommentedFilms.length !== 0) {
-        this._renderExtraFilmsList(this._mostCommentedComponent, ListType.MOST_COMMENTED, films.mostCommentedFilms, this._filmMostCommentedPresenter);
+        this._mostCommentedComponent = this._renderExtraFilmsList(this._mostCommentedComponent, ListType.MOST_COMMENTED, films.mostCommentedFilms, this._filmMostCommentedPresenter);
       }
     }
   }
