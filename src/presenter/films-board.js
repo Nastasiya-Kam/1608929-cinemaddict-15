@@ -63,9 +63,7 @@ class FilmsBoard {
     this._renderFilmsBoard({renderTopRated: true, renderMostCommented: true});
   }
 
-  destroy() {
-    this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
-
+  _removeComponents() {
     remove(this._sortComponent);
     remove(this._mainFilmsListComponent);
     remove(this._topRatedComponent);
@@ -76,6 +74,11 @@ class FilmsBoard {
     this._topRatedComponent = null;
     this._mostCommentedComponent = null;
     this._filmsComponent = null;
+  }
+
+  destroy() {
+    this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
+    this._removeComponents();
 
     this._filmsModel.removeObserver(this._handleFilmModelEvent);
     this._filterModel.removeObserver(this._handleFilmModelEvent);
@@ -266,6 +269,7 @@ class FilmsBoard {
 
         if (this._filterModel.getFilter() !== FilterType.ALL) {
           this._clearFilmsBoard({resetRenderedFilmCount: false, resetSortType: false});
+          this._removeComponents();
           this._renderFilmsBoard({renderTopRated: true, renderMostCommented: true});
         }
         break;
@@ -286,6 +290,7 @@ class FilmsBoard {
         break;
       case UpdateType.FILTER_CHANGED:
         this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
+        this._removeComponents();
         this._renderFilmsBoard({renderTopRated: true, renderMostCommented: true});
         break;
       case UpdateType.INIT:
@@ -329,7 +334,9 @@ class FilmsBoard {
     const films = this._getFilms();
     const filmCount = films.currentFilteredfilms.length;
 
-    this._renderSort();
+    if (filmCount !== 0) {
+      this._renderSort();
+    }
 
     if (this._filmsComponent === null) {
       this._filmsComponent = new FilmsView();
