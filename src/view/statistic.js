@@ -71,6 +71,16 @@ const renderGenresChart = (statisticCtx, films) => {
   });
 };
 
+const createRatingTemplate = (rating) => (
+  `${(rating === 0)
+    ? ''
+    : `<p class="statistic__rank">
+      Your rank
+      <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
+      <span class="statistic__rank-label">${getRating(rating)}</span>`}
+    </p>`
+);
+
 const createStatisticFilters = (typeStatistic, currentRange) => {
   const {type, text} = typeStatistic;
 
@@ -116,13 +126,7 @@ const createStatisticTemplate = (statistics) => {
 
   return (
     `<section class="statistic">
-      ${(rating === 0)
-      ? ''
-      : `<p class="statistic__rank">
-        Your rank
-        <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-        <span class="statistic__rank-label">${getRating(rating)}</span>`}
-      </p>
+      ${createRatingTemplate(rating)}
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
         <p class="statistic__filters-description">Show stats:</p>
