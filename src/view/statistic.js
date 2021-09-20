@@ -1,10 +1,11 @@
 import SmartView from './smart.js';
 import {getRating} from '../utils/users.js';
-import {Statistics, makeItemsUnique, StatisticType, getCountWatchedFilms, getFilmGenres, getGenresData} from '../utils/statistics.js';
+import {statistics, makeItemsUnique, StatisticType, getCountWatchedFilms, getFilmGenres, getGenresData} from '../utils/statistics.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const BAR_HEIGHT = 50;
+const MINUTES_IN_HOUR = 60;
 
 const renderGenresChart = (statisticCtx, films) => {
   const filmGenres = getFilmGenres(films);
@@ -98,10 +99,10 @@ const createStatisticFilters = (typeStatistic, currentRange) => {
   );
 };
 
-const createStatisticTemplate = (statistics) => {
-  const {films, period} = statistics;
+const createStatisticTemplate = (data) => {
+  const {films, period} = data;
 
-  const statisticFiltersTemplate = Statistics
+  const statisticFiltersTemplate = statistics
     .map((type) => createStatisticFilters(type, period))
     .join('');
 
@@ -140,7 +141,7 @@ const createStatisticTemplate = (statistics) => {
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Total duration</h4>
-          <p class="statistic__item-text">${Math.trunc(duration/60)} <span class="statistic__item-description">h</span> ${duration - Math.trunc(duration/60)*60} <span class="statistic__item-description">m</span></p>
+          <p class="statistic__item-text">${Math.trunc(duration/MINUTES_IN_HOUR)} <span class="statistic__item-description">h</span> ${duration - Math.trunc(duration/MINUTES_IN_HOUR)*MINUTES_IN_HOUR} <span class="statistic__item-description">m</span></p>
         </li>
         ${(isEmptyLabels) ? '' : `<li class="statistic__text-item">
           <h4 class="statistic__item-title">Top genre</h4>

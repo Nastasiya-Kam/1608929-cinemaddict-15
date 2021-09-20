@@ -8,7 +8,7 @@ const StatisticType = {
   YEAR: 'year',
 };
 
-const Statistics = [
+const statistics = [
   {
     type: StatisticType.ALL,
     text: 'All time',
@@ -80,4 +80,4 @@ const getGenresData = (uniqueGenres, allGenres) => {
   };
 };
 
-export {StatisticType, Statistics, makeItemsUnique, countFilmsByGenre, sortGenre, getCountWatchedFilms, getFilmGenres, getGenresData};
+export {StatisticType, statistics, makeItemsUnique, countFilmsByGenre, sortGenre, getCountWatchedFilms, getFilmGenres, getGenresData};
