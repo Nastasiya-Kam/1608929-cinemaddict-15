@@ -42,6 +42,17 @@ class Comment extends SmartView {
     return createComment(this._data);
   }
 
+  setIsDeleting(flag) {
+    this.updateData({
+      isDeleting: flag,
+    });
+  }
+
+  setOnCommentDelete(callback) {
+    this._callback.commentDelete = callback;
+    this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._onCommentDelete);
+  }
+
   destroy() {
     remove(this);
   }
@@ -50,20 +61,9 @@ class Comment extends SmartView {
     this.setOnCommentDelete(this._callback.commentDelete);
   }
 
-  setIsDeleting(flag) {
-    this.updateData({
-      isDeleting: flag,
-    });
-  }
-
   _onCommentDelete(evt) {
     evt.preventDefault();
     this._callback.commentDelete(Comment.parseDataToComment(this._data));
-  }
-
-  setOnCommentDelete(callback) {
-    this._callback.commentDelete = callback;
-    this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._onCommentDelete);
   }
 
   static parseCommentToData(comment) {

@@ -37,33 +37,6 @@ class SiteMenu {
     remove(prevSiteMenuComponent);
   }
 
-  _handleModelEvent() {
-    this.init();
-  }
-
-  _handleStatisticsClick() {
-    if (this._filterModel.getFilter() === null) {
-      return;
-    }
-
-    this._changeMenu(UpdateType.STATISTICS_OPENED);
-    this._filterModel.setFilter(UpdateType.FILTER_CHANGED, null);
-  }
-
-  _handleFilterTypeClick(filterType) {
-    if (this._filterModel.getFilter() === filterType) {
-      return;
-    }
-
-    const prevFilterType = this._filterModel.getFilter();
-
-    this._filterModel.setFilter(UpdateType.FILTER_CHANGED, filterType);
-
-    if (prevFilterType === null) {
-      this._changeMenu(UpdateType.FILTER_CHANGED);
-    }
-  }
-
   _getFilters() {
     const films = this._filmsModel.getFilms();
 
@@ -101,6 +74,33 @@ class SiteMenu {
         count: filter[FilterType.FAVORITE](films).length,
       },
     ];
+  }
+
+  _handleModelEvent() {
+    this.init();
+  }
+
+  _handleStatisticsClick() {
+    if (this._filterModel.getFilter() === null) {
+      return;
+    }
+
+    this._changeMenu(UpdateType.STATISTICS_OPENED);
+    this._filterModel.setFilter(UpdateType.FILTER_CHANGED, null);
+  }
+
+  _handleFilterTypeClick(filterType) {
+    if (this._filterModel.getFilter() === filterType) {
+      return;
+    }
+
+    const prevFilterType = this._filterModel.getFilter();
+
+    this._filterModel.setFilter(UpdateType.FILTER_CHANGED, filterType);
+
+    if (prevFilterType === null) {
+      this._changeMenu(UpdateType.FILTER_CHANGED);
+    }
   }
 }
 

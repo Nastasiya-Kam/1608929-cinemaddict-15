@@ -45,24 +45,6 @@ class CardFilm extends AbstractView {
     return createCardFilmTemplate(this._film);
   }
 
-  _onTitleClick() {
-    this._callback.titleClick();
-  }
-
-  _onCommentsClick(evt) {
-    evt.preventDefault();
-    this._callback.commentsClick();
-  }
-
-  _onPosterClick() {
-    this._callback.posterClick();
-  }
-
-  setOnPosterClick(callback) {
-    this._callback.posterClick = callback;
-    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._onPosterClick);
-  }
-
   setOnTitleClick(callback) {
     this._callback.titleClick = callback;
     this.getElement().querySelector('.film-card__title').addEventListener('click', this._onTitleClick);
@@ -73,16 +55,9 @@ class CardFilm extends AbstractView {
     this.getElement().querySelector('.film-card__comments').addEventListener('click', this._onCommentsClick);
   }
 
-  _onWatchListClick() {
-    this._callback.watchListClick();
-  }
-
-  _onWatchedClick() {
-    this._callback.watchedClick();
-  }
-
-  _onFavoriteClick() {
-    this._callback.favoriteClick();
+  setOnPosterClick(callback) {
+    this._callback.posterClick = callback;
+    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._onPosterClick);
   }
 
   setOnWatchListClick(callback) {
@@ -98,6 +73,31 @@ class CardFilm extends AbstractView {
   setOnFavoriteClick(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._onFavoriteClick);
+  }
+
+  _onTitleClick() {
+    this._callback.titleClick();
+  }
+
+  _onCommentsClick(evt) {
+    evt.preventDefault();
+    this._callback.commentsClick();
+  }
+
+  _onPosterClick() {
+    this._callback.posterClick();
+  }
+
+  _onWatchListClick() {
+    this._callback.watchListClick();
+  }
+
+  _onWatchedClick() {
+    this._callback.watchedClick();
+  }
+
+  _onFavoriteClick() {
+    this._callback.favoriteClick();
   }
 }
 

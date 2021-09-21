@@ -203,6 +203,10 @@ class Statistic extends SmartView {
     this._genresChart = renderGenresChart(statisticCtx, watchedFilms);
   }
 
+  _setOnStatisticTypeChange() {
+    this.getElement().querySelector('.statistic__filters').addEventListener('change', this._onStatisticTypeChange);
+  }
+
   _onStatisticTypeChange(evt) {
     evt.preventDefault();
     const currentPeriod = evt.target.value;
@@ -212,10 +216,6 @@ class Statistic extends SmartView {
     });
 
     this._setChart();
-  }
-
-  _setOnStatisticTypeChange() {
-    this.getElement().querySelector('.statistic__filters').addEventListener('change', this._onStatisticTypeChange);
   }
 }
 

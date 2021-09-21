@@ -26,18 +26,6 @@ class Controls extends AbstractView {
     return createControlsTemplate(this._controls);
   }
 
-  _onWatchListClick() {
-    this._callback.watchListClick();
-  }
-
-  _onWatchedClick() {
-    this._callback.watchedClick();
-  }
-
-  _onFavoriteClick() {
-    this._callback.favoriteClick();
-  }
-
   setOnWatchListClick(callback) {
     this._callback.watchListClick = callback;
     this.getElement().querySelector('.film-details__control-button--watchlist').addEventListener('click', this._onWatchListClick);
@@ -51,6 +39,18 @@ class Controls extends AbstractView {
   setOnFavoriteClick(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._onFavoriteClick);
+  }
+
+  _onWatchListClick() {
+    this._callback.watchListClick();
+  }
+
+  _onWatchedClick() {
+    this._callback.watchedClick();
+  }
+
+  _onFavoriteClick() {
+    this._callback.favoriteClick();
   }
 }
 

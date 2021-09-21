@@ -21,16 +21,16 @@ class Sort extends AbstractView {
     return createSortTemplate(this._sortType);
   }
 
+  setOnSortTypeChange(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('click', this._onSortTypeChange);
+  }
+
   _onSortTypeChange(evt) {
     if (evt.target.tagName === 'A') {
       evt.preventDefault();
       this._callback.sortTypeChange(evt.target.dataset.sortType);
     }
-  }
-
-  setOnSortTypeChange(callback) {
-    this._callback.sortTypeChange = callback;
-    this.getElement().addEventListener('click', this._onSortTypeChange);
   }
 }
 

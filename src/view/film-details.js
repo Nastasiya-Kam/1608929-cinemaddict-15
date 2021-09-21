@@ -97,13 +97,13 @@ class FilmDetails extends AbstractView {
     return this.getElement().querySelector('.film-details__bottom-container');
   }
 
-  _onCloseButtonClick() {
-    this._callback.closeButtonClick();
-  }
-
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
+  }
+
+  _onCloseButtonClick() {
+    this._callback.closeButtonClick();
   }
 }
 

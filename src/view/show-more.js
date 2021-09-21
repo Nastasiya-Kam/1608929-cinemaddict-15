@@ -13,14 +13,14 @@ class ShowMore extends AbstractView {
     return createShowMoreTemplate();
   }
 
-  _onShowMoreClick(evt) {
-    evt.preventDefault();
-    this._callback.showMore();
-  }
-
   setOnShowMoreClick(callback) {
     this._callback.showMore = callback;
     this.getElement().addEventListener('click', this._onShowMoreClick);
+  }
+
+  _onShowMoreClick(evt) {
+    evt.preventDefault();
+    this._callback.showMore();
   }
 }
 

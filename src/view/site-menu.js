@@ -47,6 +47,16 @@ class SiteMenu extends AbstractView {
     return createSiteMenuTemplate(this._filter, this._currentFilterType);
   }
 
+  setOnFilterTypeClick(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement().querySelector('.main-navigation__items').addEventListener('click', this._onFilterTypeClick);
+  }
+
+  setOnStatsClick(callback) {
+    this._callback.statsClick = callback;
+    this.getElement().querySelector('.main-navigation__additional').addEventListener('click', this._onStatsClick);
+  }
+
   _onFilterTypeClick(evt) {
     if (evt.target.tagName === 'A') {
       evt.preventDefault();
@@ -54,19 +64,9 @@ class SiteMenu extends AbstractView {
     }
   }
 
-  setOnFilterTypeClick(callback) {
-    this._callback.filterTypeChange = callback;
-    this.getElement().querySelector('.main-navigation__items').addEventListener('click', this._onFilterTypeClick);
-  }
-
   _onStatsClick(evt) {
     evt.preventDefault();
     this._callback.statsClick();
-  }
-
-  setOnStatsClick(callback) {
-    this._callback.statsClick = callback;
-    this.getElement().querySelector('.main-navigation__additional').addEventListener('click', this._onStatsClick);
   }
 }
 

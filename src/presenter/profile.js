@@ -42,7 +42,6 @@ class Profile {
   _handleModelEvent() {
     this.init();
   }
-
 }
 
 export default Profile;

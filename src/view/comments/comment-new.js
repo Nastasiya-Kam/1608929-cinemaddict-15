@@ -70,6 +70,11 @@ class CommentNew extends SmartView {
     });
   }
 
+  setOnCommentSubmit(callback) {
+    this._callback.commentSubmit = callback;
+    this.getElement().querySelector('textarea').addEventListener('keydown', this._onCommentSubmit);
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector('.film-details__emoji-list').addEventListener('change', this._onEmojiClick);
     this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._onDescriptionTextareaChange);
@@ -102,11 +107,6 @@ class CommentNew extends SmartView {
       evt.preventDefault();
       this._callback.commentSubmit(CommentNew.parseDataToComment(this._data));
     }
-  }
-
-  setOnCommentSubmit(callback) {
-    this._callback.commentSubmit = callback;
-    this.getElement().querySelector('textarea').addEventListener('keydown', this._onCommentSubmit);
   }
 
   static parseDataToComment(data) {

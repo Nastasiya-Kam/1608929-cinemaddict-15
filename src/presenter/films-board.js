@@ -63,6 +63,41 @@ class FilmsBoard {
     this._renderFilmsBoard({renderTopRated: true, renderMostCommented: true});
   }
 
+  destroy() {
+    this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
+    this._removeComponents();
+
+    this._filmsModel.removeObserver(this._handleFilmModelEvent);
+    this._filterModel.removeObserver(this._handleFilmModelEvent);
+  }
+
+  _getFilms() {
+    this._filterType = this._filterModel.getFilter();
+    const films = this._filmsModel.getFilms();
+    let filteredFilms = filter[this._filterType](films);
+    const topRatedFilms = films.slice().filter((film) => film.rating !== 0).sort(compareRating).slice(0, EXTRA_FILM_COUNT);
+    const mostCommentedFilms = films.slice().filter((film) => film.comments.length !== 0).sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
+
+    switch (this._currentSortType) {
+      case SortType.DATE:
+        filteredFilms = filteredFilms.slice().sort(sortDate);
+        break;
+      case SortType.RATING:
+        filteredFilms = filteredFilms.slice().sort(compareRating);
+        break;
+    }
+
+    return {
+      currentFilteredfilms: filteredFilms,
+      topRatedFilms: topRatedFilms,
+      mostCommentedFilms: mostCommentedFilms,
+    };
+  }
+
+  _getFilmPresenters() {
+    return [this._filmPresenter, this._filmTopPresenter, this._filmMostCommentedPresenter];
+  }
+
   _removeComponents() {
     remove(this._sortComponent);
     remove(this._mainFilmsListComponent);
@@ -74,14 +109,6 @@ class FilmsBoard {
     this._topRatedComponent = null;
     this._mostCommentedComponent = null;
     this._filmsComponent = null;
-  }
-
-  destroy() {
-    this._clearFilmsBoard({resetRenderedFilmCount: true, resetSortType: true});
-    this._removeComponents();
-
-    this._filmsModel.removeObserver(this._handleFilmModelEvent);
-    this._filterModel.removeObserver(this._handleFilmModelEvent);
   }
 
   _clearFilmsBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {
@@ -110,27 +137,8 @@ class FilmsBoard {
     }
   }
 
-  _getFilms() {
-    this._filterType = this._filterModel.getFilter();
-    const films = this._filmsModel.getFilms();
-    let filteredFilms = filter[this._filterType](films);
-    const topRatedFilms = films.slice().filter((film) => film.rating !== 0).sort(compareRating).slice(0, EXTRA_FILM_COUNT);
-    const mostCommentedFilms = films.slice().filter((film) => film.comments.length !== 0).sort(compareCommentsAmount).slice(0, EXTRA_FILM_COUNT);
-
-    switch (this._currentSortType) {
-      case SortType.DATE:
-        filteredFilms = filteredFilms.slice().sort(sortDate);
-        break;
-      case SortType.RATING:
-        filteredFilms = filteredFilms.slice().sort(compareRating);
-        break;
-    }
-
-    return {
-      currentFilteredfilms: filteredFilms,
-      topRatedFilms: topRatedFilms,
-      mostCommentedFilms: mostCommentedFilms,
-    };
+  _openDetails(film) {
+    this._filmDetailsPresenter.open(film);
   }
 
   _renderSort() {
@@ -148,18 +156,10 @@ class FilmsBoard {
     remove(prevSortComponent);
   }
 
-  _getFilmPresenters() {
-    return [this._filmPresenter, this._filmTopPresenter, this._filmMostCommentedPresenter];
-  }
-
   _renderFilm(container, film, presenter) {
     const filmPresenter = new FilmPresenter(container, this._handleViewAction, this._openDetails);
     filmPresenter.init(film);
     presenter.set(film.id, filmPresenter);
-  }
-
-  _openDetails(film) {
-    this._filmDetailsPresenter.open(film);
   }
 
   _renderNoFilms() {
