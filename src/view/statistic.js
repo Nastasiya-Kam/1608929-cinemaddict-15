@@ -1,11 +1,11 @@
 import SmartView from './smart.js';
 import {getRating} from '../utils/users.js';
+import {MINUTES_IN_HOUR} from '../utils/films.js';
 import {statistics, makeItemsUnique, StatisticType, getCountWatchedFilms, getFilmGenres, getGenresData} from '../utils/statistics.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const BAR_HEIGHT = 50;
-const MINUTES_IN_HOUR = 60;
 
 const renderGenresChart = (statisticCtx, films) => {
   const filmGenres = getFilmGenres(films);

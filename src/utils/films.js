@@ -1,6 +1,7 @@
 import {getToday} from './dates.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
+const MINUTES_IN_HOUR = 60;
 
 const ListType = {
   MAIN: {title: 'All movies. Upcoming', isExtraList: false, isEmptyList: false},
@@ -39,6 +40,6 @@ const getShortDescription = (text) => (text.length > MAX_LENGTH_DESCRIPTION)
   ? `${text.slice(0, MAX_LENGTH_DESCRIPTION - 1).trim()}...`
   : text;
 
-const getDuration = (minutes) => `${Math.trunc(minutes/60)}h ${minutes - Math.trunc(minutes/60)*60}m`;
+const getDuration = (minutes) => `${Math.trunc(minutes/MINUTES_IN_HOUR)}h ${minutes - Math.trunc(minutes/MINUTES_IN_HOUR)*MINUTES_IN_HOUR}m`;
 
-export {ListType, Settings, getUpdatedFilm, getUpdatedWatchedFilm, getShortDescription, getDuration};
+export {MINUTES_IN_HOUR, ListType, Settings, getUpdatedFilm, getUpdatedWatchedFilm, getShortDescription, getDuration};
